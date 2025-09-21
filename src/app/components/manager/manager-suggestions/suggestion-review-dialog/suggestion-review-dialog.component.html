@@ -1,0 +1,60 @@
+<div class="suggestion-review-dialog">
+  <h2 mat-dialog-title>Review Task Suggestion</h2>
+
+  <mat-dialog-content>
+    <div class="suggestion-details">
+      <div class="suggestion-header">
+        <h3>{{ suggestion.taskName }}</h3>
+        <mat-chip>{{ suggestion.category }}</mat-chip>
+      </div>
+
+      <div class="suggestion-description" *ngIf="suggestion.description">
+        <p>{{ suggestion.description }}</p>
+      </div>
+
+      <div class="suggestion-url" *ngIf="suggestion.url">
+        <strong>Task URL:</strong>
+        <a [href]="suggestion.url" target="_blank" class="url-link">
+          {{ suggestion.url }}
+        </a>
+      </div>
+
+      <div class="actions-section">
+        <h4>Proposed Actions ({{ suggestion.actions.length }})</h4>
+        <div class="actions-list">
+          <mat-card *ngFor="let action of suggestion.actions; let i = index" class="action-card">
+            <mat-card-content>
+              <div class="action-header">
+                <span class="action-number">{{ i + 1 }}</span>
+                <h5>{{ action.name }}</h5>
+              </div>
+              
+              <p *ngIf="action.description" class="action-description">
+                {{ action.description }}
+              </p>
+
+              <div class="action-meta" *ngIf="action.imageUrl || action.url">
+                <div *ngIf="action.imageUrl" class="action-image">
+                  <strong>Image:</strong>
+                  <a [href]="action.imageUrl" target="_blank" class="url-link">
+                    {{ action.imageUrl }}
+                  </a>
+                </div>
+                <div *ngIf="action.url" class="action-url">
+                  <strong>URL:</strong>
+                  <a [href]="action.url" target="_blank" class="url-link">
+                    {{ action.url }}
+                  </a>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">Close</button>
+  </mat-dialog-actions>
+</div>

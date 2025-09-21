@@ -1,0 +1,142 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { DataService } from '../../../services/data.service';
+import { AuthService } from '../../../services/auth.service';
+import { TaskSuggestion } from '../../../models/task.model';
+import { TaskCreateRequest } from '../../../models/task.model';
+import { ActionCreateRequest } from '../../../models/action.model';
+import { SuggestionReviewDialogComponent } from './suggestion-review-dialog/suggestion-review-dialog.component';
+
+@Component({
+    selector: 'app-manager-suggestions',
+    standalone: true,
+    imports: [
+        CommonModule,
+        MatCardModule,
+        MatButtonModule,
+        MatIconModule,
+        MatChipsModule,
+        MatTableModule,
+        MatTooltipModule,
+        MatSnackBarModule,
+        MatDialogModule
+    ],
+    templateUrl: './manager-suggestions.component.html',
+    styleUrl: './manager-suggestions.component.scss'
+})
+export class ManagerSuggestionsComponent implements OnInit {
+    suggestions: TaskSuggestion[] = [];
+    displayedColumns: string[] = ['taskName', 'suggestedBy', 'category', 'actions', 'status', 'createdAt', 'actions'];
+    currentUserId: string | null = null;
+
+    constructor(
+        private dataService: DataService,
+        private authService: AuthService,
+        private dialog: MatDialog,
+        private snackBar: MatSnackBar
+    ) { }
+
+    ngOnInit(): void {
+        this.currentUserId = this.authService.getCurrentUser()?.id || null;
+        this.loadSuggestions();
+    }
+
+    loadSuggestions(): void {
+        this.suggestions = this.dataService.getTaskSuggestions();
+    }
+
+    getStatusColor(status: string): string {
+        switch (status) {
+            case 'approved': return 'primary';
+            case 'rejected': return 'warn';
+            default: return 'basic';
+        }
+    }
+
+    getStatusText(status: string): string {
+        switch (status) {
+            case 'approved': return 'Approved';
+            case 'rejected': return 'Rejected';
+            default: return 'Pending Review';
+        }
+    }
+
+    reviewSuggestion(suggestion: TaskSuggestion): void {
+        const dialogRef = this.dialog.open(SuggestionReviewDialogComponent, {
+            width: '800px',
+            data: { suggestion, currentUserId: this.currentUserId }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.loadSuggestions();
+                this.snackBar.open('Suggestion reviewed successfully!', 'Close', { duration: 3000 });
+            }
+        });
+    }
+
+    approveSuggestion(suggestion: TaskSuggestion): void {
+        // Convert suggestion to task
+        const taskData: TaskCreateRequest = {
+            name: suggestion.taskName,
+            description: suggestion.description,
+            category: suggestion.category,
+            url: suggestion.url,
+            actions: suggestion.actions.map(action => ({
+                name: action.name,
+                description: action.description,
+                imageUrl: action.imageUrl,
+                url: action.url,
+                order: action.order
+            }))
+        };
+
+        // Create the task
+        this.dataService.createTask(taskData, this.currentUserId!);
+
+        // Update suggestion status
+        this.dataService.updateTaskSuggestion(suggestion.id, {
+            status: 'approved',
+            reviewedAt: new Date(),
+            reviewedBy: this.currentUserId!
+        });
+
+        this.loadSuggestions();
+        this.snackBar.open('Suggestion approved and task created!', 'Close', { duration: 3000 });
+    }
+
+    rejectSuggestion(suggestion: TaskSuggestion): void {
+        this.dataService.updateTaskSuggestion(suggestion.id, {
+            status: 'rejected',
+            reviewedAt: new Date(),
+            reviewedBy: this.currentUserId!
+        });
+
+        this.loadSuggestions();
+        this.snackBar.open('Suggestion rejected', 'Close', { duration: 3000 });
+    }
+
+    getSuggestionsByStatus(status: string): TaskSuggestion[] {
+        return this.suggestions.filter(s => s.status === status);
+    }
+
+    getPendingSuggestions(): TaskSuggestion[] {
+        return this.getSuggestionsByStatus('pending');
+    }
+
+    getApprovedSuggestions(): TaskSuggestion[] {
+        return this.getSuggestionsByStatus('approved');
+    }
+
+    getRejectedSuggestions(): TaskSuggestion[] {
+        return this.getSuggestionsByStatus('rejected');
+    }
+}

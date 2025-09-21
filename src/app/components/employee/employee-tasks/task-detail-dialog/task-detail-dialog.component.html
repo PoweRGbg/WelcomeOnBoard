@@ -1,0 +1,102 @@
+<div class="task-detail-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ task.name }}</h2>
+    <div class="task-meta">
+      <mat-chip>{{ task.category }}</mat-chip>
+      <span class="completion-count" *ngIf="task.completionCount > 0">
+        {{ task.completionCount }} completions
+      </span>
+    </div>
+  </div>
+
+  <mat-dialog-content>
+    <div class="task-description" *ngIf="task.description">
+      <p>{{ task.description }}</p>
+    </div>
+
+    <div class="task-url" *ngIf="task.url">
+      <button mat-button color="primary" (click)="openUrl(task.url!)">
+        <mat-icon>open_in_new</mat-icon>
+        Open Task URL
+      </button>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-header">
+        <h3>Progress</h3>
+        <span class="progress-text">
+          {{ progress?.completedActions?.length || 0 }} of {{ task.actions.length }} actions completed
+        </span>
+      </div>
+      <mat-progress-bar 
+        mode="determinate" 
+        [value]="getCompletionPercentage()"
+        [color]="getCompletionPercentage() === 100 ? 'primary' : 'warn'">
+      </mat-progress-bar>
+      <div class="progress-percentage">{{ getCompletionPercentage() | number:'1.0-0' }}%</div>
+    </div>
+
+    <div class="actions-section">
+      <h3>Actions</h3>
+      <div class="actions-list">
+        <mat-card *ngFor="let action of task.actions; let i = index" 
+                  class="action-card"
+                  [class.completed]="isActionCompleted(action)"
+                  [class.current]="isActionCurrent(action)"
+                  [class.locked]="!isActionAvailable(action)">
+          
+          <mat-card-content>
+            <div class="action-header">
+              <div class="action-number">{{ i + 1 }}</div>
+              <div class="action-title">
+                <h4>{{ action.name }}</h4>
+                <p *ngIf="action.description" class="action-description">{{ action.description }}</p>
+              </div>
+              <div class="action-status">
+                <mat-chip [color]="getActionStatusColor(action)" selected>
+                  {{ getActionStatusText(action) }}
+                </mat-chip>
+              </div>
+            </div>
+
+            <div class="action-content">
+              <div class="action-image" *ngIf="action.imageUrl">
+                <img [src]="action.imageUrl" 
+                     [alt]="action.name"
+                     (click)="openImage(action.imageUrl!)"
+                     class="action-image-preview"
+                     matTooltip="Click to open in new tab">
+              </div>
+
+              <div class="action-url" *ngIf="action.url">
+                <button mat-button color="accent" (click)="openUrl(action.url!)">
+                  <mat-icon>link</mat-icon>
+                  {{ action.url }}
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <mat-checkbox 
+              [checked]="isActionCompleted(action)"
+              [disabled]="!isActionAvailable(action)"
+              (change)="toggleAction(action)"
+              class="action-checkbox">
+              {{ isActionCompleted(action) ? 'Completed' : 'Mark as Complete' }}
+            </mat-checkbox>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">Close</button>
+    <button mat-raised-button color="primary" (click)="onClose()" 
+            *ngIf="progress?.isCompleted">
+      <mat-icon>check_circle</mat-icon>
+      Task Completed!
+    </button>
+  </mat-dialog-actions>
+</div>

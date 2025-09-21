@@ -1,0 +1,163 @@
+<div class="employee-suggestions-container">
+  <div class="suggestion-form-section">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Suggest New Task</mat-card-title>
+        <mat-card-subtitle>Create a task suggestion for managers to review</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="suggestionForm" (ngSubmit)="onSubmit()" class="suggestion-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Task Name *</mat-label>
+              <input matInput formControlName="taskName" placeholder="Enter suggested task name">
+              <mat-error *ngIf="suggestionForm.get('taskName')?.hasError('required')">
+                Task name is required
+              </mat-error>
+              <mat-error *ngIf="suggestionForm.get('taskName')?.hasError('minlength')">
+                Task name must be at least 3 characters
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" rows="3" placeholder="Describe the task and its purpose"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="category-field">
+              <mat-label>Category *</mat-label>
+              <mat-select formControlName="category">
+                <mat-option *ngFor="let category of categories" [value]="category">
+                  {{ category }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="suggestionForm.get('category')?.hasError('required')">
+                Category is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="url-field">
+              <mat-label>Task URL</mat-label>
+              <input matInput formControlName="url" placeholder="https://example.com">
+            </mat-form-field>
+          </div>
+
+          <div class="actions-section">
+            <div class="actions-header">
+              <h3>Actions</h3>
+              <button mat-raised-button color="primary" type="button" (click)="addAction()">
+                <mat-icon>add</mat-icon>
+                Add Action
+              </button>
+            </div>
+
+            <div formArrayName="actions" class="actions-list">
+              <div *ngFor="let action of actionsArray.controls; let i = index" 
+                   [formGroupName]="i" 
+                   class="action-item">
+                
+                <div class="action-header">
+                  <span class="action-number">{{ i + 1 }}</span>
+                  <div class="action-controls">
+                    <button mat-icon-button type="button" 
+                            (click)="removeAction(i)"
+                            matTooltip="Remove Action"
+                            color="warn">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="action-fields">
+                  <mat-form-field appearance="outline" class="action-name">
+                    <mat-label>Action Name *</mat-label>
+                    <input matInput formControlName="name" placeholder="Enter action name">
+                    <mat-error *ngIf="action.get('name')?.hasError('required')">
+                      Action name is required
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="action-description">
+                    <mat-label>Description</mat-label>
+                    <input matInput formControlName="description" placeholder="Enter action description">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="action-image">
+                    <mat-label>Image URL</mat-label>
+                    <input matInput formControlName="imageUrl" placeholder="https://example.com/image.jpg">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="action-url">
+                    <mat-label>Action URL</mat-label>
+                    <input matInput formControlName="url" placeholder="https://example.com">
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="actionsArray.length === 0" class="no-actions">
+              <mat-icon>assignment</mat-icon>
+              <p>No actions added yet. Click "Add Action" to get started.</p>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="!suggestionForm.valid || actionsArray.length === 0">
+              <mat-icon>send</mat-icon>
+              Submit Suggestion
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="my-suggestions-section" *ngIf="mySuggestions.length > 0">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>My Suggestions</mat-card-title>
+        <mat-card-subtitle>Track the status of your submitted suggestions</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="suggestions-list">
+          <mat-card *ngFor="let suggestion of mySuggestions" class="suggestion-card">
+            <mat-card-content>
+              <div class="suggestion-header">
+                <div class="suggestion-title">
+                  <h4>{{ suggestion.taskName }}</h4>
+                  <p *ngIf="suggestion.description">{{ suggestion.description }}</p>
+                </div>
+                <div class="suggestion-status">
+                  <mat-chip [color]="getStatusColor(suggestion.status)" selected>
+                    {{ getStatusText(suggestion.status) }}
+                  </mat-chip>
+                </div>
+              </div>
+
+              <div class="suggestion-meta">
+                <div class="suggestion-category">
+                  <mat-chip>{{ suggestion.category }}</mat-chip>
+                </div>
+                <div class="suggestion-actions-count">
+                  <mat-icon>assignment</mat-icon>
+                  <span>{{ suggestion.actions.length }} actions</span>
+                </div>
+                <div class="suggestion-date">
+                  <mat-icon>schedule</mat-icon>
+                  <span>{{ suggestion.createdAt | date:'short' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

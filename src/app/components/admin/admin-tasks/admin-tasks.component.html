@@ -1,0 +1,45 @@
+<div class="admin-tasks-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Task Management</mat-card-title>
+      <mat-card-subtitle>Manage all tasks in the system</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="actions-bar">
+        <button mat-raised-button color="primary" (click)="createTask()">
+          <mat-icon></mat-icon>
+          Add Task
+        </button>
+      </div>
+
+      <div class="tasks-grid">
+        <mat-card *ngFor="let task of tasks" class="task-card">
+          <mat-card-header>
+            <mat-card-title>{{ task.name }}</mat-card-title>
+            <mat-card-subtitle>{{ task.category }}</mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <p>{{ task.description }}</p>
+            <div class="task-meta">
+              <span class="actions-count">{{ task.actions.length }} actions</span>
+              <span class="completion-count">{{ task.completionCount }} completions</span>
+            </div>
+          </mat-card-content>
+          
+          <mat-card-actions>
+            <button mat-button (click)="editTask(task)">
+              <mat-icon></mat-icon>
+              Edit
+            </button>
+            <button mat-button color="warn" (click)="deleteTask(task)">
+              <mat-icon></mat-icon>
+              Delete
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,71 @@
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 16px;
+}
+
+.role-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sidenav-container {
+  flex: 1;
+  height: calc(100vh - 64px);
+}
+
+mat-sidenav {
+  width: 250px;
+  border-right: 1px solid #e0e0e0;
+}
+
+mat-nav-list {
+  padding-top: 0;
+}
+
+mat-list-item {
+  margin: 4px 8px;
+  border-radius: 8px;
+  
+  &.active {
+    background-color: rgba(25, 118, 210, 0.1);
+    color: #1976d2;
+    
+    mat-icon {
+      color: #1976d2;
+    }
+  }
+  
+  &:hover:not(.active) {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.login-view {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+mat-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

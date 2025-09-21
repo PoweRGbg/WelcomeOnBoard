@@ -1,0 +1,47 @@
+.admin-tasks-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.actions-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.task-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.task-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #666;
+}
+
+.actions-count,
+.completion-count {
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
