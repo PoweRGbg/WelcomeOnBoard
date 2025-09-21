@@ -62,7 +62,7 @@ export class TaskCreateDialogComponent implements OnInit {
             description: [''],
             category: ['', Validators.required],
             url: [''],
-            actions: this.fb.array([])
+            action: this.fb.array([])
         });
     }
 

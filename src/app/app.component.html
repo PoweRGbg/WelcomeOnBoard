@@ -30,7 +30,6 @@
                             <mat-icon matListItemIcon>dashboard</mat-icon>
                             <span matListItemTitle>Dashboard</span>
                         </a>
-                        <div>No menu items for {{ currentUser ? currentUser.role : 'guest' }}</div>
                         <a mat-list-item *ngFor="let item of dashboardMenuItems" [routerLink]="item.route"
                             routerLinkActive="active">
                             <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>

@@ -37,10 +37,12 @@
             Category is required
           </mat-error>
         </mat-form-field>
+      </div>
 
+      <div class="form-row">
         <mat-form-field appearance="outline" class="url-field">
-          <mat-label>Task URL</mat-label>
-          <input matInput formControlName="url" placeholder="https://example.com">
+            <mat-label>Task URL</mat-label>
+            <input matInput formControlName="url" placeholder="https://example.com">
         </mat-form-field>
       </div>
 
@@ -48,7 +50,7 @@
         <div class="actions-header">
           <h3>Actions</h3>
           <button mat-raised-button color="primary" type="button" (click)="addAction()">
-            <mat-icon>add</mat-icon>
+            <mat-icon>+</mat-icon>
             Add Action
           </button>
         </div>
