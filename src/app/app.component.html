@@ -20,29 +20,36 @@
       </button>
     </mat-menu>
   </mat-toolbar>
-
-  <mat-sidenav-container class="sidenav-container" *ngIf="isLoggedIn">
-    <mat-sidenav #sidenav mode="side" opened>
-      <mat-nav-list>
-        <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
-          <mat-icon matListItemIcon>dashboard</mat-icon>
-          <span matListItemTitle>Dashboard</span>
-        </a>
-        <a mat-list-item 
-           *ngFor="let item of getRoleBasedMenuItems()" 
-           [routerLink]="item.route" 
-           routerLinkActive="active">
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
-        </a>
-      </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <router-outlet></router-outlet>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-
-  <div *ngIf="!isLoggedIn" class="login-view">
-    <router-outlet></router-outlet>
-  </div>
+    @if (isLoggedIn) {
+        <mat-sidenav-container class="sidenav-container">
+            <mat-sidenav #sidenav mode="side" opened>
+                <mat-nav-list>
+                    <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+            <mat-icon matListItemIcon>dashboard</mat-icon>
+            <span matListItemTitle>Dashboard</span>
+            </a>
+            @if (getRoleBasedMenuItems().length > 0 && currentUser) {
+                <div>No menu items for {{ currentUser.role }}</div>
+            } 
+            @else {
+                <a mat-list-item 
+                    *ngFor="let item of getRoleBasedMenuItems()" 
+                    [routerLink]="item.route" 
+                    routerLinkActive="active"
+                >
+                <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                <span matListItemTitle>{{ item.label }}</span>
+                </a>
+            }
+        </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+                </mat-sidenav-container>
+    } @else {
+        <div class="login-view">
+            <router-outlet></router-outlet>
+        </div>
+    }
 </div>

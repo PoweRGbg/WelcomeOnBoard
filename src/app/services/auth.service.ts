@@ -8,10 +8,12 @@ export class AuthService {
     private currentUser = signal<User | null>(null);
     private isAuthenticated = signal<boolean>(false);
 
+
     constructor() {
         // Check for stored user data on service initialization
         console.log('AuthService initialized');
-        
+
+
         const storedUser = localStorage.getItem('currentUser');
         if (storedUser) {
             this.currentUser.set(JSON.parse(storedUser));
@@ -36,6 +38,8 @@ export class AuthService {
     }
 
     isLoggedIn(): boolean {
+        console.log('AuthService isLoggedIn check!!!!');
+
         return this.isAuthenticated();
     }
 

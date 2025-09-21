@@ -37,13 +37,12 @@ export class AppComponent {
     isLoggedIn = false;
 
     constructor(private authService: AuthService) {
-        console.log('AppComponent constructor');
-        
         this.updateAuthState();
-        console.log('App initialized - isLoggedIn:', this.isLoggedIn, 'currentUser:', this.currentUser);
     }
 
     private updateAuthState(): void {
+        console.log('APP updateAuthState called');
+        
         this.currentUser = this.authService.getCurrentUser();
         this.isLoggedIn = this.authService.isLoggedIn();
         console.log('Auth state updated - isLoggedIn:', this.isLoggedIn, 'currentUser:', this.currentUser);
@@ -56,8 +55,9 @@ export class AppComponent {
     }
 
     getRoleBasedMenuItems(): any[] {
-        if (!this.currentUser) return [];
+        console.log('APP getRoleBasedMenuItems called');
 
+        if (!this.currentUser) return [];
         const items = [];
 
         switch (this.currentUser.role) {
@@ -80,7 +80,9 @@ export class AppComponent {
                 );
                 break;
         }
-
+        console.log('Current user:', items);
+        console.log('Menu items:', items);
+        
         return items;
     }
 }
