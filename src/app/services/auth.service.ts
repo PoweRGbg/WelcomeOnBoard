@@ -1,53 +1,41 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { User, UserRole } from '../models/user.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private currentUser = signal<User | null>(null);
-    private isAuthenticated = signal<boolean>(false);
-
+    private storedUser: User | null = null;
+    private currentUserSubject: BehaviorSubject<any>;
+    public currentUser$: Observable<any>;
 
     constructor() {
-        // Check for stored user data on service initialization
-        console.log('AuthService initialized');
-
-
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-            this.currentUser.set(JSON.parse(storedUser));
-            this.isAuthenticated.set(true);
-        }
+        const user = localStorage.getItem('currentUser');
+        this.storedUser = user ? JSON.parse(user) : null;
+        this.currentUserSubject = new BehaviorSubject<any>(this.storedUser);
+        this.currentUser$ = this.currentUserSubject.asObservable();
     }
 
     login(user: User): void {
-        this.currentUser.set(user);
-        this.isAuthenticated.set(true);
         localStorage.setItem('currentUser', JSON.stringify(user));
+        this.currentUserSubject.next(user);
     }
 
     logout(): void {
-        this.currentUser.set(null);
-        this.isAuthenticated.set(false);
         localStorage.removeItem('currentUser');
+        this.currentUserSubject.next(null);
     }
 
     getCurrentUser(): User | null {
-        return this.currentUser();
-    }
-
-    isLoggedIn(): boolean {
-        return this.isAuthenticated();
+        return this.storedUser;
     }
 
     hasRole(role: UserRole): boolean {
-        const user = this.getCurrentUser();
-        return user?.role === role;
+        return this.storedUser?.role === role;
     }
 
     hasAnyRole(roles: UserRole[]): boolean {
-        const user = this.getCurrentUser();
-        return user ? roles.includes(user.role) : false;
+        return this.storedUser ? roles.includes(this.storedUser.role) : false;
     }
 }

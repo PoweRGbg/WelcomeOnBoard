@@ -38,32 +38,18 @@ export class AppComponent {
     isLoggedIn = false;
     protected dashboardMenuItems: any[] = [];
     constructor(private authService: AuthService, private router: Router) {
-        this.updateAuthState();
-        this.dashboardMenuItems = this.getRoleBasedMenuItems();
     }
 
-    ngOnChanges(): void {
-        this.isLoggedIn = this.authService.isLoggedIn();
-        if (this.isLoggedIn) {
-            console.log('User is logged in, fetching menu items');
-            this.sidenav.open();
+    ngOnInit(): void {
+        this.authService.currentUser$.subscribe(user => {
+            this.currentUser = user;
+            this.isLoggedIn = !!user; // Check if user object exists to set the login status
             this.dashboardMenuItems = this.getRoleBasedMenuItems();
-        }
-    }
-
-    private updateAuthState(): void {
-        console.log('APP updateAuthState called');
-        
-        this.currentUser = this.authService.getCurrentUser();
-        this.isLoggedIn = this.authService.isLoggedIn();
-        this.dashboardMenuItems =this.getRoleBasedMenuItems();
+        });
     }
 
     getRoleBasedMenuItems(): any[] {
-        console.log('APP getRoleBasedMenuItems called');
-        this.currentUser = this.authService.getCurrentUser();
         if (!this.currentUser) {
-            console.log('No current user, returning empty menu items');
             return [];
         }
         const items = [];
@@ -96,7 +82,6 @@ export class AppComponent {
 
     protected logout(): void {
         this.authService.logout();
-        this.updateAuthState();
         this.router.navigate(['/login']);
     }
 }
