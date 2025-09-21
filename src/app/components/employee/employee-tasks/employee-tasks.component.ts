@@ -120,7 +120,7 @@ export class EmployeeTasksComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(result => {
-            if (result) {
+            if (result || result === undefined) {
                 this.loadTaskProgress();
                 this.snackBar.open('Task progress updated!', 'Close', { duration: 3000 });
             }

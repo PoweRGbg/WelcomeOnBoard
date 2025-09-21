@@ -93,10 +93,14 @@
 
   <mat-dialog-actions align="end">
     <button mat-button (click)="onClose()">Close</button>
-    <button mat-raised-button color="primary" (click)="onClose()" 
-            *ngIf="progress?.isCompleted">
-      <mat-icon>check_circle</mat-icon>
+    <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="onClose()" 
+        *ngIf="progress?.isCompleted">
+        <mat-icon>check_circle</mat-icon>
       Task Completed!
     </button>
+
   </mat-dialog-actions>
 </div>
