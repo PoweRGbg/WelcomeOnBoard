@@ -216,6 +216,19 @@ export class DataService {
         return true;
     }
 
+    saveTasks(): void {
+        // Placeholder for saving tasks to persistent storage if needed
+        console.log('Saving tasks...');
+        localStorage.setItem('tasks', JSON.stringify(this.tasks()));
+    }
+
+    loadTasks(): void {
+        // Placeholder for loading tasks from persistent storage if needed
+        console.log('Loading tasks...');
+        const storedTasks = localStorage.getItem('tasks');
+        if (storedTasks) this.tasks.set(JSON.parse(storedTasks));
+    }
+
     // Task suggestions
     getTaskSuggestions(): TaskSuggestion[] {
         return this.taskSuggestions();
