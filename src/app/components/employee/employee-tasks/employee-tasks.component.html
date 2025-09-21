@@ -67,6 +67,15 @@
               <mat-icon>visibility</mat-icon>
               {{ getTaskStatus(task) === 'Not Started' ? 'Start Task' : 'Continue Task' }}
             </button>
+            @if (getTaskStatus(task) === 'Completed') {
+                <button         
+                    mat-raised-button 
+                        color="primary" 
+                        (click)="restartTask(task)">
+                <mat-icon>visibility</mat-icon>
+                Restart Task
+                </button>
+            }
             
             <button mat-button 
                     *ngIf="task.url" 

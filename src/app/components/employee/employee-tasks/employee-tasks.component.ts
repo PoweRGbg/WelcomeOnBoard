@@ -126,6 +126,21 @@ export class EmployeeTasksComponent implements OnInit {
             }
         });
     }
+    restartTask(task: Task): void {
+        this.startTask(task);
+        const progress = this.getTaskProgress(task);
+        const dialogRef = this.dialog.open(TaskDetailDialogComponent, {
+            width: '900px',
+            data: { task, progress, currentUserId: this.currentUserId }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result || result === undefined) {
+                this.loadTaskProgress();
+                this.snackBar.open('Task progress updated!', 'Close', { duration: 3000 });
+            }
+        });
+    }
 
     getSortedTasks(): Task[] {
         return this.tasks.sort((a, b) => {
