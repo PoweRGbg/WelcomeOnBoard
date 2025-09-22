@@ -68,7 +68,8 @@ export class EmployeeSuggestionsComponent implements OnInit {
 
     addAction(): void {
         const actionForm = this.fb.group({
-            name: ['', [Validators.required, Validators.minLength(3)]],
+            // name: ['', [Validators.required, Validators.minLength(3)]], // when action is needed
+            name: [''],
             description: [''],
             imageUrl: [''],
             url: [''],

@@ -16,6 +16,7 @@ import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { Task, TaskCreateRequest } from '../../../models/task.model';
 import { TaskCreateDialogComponent } from './task-create-dialog/task-create-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-manager-tasks',
@@ -33,7 +34,7 @@ import { TaskCreateDialogComponent } from './task-create-dialog/task-create-dial
         MatSelectModule,
         MatChipsModule,
         MatTooltipModule,
-        MatSnackBarModule
+        MatSnackBarModule,
     ],
     templateUrl: './manager-tasks.component.html',
     styleUrl: './manager-tasks.component.scss'
@@ -47,7 +48,8 @@ export class ManagerTasksComponent implements OnInit {
         private dataService: DataService,
         private authService: AuthService,
         private dialog: MatDialog,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private router: Router,
     ) { }
 
     ngOnInit(): void {
@@ -71,6 +73,11 @@ export class ManagerTasksComponent implements OnInit {
                 this.snackBar.open('Task created successfully!', 'Close', { duration: 3000 });
             }
         });
+    }
+
+    navigateToCreateTask(): void {
+        // Navigate to the task creation page
+        this.router.navigate(['/employee/suggestions']);
     }
 
     editTask(task: Task): void {
