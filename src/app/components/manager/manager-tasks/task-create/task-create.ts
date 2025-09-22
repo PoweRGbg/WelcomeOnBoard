@@ -12,7 +12,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../../../../services/data.service';
 import { AuthService } from '../../../../services/auth.service';
 import { TaskSuggestion } from '../../../../models/task.model';
-import { ActionCreateRequest } from '../../../../models/action.model';
+import { Action } from '../../../../models/action.model';
 
 @Component({
     selector: 'app-employee-suggestions',
@@ -93,7 +93,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
         if (this.suggestionForm.valid && this.actionsArray.length > 0) {
             const formValue = this.suggestionForm.value;
 
-            const actions: ActionCreateRequest[] = formValue.actions.map((action: any) => ({
+            const actions: Action[] = formValue.actions.map((action: any) => ({
                 name: action.name,
                 description: action.description,
                 imageUrl: action.imageUrl,
