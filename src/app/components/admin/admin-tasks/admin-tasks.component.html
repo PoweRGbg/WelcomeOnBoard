@@ -23,7 +23,7 @@
           <mat-card-content>
             <p>{{ task.description }}</p>
             <div class="task-meta">
-              <span class="actions-count">{{ task.actions.length }} actions</span>
+              <span class="actions-count">{{ task.actions?.length || 0}} actions</span>
               <span class="completion-count">{{ task.completionCount }} completions</span>
             </div>
           </mat-card-content>

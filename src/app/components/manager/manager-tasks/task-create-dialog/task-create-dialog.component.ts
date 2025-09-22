@@ -12,8 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../../../../services/data.service';
 import { Task, TaskCreateRequest } from '../../../../models/task.model';
-import { Action, ActionCreateRequest } from '../../../../models/action.model';
-import { v4 as uuidv4 } from 'uuid';
+import { Action } from '../../../../models/action.model';
 
 @Component({
     selector: 'app-task-create-dialog',
@@ -79,9 +78,11 @@ export class TaskCreateDialogComponent implements OnInit {
         actionsArray.clear();
 
         // Add existing actions
-        task.actions.forEach(action => {
-            this.addAction(action);
-        });
+        if (task.actions?.length) {
+            task.actions.forEach(action => {
+                this.addAction(action);
+            });
+        }
     }
 
     get actionsArray(): FormArray {
@@ -136,7 +137,7 @@ export class TaskCreateDialogComponent implements OnInit {
         if (this.taskForm.valid) {
             const formValue = this.taskForm.value;
 
-            const actions: ActionCreateRequest[] = formValue.actions.map((action: any) => ({
+            const actions: Action[] = formValue.actions.map((action: any) => ({
                 name: action.name,
                 description: action.description,
                 imageUrl: action.imageUrl,

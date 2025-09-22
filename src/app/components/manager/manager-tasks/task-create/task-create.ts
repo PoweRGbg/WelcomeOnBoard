@@ -9,10 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { DataService } from '../../../services/data.service';
-import { AuthService } from '../../../services/auth.service';
-import { TaskSuggestion } from '../../../models/task.model';
-import { Action } from '../../../models/action.model';
+import { DataService } from '../../../../services/data.service';
+import { AuthService } from '../../../../services/auth.service';
+import { TaskSuggestion } from '../../../../models/task.model';
+import { ActionCreateRequest } from '../../../../models/action.model';
 
 @Component({
     selector: 'app-employee-suggestions',
@@ -29,8 +29,8 @@ import { Action } from '../../../models/action.model';
         MatChipsModule,
         MatSnackBarModule
     ],
-    templateUrl: './employee-suggestions.component.html',
-    styleUrl: './employee-suggestions.component.scss'
+    templateUrl: './task-create.html',
+    styleUrl: './task-create.scss'
 })
 export class EmployeeSuggestionsComponent implements OnInit {
     suggestionForm: FormGroup;
@@ -93,7 +93,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
         if (this.suggestionForm.valid && this.actionsArray.length > 0) {
             const formValue = this.suggestionForm.value;
 
-            const actions: Action[] = formValue.actions.map((action: any) => ({
+            const actions: ActionCreateRequest[] = formValue.actions.map((action: any) => ({
                 name: action.name,
                 description: action.description,
                 imageUrl: action.imageUrl,

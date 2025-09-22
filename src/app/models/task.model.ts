@@ -1,4 +1,4 @@
-import { Action, ActionCreateRequest } from './action.model';
+import { Action } from './action.model';
 
 export interface Task {
     id: string;
@@ -6,7 +6,7 @@ export interface Task {
     description?: string;
     category: string;
     url?: string;
-    actions: Action[];
+    actions?: Action[];
     createdBy: string;
     createdAt: Date;
     updatedAt: Date;
@@ -21,7 +21,7 @@ export interface TaskCreateRequest {
     description?: string;
     category: string;
     url?: string;
-    actions: ActionCreateRequest[];
+    actions?: Action[];
 }
 
 export interface TaskSuggestion {
@@ -31,7 +31,7 @@ export interface TaskSuggestion {
     description?: string;
     category: string;
     url?: string;
-    actions: ActionCreateRequest[];
+    actions?: Action[];
     status: 'pending' | 'approved' | 'rejected';
     createdAt: Date;
     reviewedAt?: Date;

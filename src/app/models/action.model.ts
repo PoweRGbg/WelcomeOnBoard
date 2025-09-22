@@ -10,10 +10,10 @@ export interface Action {
     completedBy?: string;
 }
 
-export interface ActionCreateRequest {
-    name: string;
-    description?: string;
-    imageUrl?: string;
-    url?: string;
-    order: number;
-}
+// export interface ActionCreateRequest {
+//     name: string;
+//     description?: string;
+//     imageUrl?: string;
+//     url?: string;
+//     order: number;
+// }

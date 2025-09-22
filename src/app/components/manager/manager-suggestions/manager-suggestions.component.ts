@@ -12,7 +12,7 @@ import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { TaskSuggestion } from '../../../models/task.model';
 import { TaskCreateRequest } from '../../../models/task.model';
-import { ActionCreateRequest } from '../../../models/action.model';
+import { Action } from '../../../models/action.model';
 import { SuggestionReviewDialogComponent } from './suggestion-review-dialog/suggestion-review-dialog.component';
 
 @Component({
@@ -90,13 +90,7 @@ export class ManagerSuggestionsComponent implements OnInit {
             description: suggestion.description,
             category: suggestion.category,
             url: suggestion.url,
-            actions: suggestion.actions.map(action => ({
-                name: action.name,
-                description: action.description,
-                imageUrl: action.imageUrl,
-                url: action.url,
-                order: action.order
-            }))
+            actions: suggestion.actions || []
         };
 
         // Create the task

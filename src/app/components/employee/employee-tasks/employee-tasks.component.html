@@ -34,7 +34,7 @@
             <div class="task-progress">
               <div class="progress-info">
                 <span class="progress-text">
-                  {{ (getTaskProgress(task)?.completedActions?.length || 0) }} of {{ task.actions.length }} actions completed
+                  {{ (getTaskProgress(task)?.completedActions?.length || 0) }} of {{ task.actions?.length || 0 }} actions completed
                 </span>
                 <span class="progress-percentage">
                   {{ getTaskCompletionPercentage(task) | number:'1.0-0' }}%
@@ -50,7 +50,7 @@
             <div class="task-meta">
               <div class="task-actions-count">
                 <mat-icon>assignment</mat-icon>
-                <span>{{ task.actions.length }} actions</span>
+                <span>{{ task.actions?.length }} actions</span>
               </div>
               <div class="task-completion-count" *ngIf="task.completionCount > 0">
                 <mat-icon>check_circle</mat-icon>

@@ -70,7 +70,7 @@ export class EmployeeTasksComponent implements OnInit {
     getTaskCompletionPercentage(task: Task): number {
         const progress = this.getTaskProgress(task);
         if (!progress) return 0;
-        return (progress.completedActions.length / task.actions.length) * 100;
+        return (progress.completedActions?.length / (task.actions?.length || 0)) * 100;
     }
 
     getTaskStatus(task: Task): string {

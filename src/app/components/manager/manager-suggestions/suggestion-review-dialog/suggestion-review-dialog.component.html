@@ -20,7 +20,7 @@
       </div>
 
       <div class="actions-section">
-        <h4>Proposed Actions ({{ suggestion.actions.length }})</h4>
+        <h4>Proposed Actions ({{ suggestion.actions?.length }})</h4>
         <div class="actions-list">
           <mat-card *ngFor="let action of suggestion.actions; let i = index" class="action-card">
             <mat-card-content>

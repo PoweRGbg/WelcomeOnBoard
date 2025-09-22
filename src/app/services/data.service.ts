@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { User, UserRole } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
-import { Action, ActionCreateRequest } from '../models/action.model';
+import { Action } from '../models/action.model';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
@@ -142,8 +142,8 @@ export class DataService {
         return this.tasks().find(t => t.id === id) || null;
     }
 
-    createTask(taskData: TaskCreateRequest, createdBy: string): Task {
-        const actions = this.convertActionsToAction(taskData.actions);
+    createTask(taskData: Task | TaskCreateRequest, createdBy: string): Task {
+        const actions = this.convertActionsToAction(taskData.actions || []);
 
         const newTask: Task = {
             ...taskData,
@@ -298,7 +298,7 @@ export class DataService {
                 };
 
                 // Check if task is completed
-                if (updatedProgress.completedActions.length === task.actions.length) {
+                if (updatedProgress.completedActions.length === task.actions?.length) {
                     updatedProgress.isCompleted = true;
                     updatedProgress.completedAt = new Date();
                 }

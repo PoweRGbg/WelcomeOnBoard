@@ -1,12 +1,11 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { User, UserRole } from '../models/user.model';
+import { UserRole } from '../models/user.model';
 
 export const RoleGuard = (route: any) => {
     const authService = inject(AuthService);
     const router = inject(Router);
-    let userLogged: User | null = null;
 
     const requiredRoles = route.data?.['roles'] as UserRole[];
     const user = authService.getCurrentUser();

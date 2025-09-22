@@ -15,7 +15,6 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { Task, TaskCreateRequest } from '../../../models/task.model';
-import { Action, ActionCreateRequest } from '../../../models/action.model';
 import { TaskCreateDialogComponent } from './task-create-dialog/task-create-dialog.component';
 
 @Component({
@@ -102,13 +101,7 @@ export class ManagerTasksComponent implements OnInit {
             description: task.description,
             category: task.category,
             url: task.url,
-            actions: task.actions.map(action => ({
-                name: action.name,
-                description: action.description,
-                imageUrl: action.imageUrl,
-                url: action.url,
-                order: action.order
-            }))
+            actions: task.actions
         };
 
         this.dataService.createTask(newTask, this.currentUserId!);

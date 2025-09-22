@@ -62,7 +62,7 @@ export class TaskDetailDialogComponent implements OnInit {
 
     getCompletionPercentage(): number {
         if (!this.progress) return 0;
-        return (this.progress.completedActions.length / this.task.actions.length) * 100;
+        return (this.progress.completedActions?.length / (this.task.actions?.length || 0)) * 100;
     }
 
     isActionCompleted(action: Action): boolean {
@@ -70,11 +70,11 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     isActionCurrent(action: Action): boolean {
-        return this.task.actions.indexOf(action) === this.currentActionIndex;
+        return this.task.actions?.indexOf(action) === this.currentActionIndex;
     }
 
     isActionAvailable(action: Action): boolean {
-        const actionIndex = this.task.actions.indexOf(action);
+        const actionIndex = this.task.actions?.indexOf(action) || 0;
         return actionIndex <= this.currentActionIndex;
     }
 
