@@ -156,3 +156,4 @@ export class TaskDetailDialogComponent implements OnInit {
         return 'basic';
     }
 }
+

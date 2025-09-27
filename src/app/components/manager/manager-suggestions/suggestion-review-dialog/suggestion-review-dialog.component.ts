@@ -40,3 +40,4 @@ export class SuggestionReviewDialogComponent {
         this.dialogRef.close(false);
     }
 }
+

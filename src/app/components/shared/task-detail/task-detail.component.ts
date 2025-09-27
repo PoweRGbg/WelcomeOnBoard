@@ -10,3 +10,4 @@ import { MatCardModule } from '@angular/material/card';
     styleUrl: './task-detail.component.scss'
 })
 export class TaskDetailComponent { }
+
