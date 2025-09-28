@@ -17,13 +17,6 @@ export interface LoginResponse {
     refreshToken?: string;
 }
 
-export interface ApiResponse<T> {
-    success: boolean;
-    data: T;
-    message?: string;
-    error?: string;
-}
-
 export interface PaginatedResponse<T> {
     data: T[];
     total: number;
@@ -99,9 +92,9 @@ export class BackendService {
 
     refreshToken(): Observable<LoginResponse> {
         const refreshToken = localStorage.getItem('refreshToken');
-        return this.http.post<ApiResponse<LoginResponse>>(`${this.baseUrl}/auth/refresh`, { refreshToken })
+        return this.http.post<LoginResponse>(`${this.baseUrl}/auth/refresh`, { refreshToken })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 tap(response => {
                     this.setToken(response.token);
                     if (response.refreshToken) {
@@ -124,9 +117,9 @@ export class BackendService {
     }
 
     getCurrentUser(): Observable<User> {
-        return this.http.get<ApiResponse<User>>(`${this.baseUrl}/auth/profile`, { headers: this.headers })
+        return this.http.get<User>(`${this.baseUrl}/auth/profile`, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
@@ -156,33 +149,33 @@ export class BackendService {
     }
 
     getUserById(id: string): Observable<User> {
-        return this.http.get<ApiResponse<User>>(`${this.baseUrl}/users/${id}`, { headers: this.headers })
+        return this.http.get<User>(`${this.baseUrl}/users/${id}`, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Observable<User> {
-        return this.http.post<ApiResponse<User>>(`${this.baseUrl}/users`, userData, { headers: this.headers })
+        return this.http.post<User>(`${this.baseUrl}/users`, userData, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     updateUser(id: string, userData: Partial<User>): Observable<User> {
-        return this.http.put<ApiResponse<User>>(`${this.baseUrl}/users/${id}`, userData, { headers: this.headers })
+        return this.http.put<User>(`${this.baseUrl}/users/${id}`, userData, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     deleteUser(id: string): Observable<boolean> {
-        return this.http.delete<ApiResponse<{ deleted: boolean }>>(`${this.baseUrl}/users/${id}`, { headers: this.headers })
+        return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/users/${id}`, { headers: this.headers })
             .pipe(
-                map(response => response.data.deleted),
+                map(response => response.deleted),
                 catchError(this.handleError)
             );
     }
@@ -210,74 +203,74 @@ export class BackendService {
     }
 
     getTaskById(id: string): Observable<Task> {
-        return this.http.get<ApiResponse<Task>>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
+        return this.http.get<Task>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     createTask(taskData: TaskCreateRequest): Observable<Task> {
-        return this.http.post<ApiResponse<Task>>(`${this.baseUrl}/tasks`, taskData, { headers: this.headers })
+        return this.http.post<Task>(`${this.baseUrl}/tasks`, taskData, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     updateTask(id: string, taskData: Partial<Task> | TaskCreateRequest): Observable<Task> {
-        return this.http.put<ApiResponse<Task>>(`${this.baseUrl}/tasks/${id}`, taskData, { headers: this.headers })
+        return this.http.put<Task>(`${this.baseUrl}/tasks/${id}`, taskData, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     deleteTask(id: string): Observable<boolean> {
-        return this.http.delete<ApiResponse<{ deleted: boolean }>>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
+        return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
             .pipe(
-                map(response => response.data.deleted),
+                map(response => response.deleted),
                 catchError(this.handleError)
             );
     }
 
     // Action Management Methods
     getActionsByTaskId(taskId: string): Observable<Action[]> {
-        return this.http.get<ApiResponse<Action[]>>(`${this.baseUrl}/tasks/${taskId}/actions`, { headers: this.headers })
+        return this.http.get<Action[]>(`${this.baseUrl}/tasks/${taskId}/actions`, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     createAction(taskId: string, actionData: Omit<Action, 'id' | 'isCompleted' | 'completedAt' | 'completedBy'>): Observable<Action> {
-        return this.http.post<ApiResponse<Action>>(`${this.baseUrl}/tasks/${taskId}/actions`, actionData, { headers: this.headers })
+        return this.http.post<Action>(`${this.baseUrl}/tasks/${taskId}/actions`, actionData, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     updateAction(taskId: string, actionId: string, actionData: Partial<Action>): Observable<Action> {
-        return this.http.put<ApiResponse<Action>>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}`, actionData, { headers: this.headers })
+        return this.http.put<Action>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}`, actionData, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     deleteAction(taskId: string, actionId: string): Observable<boolean> {
-        return this.http.delete<ApiResponse<{ deleted: boolean }>>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}`, { headers: this.headers })
+        return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}`, { headers: this.headers })
             .pipe(
-                map(response => response.data.deleted),
+                map(response => response.deleted),
                 catchError(this.handleError)
             );
     }
 
     completeAction(taskId: string, actionId: string): Observable<Action> {
-        return this.http.post<ApiResponse<Action>>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}/complete`, {}, { headers: this.headers })
+        return this.http.post<Action>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}/complete`, {}, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
@@ -289,35 +282,35 @@ export class BackendService {
             params = params.set('userId', userId);
         }
 
-        return this.http.get<ApiResponse<TaskProgress[]>>(`${this.baseUrl}/task-progress`, {
+        return this.http.get<TaskProgress[]>(`${this.baseUrl}/task-progress`, {
             headers: this.headers,
             params
         }).pipe(
-            map(response => response.data),
+            map(response => response),
             catchError(this.handleError)
         );
     }
 
     updateTaskProgress(progress: TaskProgress): Observable<TaskProgress> {
-        return this.http.put<ApiResponse<TaskProgress>>(`${this.baseUrl}/task-progress`, progress, { headers: this.headers })
+        return this.http.put<TaskProgress>(`${this.baseUrl}/task-progress`, progress, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     startTask(taskId: string): Observable<TaskProgress> {
-        return this.http.post<ApiResponse<TaskProgress>>(`${this.baseUrl}/tasks/${taskId}/start`, {}, { headers: this.headers })
+        return this.http.post<TaskProgress>(`${this.baseUrl}/tasks/${taskId}/start`, {}, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     completeTask(taskId: string): Observable<TaskProgress> {
-        return this.http.post<ApiResponse<TaskProgress>>(`${this.baseUrl}/tasks/${taskId}/complete`, {}, { headers: this.headers })
+        return this.http.post<TaskProgress>(`${this.baseUrl}/tasks/${taskId}/complete`, {}, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
@@ -332,35 +325,35 @@ export class BackendService {
             params = params.set('status', status);
         }
 
-        return this.http.get<ApiResponse<PaginatedResponse<TaskSuggestion>>>(`${this.baseUrl}/task-suggestions`, {
+        return this.http.get<PaginatedResponse<TaskSuggestion>>(`${this.baseUrl}/task-suggestions`, {
             headers: this.headers,
             params
         }).pipe(
-            map(response => response.data),
+            map(response => response),
             catchError(this.handleError)
         );
     }
 
     createTaskSuggestion(suggestion: Omit<TaskSuggestion, 'id' | 'createdAt'>): Observable<TaskSuggestion> {
-        return this.http.post<ApiResponse<TaskSuggestion>>(`${this.baseUrl}/task-suggestions`, suggestion, { headers: this.headers })
+        return this.http.post<TaskSuggestion>(`${this.baseUrl}/task-suggestions`, suggestion, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     updateTaskSuggestion(id: string, suggestionData: Partial<TaskSuggestion>): Observable<TaskSuggestion> {
-        return this.http.put<ApiResponse<TaskSuggestion>>(`${this.baseUrl}/task-suggestions/${id}`, suggestionData, { headers: this.headers })
+        return this.http.put<TaskSuggestion>(`${this.baseUrl}/task-suggestions/${id}`, suggestionData, { headers: this.headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }
 
     deleteTaskSuggestion(id: string): Observable<boolean> {
-        return this.http.delete<ApiResponse<{ deleted: boolean }>>(`${this.baseUrl}/task-suggestions/${id}`, { headers: this.headers })
+        return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/task-suggestions/${id}`, { headers: this.headers })
             .pipe(
-                map(response => response.data.deleted),
+                map(response => response.deleted),
                 catchError(this.handleError)
             );
     }
@@ -387,9 +380,9 @@ export class BackendService {
             headers.set('Authorization', `Bearer ${this.tokenSubject.value}`);
         }
 
-        return this.http.post<ApiResponse<{ url: string }>>(`${this.baseUrl}/tasks/${taskId}/upload`, formData, { headers })
+        return this.http.post<{ url: string }>(`${this.baseUrl}/tasks/${taskId}/upload`, formData, { headers })
             .pipe(
-                map(response => response.data),
+                map(response => response),
                 catchError(this.handleError)
             );
     }

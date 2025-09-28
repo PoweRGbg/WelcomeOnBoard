@@ -31,6 +31,7 @@ export class AuthService {
     logout(): Observable<any> {
         return this.backendService.logout().pipe(
             tap(() => {
+                this.backendService.logout();
                 this.currentUserSubject.next(null);
             }),
             catchError((error) => {

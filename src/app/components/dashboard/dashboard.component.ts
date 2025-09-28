@@ -66,7 +66,6 @@ export class DashboardComponent implements OnInit {
         if (!this.currentUser) return [];
 
         const actions = [];
-        console.log('Determining actions for role:', this.currentUser.role);
         
         switch (this.currentUser.role) {
             case UserRole.ADMIN:
@@ -87,8 +86,10 @@ export class DashboardComponent implements OnInit {
                     { title: 'Suggest Tasks', icon: 'add', route: '/employee/suggestions', color: 'accent' }
                 );
                 break;
+            default:
+                console.error('Unknown user role:', this.currentUser.role);
+                break;
         }
-
         return actions;
     }
 
