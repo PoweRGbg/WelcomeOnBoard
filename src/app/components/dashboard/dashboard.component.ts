@@ -40,26 +40,34 @@ export class DashboardComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.currentUser = this.authService.getCurrentUser();
-        this.tasks = this.dataService.getTasks();
-        this.calculateStats();
+        console.log('Dashboard initialized');
+        this.authService.currentUser$.subscribe(user => {
+            this.currentUser = user;
+            console.log('Current user in Dashboard:', user);
+        });
+        
+        this.dataService.getTasks().subscribe(tasks => {
+            this.tasks = tasks;
+            this.calculateStats();
+        });
     }
 
     private calculateStats(): void {
         if (!this.currentUser) return;
-
-        const userProgress = this.dataService.getTaskProgress(this.currentUser.id);
-        this.userStats.totalTasks = this.tasks.length;
-        this.userStats.completedTasks = userProgress.filter(p => p.isCompleted).length;
-        this.userStats.inProgressTasks = userProgress.filter(p => !p.isCompleted && p.completedActions.length > 0).length;
-        this.userStats.pendingTasks = this.userStats.totalTasks - this.userStats.completedTasks - this.userStats.inProgressTasks;
+        this.dataService.getTaskProgress(this.currentUser.id).subscribe(userProgress => {
+            this.userStats.totalTasks = this.tasks.length;
+            this.userStats.completedTasks = userProgress.filter(p => p.isCompleted).length;
+            this.userStats.inProgressTasks = userProgress.filter(p => !p.isCompleted && p.completedActions.length > 0).length;
+            this.userStats.pendingTasks = this.userStats.totalTasks - this.userStats.completedTasks - this.userStats.inProgressTasks;
+        });
     }
 
     getRoleBasedActions(): any[] {
         if (!this.currentUser) return [];
 
         const actions = [];
-
+        console.log('Determining actions for role:', this.currentUser.role);
+        
         switch (this.currentUser.role) {
             case UserRole.ADMIN:
                 actions.push(

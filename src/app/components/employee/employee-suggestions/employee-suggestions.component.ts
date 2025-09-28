@@ -48,7 +48,9 @@ export class EmployeeSuggestionsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.currentUserId = this.authService.getCurrentUser()?.id || null;
+        this.authService.currentUser$.subscribe(currentUser => {
+            this.currentUserId = currentUser?.id || null;
+        });
         this.loadMySuggestions();
     }
 
@@ -125,9 +127,11 @@ export class EmployeeSuggestionsComponent implements OnInit {
     loadMySuggestions(): void {
         if (!this.currentUserId) return;
 
-        const allSuggestions = this.dataService.getTaskSuggestions();
-        this.mySuggestions = allSuggestions.filter(s => s.suggestedBy === this.currentUserId);
-    }
+        this.dataService.getTaskSuggestions().subscribe(suggestions => {
+            const allSuggestions = suggestions;
+            this.mySuggestions = allSuggestions.data.filter(s => s.suggestedBy === this.currentUserId);
+        })
+    };
 
     getStatusColor(status: string): string {
         switch (status) {

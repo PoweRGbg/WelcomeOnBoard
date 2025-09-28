@@ -1,4 +1,5 @@
 import { Action } from './action.model';
+import { UserInfo } from './user.model';
 
 export interface Task {
     id: string;
@@ -7,7 +8,7 @@ export interface Task {
     category: string;
     url?: string;
     actions?: Action[];
-    createdBy: string;
+    createdBy: UserInfo;
     createdAt: Date;
     updatedAt: Date;
     isActive: boolean;
@@ -17,11 +18,14 @@ export interface Task {
 }
 
 export interface TaskCreateRequest {
-    name: string;
-    description?: string;
-    category: string;
-    url?: string;
-    actions?: Action[];
+    name: string,
+    description: string,
+    category: string,
+    url: string,
+    actions: Action[],    
+    createdBy: string,
+    isActive: boolean,
+    isInProgress: boolean
 }
 
 export interface TaskSuggestion {

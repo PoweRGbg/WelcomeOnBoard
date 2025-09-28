@@ -93,7 +93,7 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     private completeAction(action: Action): void {
-        this.dataService.completeAction(this.task.id, action.id, this.currentUserId!);
+        this.dataService.completeAction(this.task.id, action.id);
         this.updateProgress();
         this.updateCurrentActionIndex();
 
@@ -126,8 +126,9 @@ export class TaskDetailDialogComponent implements OnInit {
     private updateProgress(): void {
         if (!this.currentUserId) return;
 
-        const progress = this.dataService.getTaskProgress(this.currentUserId);
-        this.progress = progress.find(p => p.taskId === this.task.id) || null;
+        this.dataService.getTaskProgress(this.currentUserId).subscribe(progress => {
+            this.progress = progress.find(p => p.taskId === this.task.id) || null;
+        });
     }
 
     openImage(imageUrl: string): void {

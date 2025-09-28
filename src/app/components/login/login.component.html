@@ -16,14 +16,10 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Role</mat-label>
-          <mat-select formControlName="role">
-            <mat-option *ngFor="let role of userRoles" [value]="role">
-              {{ role | titlecase }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="loginForm.get('role')?.hasError('required')">
-            Role is required
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" placeholder="Password" type="password">
+          <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+            Enter password
           </mat-error>
         </mat-form-field>
 

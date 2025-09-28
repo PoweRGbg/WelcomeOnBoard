@@ -13,6 +13,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../../../../services/data.service';
 import { Task, TaskCreateRequest } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
+import { UserInfo } from '../../../../models/user.model';
 
 @Component({
     selector: 'app-task-create-dialog',
@@ -43,7 +44,7 @@ export class TaskCreateDialogComponent implements OnInit {
         private dataService: DataService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<TaskCreateDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { task?: Task; currentUserId: string }
+        @Inject(MAT_DIALOG_DATA) public data: { task?: Task; currentUser: UserInfo }
     ) {
         this.taskForm = this.createForm();
         this.isEditMode = !!data.task;
@@ -150,14 +151,17 @@ export class TaskCreateDialogComponent implements OnInit {
                 description: formValue.description,
                 category: formValue.category,
                 url: formValue.url,
-                actions: actions
+                actions: actions,
+                createdBy: this.data.currentUser.id,
+                isActive: true,
+                isInProgress: false
             };
 
             if (this.isEditMode && this.data.task) {
                 this.dataService.updateTask(this.data.task.id, taskData);
                 this.snackBar.open('Task updated successfully!', 'Close', { duration: 3000 });
             } else {
-                this.dataService.createTask(taskData, this.data.currentUserId);
+                this.dataService.createTask(taskData);
                 this.snackBar.open('Task created successfully!', 'Close', { duration: 3000 });
             }
 

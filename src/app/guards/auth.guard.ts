@@ -9,6 +9,8 @@ export const AuthGuard = () => {
     if (!!authService.getCurrentUser()) {
         return true;
     } else {
+        console.log('Access denied - Users must be logged in to access this page');
+        
         router.navigate(['/login']);
         return false;
     }

@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../services/auth.service';
 import { DataService } from '../../services/data.service';
 import { UserRole } from '../../models/user.model';
+import { BackendService, LoginResponse } from '../../services/backend.service';
 
 @Component({
     selector: 'app-login',
@@ -33,29 +34,44 @@ export class LoginComponent {
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
+        private backendService: BackendService,
         private dataService: DataService,
         private router: Router
     ) {
         this.loginForm = this.fb.group({
             username: ['', Validators.required],
-            role: ['', Validators.required]
+            password: ['', Validators.required]
         });
     }
 
     onSubmit(): void {
         if (this.loginForm.valid) {
-            const { username, role } = this.loginForm.value;
-
-            // Find user by username and role
-            const users = this.dataService.getUsers();
-            const user = users.find(u => u.username === username && u.role === role);
-
-            if (user) {
-                this.authService.login(user);
-                this.router.navigate(['/dashboard']);
-            } else {
-                alert('Invalid username or role');
+            const loiginRequest = {
+                username: this.loginForm.value.username,
+                password: this.loginForm.value.password,
             }
+            this.dataService.login(loiginRequest).subscribe({
+                next: () => {
+                    this.dataService.login(loiginRequest).subscribe((user) => {
+                        console.log('Login successful', user.user);
+                        this.authService.login(user.user);
+                        this.router.navigate(['/dashboard']);
+                    });
+                },
+                error: (err) => {
+                    alert('Login failed: ' + err.message);
+                }
+            });
+            // // Find user by username and role
+            // const users = this.dataService.getUsers();
+            // const user = users.find(u => u.username === username && u.role === role);
+
+            // if (user) {
+            //     this.authService.login(user);
+            //     this.router.navigate(['/dashboard']);
+            // } else {
+            //     alert('Invalid username or password');
+            // }
         }
     }
 }

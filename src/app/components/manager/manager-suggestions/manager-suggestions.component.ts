@@ -12,8 +12,10 @@ import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { TaskSuggestion } from '../../../models/task.model';
 import { TaskCreateRequest } from '../../../models/task.model';
+import { UserInfo } from '../../../models/user.model';
 import { Action } from '../../../models/action.model';
 import { SuggestionReviewDialogComponent } from './suggestion-review-dialog/suggestion-review-dialog.component';
+import { first } from 'rxjs';
 
 @Component({
     selector: 'app-manager-suggestions',
@@ -45,12 +47,16 @@ export class ManagerSuggestionsComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.currentUserId = this.authService.getCurrentUser()?.id || null;
+        this.authService.currentUser$.subscribe(currentUser => {
+            this.currentUserId = currentUser?.id || null;
+        });
         this.loadSuggestions();
     }
 
     loadSuggestions(): void {
-        this.suggestions = this.dataService.getTaskSuggestions();
+        this.dataService.getTaskSuggestions().subscribe(suggestions => {
+            suggestions.data ? this.suggestions = suggestions.data : console.log("no suggestions.data");
+        });
     }
 
     getStatusColor(status: string): string {
@@ -87,14 +93,23 @@ export class ManagerSuggestionsComponent implements OnInit {
         // Convert suggestion to task
         const taskData: TaskCreateRequest = {
             name: suggestion.taskName,
-            description: suggestion.description,
+            description: suggestion.description || '',
             category: suggestion.category,
-            url: suggestion.url,
-            actions: suggestion.actions || []
+            url: suggestion.url || '',
+            actions: suggestion.actions || [],
+            createdBy: suggestion.suggestedBy,
+            isActive: true,
+            isInProgress: false
         };
 
         // Create the task
-        this.dataService.createTask(taskData, this.currentUserId!);
+        const suggestionUser: UserInfo = {
+            id: suggestion.suggestedBy,
+            username: '',
+            firstName: '',
+            lastName: ''
+        }
+        this.dataService.createTask(taskData);
 
         // Update suggestion status
         this.dataService.updateTaskSuggestion(suggestion.id, {

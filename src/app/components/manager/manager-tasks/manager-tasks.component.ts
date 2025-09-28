@@ -53,12 +53,16 @@ export class ManagerTasksComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.currentUserId = this.authService.getCurrentUser()?.id || null;
-        this.loadTasks();
+        this.authService.currentUser$.subscribe(currentUser => {
+            this.currentUserId = currentUser?.id || null;
+            this.loadTasks();
+        });
     }
 
     loadTasks(): void {
-        this.tasks = this.dataService.getTasks();
+        this.dataService.getTasks().subscribe(tasks => {
+            this.tasks = tasks;
+        });
     }
 
     createTask(): void {
@@ -103,17 +107,17 @@ export class ManagerTasksComponent implements OnInit {
     }
 
     duplicateTask(task: Task): void {
-        const newTask: TaskCreateRequest = {
-            name: `${task.name} (Copy)`,
-            description: task.description,
-            category: task.category,
-            url: task.url,
-            actions: task.actions
-        };
+        // const newTask: TaskCreateRequest = {
+        //     name: `${task.name} (Copy)`,
+        //     description: task.description,
+        //     category: task.category,
+        //     url: task.url,
+        //     actions: task.actions
+        // };
 
-        this.dataService.createTask(newTask, this.currentUserId!);
-        this.loadTasks();
-        this.snackBar.open('Task duplicated successfully!', 'Close', { duration: 3000 });
+        // this.dataService.createTask(newTask, this.currentUserId!);
+        // this.loadTasks();
+        // this.snackBar.open('Task duplicated successfully!', 'Close', { duration: 3000 });
     }
 
     getTaskStatus(task: Task): string {

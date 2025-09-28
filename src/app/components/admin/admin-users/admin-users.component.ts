@@ -35,7 +35,9 @@ export class AdminUsersComponent implements OnInit {
     }
 
     loadUsers(): void {
-        this.users = this.dataService.getUsers();
+        this.dataService.getUsers().subscribe(users => {
+            this.users = users;
+        });
     }
 
     createUser(): void {

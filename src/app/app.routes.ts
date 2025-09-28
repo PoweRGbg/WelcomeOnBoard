@@ -10,10 +10,17 @@ import { EmployeeSuggestionsComponent } from './components/employee/employee-sug
 import { TaskDetailComponent } from './components/shared/task-detail/task-detail.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
+import { BackendUsageExampleComponent } from './services/backend-usage-example';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'login', component: LoginComponent },
+    {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [AuthGuard]
+    },
+    { path: 'test', component: BackendUsageExampleComponent },
     {
         path: 'dashboard',
         component: DashboardComponent,

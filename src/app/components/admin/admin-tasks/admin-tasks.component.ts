@@ -28,7 +28,9 @@ export class AdminTasksComponent implements OnInit {
     }
 
     loadTasks(): void {
-        this.tasks = this.dataService.getTasks();
+        this.dataService.getTasks().subscribe(tasks => {
+            this.tasks = tasks;
+        });
     }
 
     createTask(): void {

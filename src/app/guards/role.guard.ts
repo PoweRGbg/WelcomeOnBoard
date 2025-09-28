@@ -8,13 +8,14 @@ export const RoleGuard = (route: any) => {
     const router = inject(Router);
 
     const requiredRoles = route.data?.['roles'] as UserRole[];
-    const user = authService.getCurrentUser();
+    authService.currentUser$.subscribe(
+        (user) => {
+            if (!user || !requiredRoles.includes(user.role)) {
+                router.navigate(['/dashboard']);
+            }
 
-    if (!user || !requiredRoles.includes(user.role)) {
-        router.navigate(['/dashboard']);
-        return false;
-    }
-
+            return false;
+    });
     return true;
 };
 

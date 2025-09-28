@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError, firstValueFrom } from 'rxjs';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import { User } from '../models/user.model';
+import { User, UserRole } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { Action } from '../models/action.model';
-import { AuthService } from './auth.service';
 
 export interface LoginRequest {
     username: string;
@@ -36,7 +35,7 @@ export interface PaginatedResponse<T> {
 @Injectable({
     providedIn: 'root'
 })
-export class DataService {
+export class BackendService {
     private baseUrl = 'http://localhost:3000'; // Update this to your actual backend URL
     private tokenSubject = new BehaviorSubject<string | null>(null);
     public token$ = this.tokenSubject.asObservable();
@@ -78,8 +77,7 @@ export class DataService {
                     return response;
                 }),
                 tap(response => {
-                    if (response.token)
-                        localStorage.setItem('authToken', response.token);
+                    this.setToken(response.token);
                     if (response.refreshToken) {
                         localStorage.setItem('refreshToken', response.refreshToken);
                     }
@@ -125,20 +123,12 @@ export class DataService {
         this.tokenSubject.next(null);
     }
 
-    async getCurrentUser(): Promise<User | null> {
-        try {
-            const user = await firstValueFrom(
-                this.http.get<User>(`${this.baseUrl}/auth/profile`, { headers: this.headers })
-                    .pipe(
-                        map(response => response),
-                        catchError(this.handleError)
-                    )
+    getCurrentUser(): Observable<User> {
+        return this.http.get<ApiResponse<User>>(`${this.baseUrl}/auth/profile`, { headers: this.headers })
+            .pipe(
+                map(response => response.data),
+                catchError(this.handleError)
             );
-            return user;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
     }
 
     // User Management Methods
@@ -151,14 +141,14 @@ export class DataService {
             params = params.set('search', search);
         }
         console.log('Getting users with params:', params.toString());
-
+        
         return this.http.get<User[]>(`${this.baseUrl}/users`, {
             headers: this.headers,
             params
         }).pipe(
             map(response => {
                 console.log('Received users response:', response);
-
+                
                 return response
             }),
             catchError(this.handleError)

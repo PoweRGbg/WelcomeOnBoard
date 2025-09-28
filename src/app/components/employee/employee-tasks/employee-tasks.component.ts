@@ -44,13 +44,17 @@ export class EmployeeTasksComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.currentUserId = this.authService.getCurrentUser()?.id || null;
-        this.loadTasks();
-        this.loadTaskProgress();
+        this.authService.currentUser$.subscribe(currentUser => {
+            this.currentUserId = currentUser?.id || null;
+            this.loadTasks();
+            this.loadTaskProgress();
+        });
     }
 
     loadTasks(): void {
-        this.tasks = this.dataService.getTasks();
+        this.dataService.getTasks().subscribe(tasks => {
+            this.tasks = tasks;
+        });
     }
 
     loadTaskProgress(): void {
@@ -58,9 +62,9 @@ export class EmployeeTasksComponent implements OnInit {
 
         const progress = this.dataService.getTaskProgress(this.currentUserId);
         this.taskProgress.clear();
-        progress.forEach(p => {
-            this.taskProgress.set(p.taskId, p);
-        });
+        // progress.forEach(p => {
+        //     this.taskProgress.set(p.taskId, p);
+        // });
     }
 
     getTaskProgress(task: Task): TaskProgress | null {

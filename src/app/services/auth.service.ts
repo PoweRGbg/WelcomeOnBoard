@@ -1,41 +1,86 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
 import { User, UserRole } from '../models/user.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BackendService, LoginRequest, LoginResponse } from './backend.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private storedUser: User | null = null;
-    private currentUserSubject: BehaviorSubject<any>;
-    public currentUser$: Observable<any>;
+    private currentUserSubject = new BehaviorSubject<User | null>(null);
+    public currentUser$ = this.currentUserSubject.asObservable();
 
-    constructor() {
-        const user = localStorage.getItem('currentUser');
-        this.storedUser = user ? JSON.parse(user) : null;
-        this.currentUserSubject = new BehaviorSubject<any>(this.storedUser);
-        this.currentUser$ = this.currentUserSubject.asObservable();
+    constructor(private backendService: BackendService) {
+        this.checkAuthStatus();
     }
 
-    login(user: User): void {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        this.currentUserSubject.next(user);
+    private checkAuthStatus(): void {
+        if (this.backendService.isAuthenticated()) {
+            this.backendService.getCurrentUser().subscribe({
+                next: (user) => this.currentUserSubject.next(user),
+                error: () => this.logout()
+            });
+        }
     }
 
-    logout(): void {
-        localStorage.removeItem('currentUser');
-        this.currentUserSubject.next(null);
+    login(loggedUser: User): void {
+        this.currentUserSubject.next(loggedUser);
+    }
+
+    logout(): Observable<any> {
+        return this.backendService.logout().pipe(
+            tap(() => {
+                this.currentUserSubject.next(null);
+            }),
+            catchError((error) => {
+                this.currentUserSubject.next(null);
+                return throwError(() => error);
+            })
+        );
     }
 
     getCurrentUser(): User | null {
-        return this.storedUser;
+        return this.currentUserSubject.value;
+    }
+
+    isAuthenticated(): boolean {
+        return this.backendService.isAuthenticated() && !!this.currentUserSubject.value;
     }
 
     hasRole(role: UserRole): boolean {
-        return this.storedUser?.role === role;
+        const user = this.getCurrentUser();
+        return user?.role === role;
     }
 
     hasAnyRole(roles: UserRole[]): boolean {
-        return this.storedUser ? roles.includes(this.storedUser.role) : false;
+        const user = this.getCurrentUser();
+        return user ? roles.includes(user.role) : false;
+    }
+
+    isAdmin(): boolean {
+        return this.hasRole(UserRole.ADMIN);
+    }
+
+    isManager(): boolean {
+        return this.hasRole(UserRole.MANAGER);
+    }
+
+    isEmployee(): boolean {
+        return this.hasRole(UserRole.EMPLOYEE);
+    }
+
+    isManagerOrAdmin(): boolean {
+        return this.hasAnyRole([UserRole.MANAGER, UserRole.ADMIN]);
+    }
+
+    refreshUser(): Observable<User> {
+        return this.backendService.getCurrentUser().pipe(
+            tap((user) => this.currentUserSubject.next(user)),
+            catchError((error) => {
+                this.logout();
+                return throwError(() => error);
+            })
+        );
     }
 }

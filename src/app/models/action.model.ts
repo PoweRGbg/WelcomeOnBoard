@@ -4,7 +4,7 @@ export interface Action {
     description?: string;
     imageUrl?: string;
     url?: string;
-    order: number;
+    // order: number;
     isCompleted: boolean;
     completedAt?: Date;
     completedBy?: string;
