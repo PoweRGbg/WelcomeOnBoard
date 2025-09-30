@@ -11,7 +11,10 @@ export const RoleGuard = (route: any) => {
     authService.currentUser$.subscribe(
         (user) => {
             if (!user || !requiredRoles.includes(user.role)) {
-                router.navigate(['/dashboard']);
+                console.log('Access denied - Users must have one of the following roles to access this page:', requiredRoles);
+                console.log('Current user role:', user);
+                
+                // router.navigate(['/dashboard']);
             }
 
             return false;

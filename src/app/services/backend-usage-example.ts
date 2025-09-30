@@ -1,11 +1,7 @@
-// This is an example file showing how to use the BackendService
-// You can delete this file after reviewing the examples
-
 import { Component, OnInit } from '@angular/core';
 import { BackendService } from './backend.service';
 import { User, UserRole } from '../models/user.model';
 import { Task, TaskCreateRequest } from '../models/task.model';
-import { Action } from '../models/action.model';
 
 @Component({
     selector: 'app-backend-usage-example',
