@@ -23,11 +23,6 @@ export class AuthService {
             } else {
                 this.logout();
             }
-                
-            // this.backendService.getCurrentUser().subscribe({
-            //     next: (user) => this.currentUserSubject.next(user),
-            //     error: () => this.logout()
-            // });
         }
     }
 
@@ -43,8 +38,6 @@ export class AuthService {
 
     getCurrentUser(): User | null {
         this.backendService.getCurrentUser();
-        console.log('AuthService getCurrentUser:', this.backendService.getCurrentUser());
-        
         return this.currentUserSubject.value;
     }
 

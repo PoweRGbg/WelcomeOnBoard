@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
 
         const actions = [];
         
-        switch (this.currentUser.role.toLocaleLowerCase()) {
+        switch (this.currentUser.role) {
             case UserRole.ADMIN:
                 actions.push(
                     { title: 'Manage Users', icon: 'people', route: '/admin/users', color: 'primary' },
