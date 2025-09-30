@@ -3,7 +3,6 @@
 
 import { Component, OnInit } from '@angular/core';
 import { BackendService } from './backend.service';
-import { AuthBackendService } from './auth-backend.service';
 import { User, UserRole } from '../models/user.model';
 import { Task, TaskCreateRequest } from '../models/task.model';
 import { Action } from '../models/action.model';
@@ -24,11 +23,10 @@ export class BackendUsageExampleComponent implements OnInit {
 
     constructor(
         private backendService: BackendService,
-        private authService: AuthBackendService
     ) { }
 
     ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
+        this.currentUser = this.backendService.getCurrentUser();
         this.loadUsers();
         this.loadTasks();
         // this.createTask();
@@ -37,7 +35,7 @@ export class BackendUsageExampleComponent implements OnInit {
     // Authentication Examples
     async login() {
         try {
-            const user = await this.authService.login({
+            const user = await this.backendService.login({
                 username: 'admin',
                 password: 'admin'
             }).toPromise();
@@ -50,7 +48,7 @@ export class BackendUsageExampleComponent implements OnInit {
 
     async logout() {
         try {
-            await this.authService.logout().toPromise();
+            await this.backendService.logout();
             console.log('Logged out successfully');
         } catch (error) {
             console.error('Logout failed:', error);

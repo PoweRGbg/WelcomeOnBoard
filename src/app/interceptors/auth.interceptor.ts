@@ -55,7 +55,7 @@ export class AuthInterceptor implements HttpInterceptor {
             catchError((error) => {
                 this.isRefreshing = false;
                 // If refresh fails, redirect to login or clear tokens
-                this.backendService.logout().subscribe();
+                this.backendService.logout();
                 return throwError(() => error);
             })
         );

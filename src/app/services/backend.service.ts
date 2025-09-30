@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import { User, UserRole } from '../models/user.model';
+import { User, UserRole, UserToken } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { Action } from '../models/action.model';
 
@@ -79,15 +79,10 @@ export class BackendService {
             );
     }
 
-    logout(): Observable<any> {
-        const refreshToken = localStorage.getItem('refreshToken');
-        return this.http.post(`${this.baseUrl}/auth/logout`, { refreshToken })
-            .pipe(
-                tap(() => {
-                    this.clearTokens();
-                }),
-                catchError(this.handleError)
-            );
+    logout(): void {
+        this.clearTokens();
+        console.log('User logged out, tokens cleared in backend service');
+        this.tokenSubject.next(null); // Check authentication status after logout
     }
 
     refreshToken(): Observable<LoginResponse> {
@@ -116,12 +111,23 @@ export class BackendService {
         this.tokenSubject.next(null);
     }
 
-    getCurrentUser(): Observable<User> {
-        return this.http.get<User>(`${this.baseUrl}/auth/profile`, { headers: this.headers })
-            .pipe(
-                map(response => response),
-                catchError(this.handleError)
-            );
+    getCurrentUser(): User | null {
+        const token = this.tokenSubject.value;
+        if (!token) {
+            return null;
+        }
+        // decode token to get user info
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('Decoded token payload:', payload);
+        
+        const loggedUser: UserToken = {
+            id: payload.sub,
+            username: payload.username,
+            role: payload.role,
+            createdAt: new Date(payload.iat * 1000),
+            updatedAt: new Date(payload.iat * 1000)
+        };
+        return loggedUser as User;
     }
 
     // User Management Methods

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { User, UserRole } from '../models/user.model';
-import { BackendService, LoginRequest, LoginResponse } from './backend.service';
+import { BackendService } from './backend.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,10 +17,17 @@ export class AuthService {
 
     private checkAuthStatus(): void {
         if (this.backendService.isAuthenticated()) {
-            this.backendService.getCurrentUser().subscribe({
-                next: (user) => this.currentUserSubject.next(user),
-                error: () => this.logout()
-            });
+            const loggedUser = this.backendService.getCurrentUser();
+            if (loggedUser) {
+                this.currentUserSubject.next(loggedUser);
+            } else {
+                this.logout();
+            }
+                
+            // this.backendService.getCurrentUser().subscribe({
+            //     next: (user) => this.currentUserSubject.next(user),
+            //     error: () => this.logout()
+            // });
         }
     }
 
@@ -28,24 +35,22 @@ export class AuthService {
         this.currentUserSubject.next(loggedUser);
     }
 
-    logout(): Observable<any> {
-        return this.backendService.logout().pipe(
-            tap(() => {
-                this.backendService.logout();
-                this.currentUserSubject.next(null);
-            }),
-            catchError((error) => {
-                this.currentUserSubject.next(null);
-                return throwError(() => error);
-            })
-        );
+    logout(): void {
+        console.log('Logging out user in authService:');
+        this.currentUserSubject.next(null);
+        this.backendService.logout();
     }
 
     getCurrentUser(): User | null {
+        this.backendService.getCurrentUser();
+        console.log('AuthService getCurrentUser:', this.backendService.getCurrentUser());
+        
         return this.currentUserSubject.value;
     }
 
     isAuthenticated(): boolean {
+        console.log('AuthService isAuthenticated check:', this.backendService.isAuthenticated(), this.currentUserSubject.value);
+        
         return this.backendService.isAuthenticated() && !!this.currentUserSubject.value;
     }
 
@@ -75,13 +80,8 @@ export class AuthService {
         return this.hasAnyRole([UserRole.MANAGER, UserRole.ADMIN]);
     }
 
-    refreshUser(): Observable<User> {
-        return this.backendService.getCurrentUser().pipe(
-            tap((user) => this.currentUserSubject.next(user)),
-            catchError((error) => {
-                this.logout();
-                return throwError(() => error);
-            })
-        );
+    refreshUser(): void {
+        const user = this.backendService.getCurrentUser();
+        this.currentUserSubject.next(user);
     }
 }

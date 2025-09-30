@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit {
         console.log('Dashboard initialized');
         this.authService.currentUser$.subscribe(user => {
             this.currentUser = user;
+            this.authService.getCurrentUser();
             console.log('Current user in Dashboard:', user);
         });
         

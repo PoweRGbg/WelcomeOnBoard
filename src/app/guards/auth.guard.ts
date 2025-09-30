@@ -8,8 +8,8 @@ export const AuthGuard = () => {
     const router = inject(Router);
     const backendService = inject(BackendService);
 
-    if (!!backendService.getCurrentUser()) {
-        console.log('Access granted - User is authenticated');
+    if (!!authService.getCurrentUser()) {
+        console.log('Access granted - User is authenticated', authService.getCurrentUser());
         return true;
     } else {
         console.log('Access denied - Users must be logged in to access this page');

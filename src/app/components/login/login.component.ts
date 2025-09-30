@@ -34,10 +34,13 @@ export class LoginComponent {
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
-        private backendService: BackendService,
         private dataService: DataService,
         private router: Router
     ) {
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+            this.router.navigate(['/dashboard']);
+        }
         this.loginForm = this.fb.group({
             username: ['', Validators.required],
             password: ['', Validators.required]
@@ -62,16 +65,6 @@ export class LoginComponent {
                     alert('Login failed: ' + err.message);
                 }
             });
-            // // Find user by username and role
-            // const users = this.dataService.getUsers();
-            // const user = users.find(u => u.username === username && u.role === role);
-
-            // if (user) {
-            //     this.authService.login(user);
-            //     this.router.navigate(['/dashboard']);
-            // } else {
-            //     alert('Invalid username or password');
-            // }
         }
     }
 }
