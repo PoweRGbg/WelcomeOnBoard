@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 import { DataService } from '../../services/data.service';
 import { UserRole } from '../../models/user.model';
 import { BackendService, LoginResponse } from '../../services/backend.service';
+import { BackendMockService } from '../../services/backend-mock.service';
 
 @Component({
     selector: 'app-login',
@@ -34,7 +35,7 @@ export class LoginComponent {
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
-        private dataService: DataService,
+        private dataService: BackendMockService,
         private router: Router
     ) {
         const currentUser = this.authService.getCurrentUser();

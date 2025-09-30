@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DataService } from '../../../services/data.service';
 import { Task } from '../../../models/task.model';
+import { BackendMockService } from '../../../services/backend-mock.service';
 
 @Component({
     selector: 'app-admin-tasks',
@@ -21,7 +22,7 @@ import { Task } from '../../../models/task.model';
 export class AdminTasksComponent implements OnInit {
     tasks: Task[] = [];
 
-    constructor(private dataService: DataService) { }
+    constructor(private dataService: BackendMockService) { }
 
     ngOnInit(): void {
         this.loadTasks();

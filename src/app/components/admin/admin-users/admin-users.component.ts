@@ -8,6 +8,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DataService } from '../../../services/data.service';
 import { User, UserRole } from '../../../models/user.model';
+import { BackendMockService } from '../../../services/backend-mock.service';
 
 @Component({
     selector: 'app-admin-users',
@@ -28,7 +29,7 @@ export class AdminUsersComponent implements OnInit {
     users: User[] = [];
     displayedColumns: string[] = ['username', 'email', 'role', 'firstName', 'lastName', 'isActive', 'actions'];
 
-    constructor(private dataService: DataService) { }
+    constructor(private dataService: BackendMockService) { }
 
     ngOnInit(): void {
         this.loadUsers();
