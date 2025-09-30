@@ -1,0 +1,850 @@
+import { Injectable } from '@angular/core';
+import { Observable, BehaviorSubject, of, throwError, delay } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { User, UserRole, UserToken } from '../models/user.model';
+import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
+import { Action } from '../models/action.model';
+import { LoginRequest, LoginResponse, PaginatedResponse } from './backend.service';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class BackendMockService {
+    private tokenSubject = new BehaviorSubject<string | null>(null);
+    public token$ = this.tokenSubject.asObservable();
+
+    // Mock data storage
+    private mockUsers: User[] = [
+        {
+            id: '1',
+            username: 'admin',
+            password: 'admin123',
+            email: 'admin@company.com',
+            role: UserRole.ADMIN,
+            firstName: 'Admin',
+            lastName: 'User',
+            isActive: true,
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01')
+        },
+        {
+            id: '2',
+            username: 'manager1',
+            password: 'manager123',
+            email: 'manager1@company.com',
+            role: UserRole.MANAGER,
+            firstName: 'John',
+            lastName: 'Manager',
+            isActive: true,
+            createdAt: new Date('2024-01-02'),
+            updatedAt: new Date('2024-01-02')
+        },
+        {
+            id: '3',
+            username: 'employee1',
+            password: 'employee123',
+            email: 'employee1@company.com',
+            role: UserRole.EMPLOYEE,
+            firstName: 'Jane',
+            lastName: 'Employee',
+            isActive: true,
+            createdAt: new Date('2024-01-03'),
+            updatedAt: new Date('2024-01-03')
+        },
+        {
+            id: '4',
+            username: 'employee2',
+            password: 'employee123',
+            email: 'employee2@company.com',
+            role: UserRole.EMPLOYEE,
+            firstName: 'Bob',
+            lastName: 'Smith',
+            isActive: true,
+            createdAt: new Date('2024-01-04'),
+            updatedAt: new Date('2024-01-04')
+        }
+    ];
+
+    private mockTasks: Task[] = [
+        {
+            id: '1',
+            name: 'Complete Employee Onboarding',
+            description: 'Complete all required onboarding tasks for new employees',
+            category: 'Onboarding',
+            url: 'https://company.com/onboarding',
+            actions: [
+                {
+                    id: '1-1',
+                    name: 'Read Company Handbook',
+                    description: 'Review the company handbook and policies',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/handbook',
+                    isCompleted: false
+                },
+                {
+                    id: '1-2',
+                    name: 'Complete IT Setup',
+                    description: 'Set up computer, email, and access credentials',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/it-setup',
+                    isCompleted: false
+                },
+                {
+                    id: '1-3',
+                    name: 'Attend Welcome Meeting',
+                    description: 'Meet with HR and team members',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/meetings',
+                    isCompleted: false
+                }
+            ],
+            createdBy: {
+                id: '1',
+                username: 'admin',
+                firstName: 'Admin',
+                lastName: 'User'
+            },
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
+            isActive: true,
+            completionCount: 5,
+            lastCompletedAt: new Date('2024-01-15'),
+            isInProgress: false
+        },
+        {
+            id: '2',
+            name: 'Security Training',
+            description: 'Complete mandatory security awareness training',
+            category: 'Training',
+            url: 'https://company.com/security-training',
+            actions: [
+                {
+                    id: '2-1',
+                    name: 'Watch Security Video',
+                    description: 'Complete the security awareness video',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/security-video',
+                    isCompleted: false
+                },
+                {
+                    id: '2-2',
+                    name: 'Take Security Quiz',
+                    description: 'Pass the security knowledge assessment',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/security-quiz',
+                    isCompleted: false
+                }
+            ],
+            createdBy: {
+                id: '1',
+                username: 'admin',
+                firstName: 'Admin',
+                lastName: 'User'
+            },
+            createdAt: new Date('2024-01-02'),
+            updatedAt: new Date('2024-01-02'),
+            isActive: true,
+            completionCount: 3,
+            lastCompletedAt: new Date('2024-01-10'),
+            isInProgress: false
+        },
+        {
+            id: '3',
+            name: 'Equipment Setup',
+            description: 'Set up and configure work equipment',
+            category: 'Equipment',
+            url: 'https://company.com/equipment',
+            actions: [
+                {
+                    id: '3-1',
+                    name: 'Collect Equipment',
+                    description: 'Pick up laptop, monitor, and accessories',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/equipment-pickup',
+                    isCompleted: false
+                },
+                {
+                    id: '3-2',
+                    name: 'Configure Software',
+                    description: 'Install and configure required software',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/software-setup',
+                    isCompleted: false
+                }
+            ],
+            createdBy: {
+                id: '2',
+                username: 'manager1',
+                firstName: 'John',
+                lastName: 'Manager'
+            },
+            createdAt: new Date('2024-01-03'),
+            updatedAt: new Date('2024-01-03'),
+            isActive: true,
+            completionCount: 2,
+            lastCompletedAt: new Date('2024-01-12'),
+            isInProgress: false
+        }
+    ];
+
+    private mockTaskSuggestions: TaskSuggestion[] = [
+        {
+            id: '1',
+            suggestedBy: '3',
+            taskName: 'Team Building Workshop',
+            description: 'Organize team building activities for new employees',
+            category: 'Team Building',
+            url: 'https://company.com/team-building',
+            actions: [
+                {
+                    id: 's1-1',
+                    name: 'Ice Breaker Games',
+                    description: 'Play team building games',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/ice-breakers',
+                    isCompleted: false
+                }
+            ],
+            status: 'pending',
+            createdAt: new Date('2024-01-05'),
+            reviewedAt: undefined,
+            reviewedBy: undefined
+        },
+        {
+            id: '2',
+            suggestedBy: '4',
+            taskName: 'Mentorship Program',
+            description: 'Pair new employees with experienced mentors',
+            category: 'Development',
+            url: 'https://company.com/mentorship',
+            actions: [
+                {
+                    id: 's2-1',
+                    name: 'Meet with Mentor',
+                    description: 'Schedule regular meetings with assigned mentor',
+                    imageUrl: 'https://via.placeholder.com/300x200',
+                    url: 'https://company.com/mentor-meetings',
+                    isCompleted: false
+                }
+            ],
+            status: 'approved',
+            createdAt: new Date('2024-01-06'),
+            reviewedAt: new Date('2024-01-07'),
+            reviewedBy: '1'
+        }
+    ];
+
+    private mockTaskProgress: TaskProgress[] = [
+        {
+            taskId: '1',
+            userId: '3',
+            completedActions: ['1-1'],
+            isCompleted: false,
+            startedAt: new Date('2024-01-08'),
+            completedAt: undefined,
+            currentActionIndex: 1
+        },
+        {
+            taskId: '2',
+            userId: '3',
+            completedActions: ['2-1', '2-2'],
+            isCompleted: true,
+            startedAt: new Date('2024-01-09'),
+            completedAt: new Date('2024-01-10'),
+            currentActionIndex: 2
+        }
+    ];
+
+    constructor() {
+        // Load token from localStorage on service initialization
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            this.tokenSubject.next(token);
+        }
+    }
+
+    private generateMockToken(user: User): string {
+        const payload = {
+            sub: user.id,
+            username: user.username,
+            role: user.role,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
+        };
+        return btoa(JSON.stringify(payload));
+    }
+
+    private getCurrentUserFromToken(): User | null {
+        const token = this.tokenSubject.value;
+        if (!token) {
+            return null;
+        }
+        try {
+            const payload = JSON.parse(atob(token));
+            return this.mockUsers.find(user => user.id === payload.sub) || null;
+        } catch {
+            return null;
+        }
+    }
+
+    private simulateNetworkDelay(): Observable<any> {
+        return of(null).pipe(delay(Math.random() * 500 + 200)); // 200-700ms delay
+    }
+
+    // Authentication Methods
+    login(credentials: LoginRequest): Observable<LoginResponse> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const user = this.mockUsers.find(u =>
+                    u.username === credentials.username &&
+                    u.password === credentials.password &&
+                    u.isActive
+                );
+
+                if (!user) {
+                    throw new Error('Invalid credentials');
+                }
+
+                const token = this.generateMockToken(user);
+                const response: LoginResponse = {
+                    user: { ...user, password: undefined } as unknown as User,
+                    token: token,
+                    refreshToken: 'mock-refresh-token-' + user.id
+                };
+
+                this.setToken(token);
+                localStorage.setItem('refreshToken', response.refreshToken!);
+
+                return response;
+            })
+        );
+    }
+
+    logout(): void {
+        this.clearTokens();
+        console.log('User logged out, tokens cleared in mock service');
+    }
+
+    refreshToken(): Observable<LoginResponse> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const refreshToken = localStorage.getItem('refreshToken');
+                if (!refreshToken) {
+                    throw new Error('No refresh token available');
+                }
+
+                const userId = refreshToken.split('-').pop();
+                const user = this.mockUsers.find(u => u.id === userId);
+
+                if (!user) {
+                    throw new Error('Invalid refresh token');
+                }
+
+                const token = this.generateMockToken(user);
+                const response: LoginResponse = {
+                    user: { ...user, password: undefined } as unknown as User,
+                    token: token,
+                    refreshToken: refreshToken
+                };
+
+                this.setToken(token);
+                return response;
+            })
+        );
+    }
+
+    private setToken(token: string): void {
+        localStorage.setItem('authToken', token);
+        this.tokenSubject.next(token);
+    }
+
+    private clearTokens(): void {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
+        this.tokenSubject.next(null);
+    }
+
+    getCurrentUser(): User | null {
+        return this.getCurrentUserFromToken();
+    }
+
+    // User Management Methods
+    getUsers(page: number = 1, limit: number = 10, search?: string): Observable<User[]> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                let filteredUsers = [...this.mockUsers];
+
+                if (search) {
+                    filteredUsers = filteredUsers.filter(user =>
+                        user.username.toLowerCase().includes(search.toLowerCase()) ||
+                        user.firstName.toLowerCase().includes(search.toLowerCase()) ||
+                        user.lastName.toLowerCase().includes(search.toLowerCase()) ||
+                        user.email.toLowerCase().includes(search.toLowerCase())
+                    );
+                }
+
+                const startIndex = (page - 1) * limit;
+                const endIndex = startIndex + limit;
+
+                return filteredUsers.slice(startIndex, endIndex).map(user => ({
+                    ...user,
+                    password: undefined
+                } as unknown as User));
+            })
+        );
+    }
+
+    getUserById(id: string): Observable<User> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const user = this.mockUsers.find(u => u.id === id);
+                if (!user) {
+                    throw new Error('User not found');
+                }
+                return { ...user, password: undefined } as unknown as User;
+            })
+        );
+    }
+
+    createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Observable<User> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const newUser: User = {
+                    ...userData,
+                    id: (this.mockUsers.length + 1).toString(),
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+                this.mockUsers.push(newUser);
+                return { ...newUser, password: undefined } as unknown as User;
+            })
+        );
+    }
+
+    updateUser(id: string, userData: Partial<User>): Observable<User> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const userIndex = this.mockUsers.findIndex(u => u.id === id);
+                if (userIndex === -1) {
+                    throw new Error('User not found');
+                }
+
+                this.mockUsers[userIndex] = {
+                    ...this.mockUsers[userIndex],
+                    ...userData,
+                    updatedAt: new Date()
+                };
+
+                return { ...this.mockUsers[userIndex], password: undefined } as unknown as User;
+            })
+        );
+    }
+
+    deleteUser(id: string): Observable<boolean> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const userIndex = this.mockUsers.findIndex(u => u.id === id);
+                if (userIndex === -1) {
+                    throw new Error('User not found');
+                }
+
+                this.mockUsers.splice(userIndex, 1);
+                return true;
+            })
+        );
+    }
+
+    // Task Management Methods
+    getTasks(page: number = 1, limit: number = 10, category?: string, search?: string): Observable<Task[]> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                let filteredTasks = [...this.mockTasks];
+
+                if (category) {
+                    filteredTasks = filteredTasks.filter(task =>
+                        task.category.toLowerCase() === category.toLowerCase()
+                    );
+                }
+
+                if (search) {
+                    filteredTasks = filteredTasks.filter(task =>
+                        task.name.toLowerCase().includes(search.toLowerCase()) ||
+                        task.description?.toLowerCase().includes(search.toLowerCase())
+                    );
+                }
+
+                const startIndex = (page - 1) * limit;
+                const endIndex = startIndex + limit;
+
+                return filteredTasks.slice(startIndex, endIndex);
+            })
+        );
+    }
+
+    getTaskById(id: string): Observable<Task> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const task = this.mockTasks.find(t => t.id === id);
+                if (!task) {
+                    throw new Error('Task not found');
+                }
+                return task;
+            })
+        );
+    }
+
+    createTask(taskData: TaskCreateRequest): Observable<Task> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const createdBy = this.mockUsers.find(u => u.id === taskData.createdBy);
+                if (!createdBy) {
+                    throw new Error('User not found');
+                }
+
+                const newTask: Task = {
+                    ...taskData,
+                    id: (this.mockTasks.length + 1).toString(),
+                    createdBy: {
+                        id: createdBy.id,
+                        username: createdBy.username,
+                        firstName: createdBy.firstName,
+                        lastName: createdBy.lastName
+                    },
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    completionCount: 0,
+                    isInProgress: false
+                };
+
+                this.mockTasks.push(newTask);
+                return newTask;
+            })
+        );
+    }
+
+    updateTask(id: string, taskData: Partial<Task> | TaskCreateRequest): Observable<Task> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const taskIndex = this.mockTasks.findIndex(t => t.id === id);
+                if (taskIndex === -1) {
+                    throw new Error('Task not found');
+                }
+
+                this.mockTasks[taskIndex] = {
+                    ...this.mockTasks[taskIndex],
+                    ...taskData,
+                    createdBy: this.mockTasks[taskIndex].createdBy, // Preserve createdBy
+                    updatedAt: new Date()
+                };
+
+                return this.mockTasks[taskIndex];
+            })
+        );
+    }
+
+    deleteTask(id: string): Observable<boolean> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const taskIndex = this.mockTasks.findIndex(t => t.id === id);
+                if (taskIndex === -1) {
+                    throw new Error('Task not found');
+                }
+
+                this.mockTasks.splice(taskIndex, 1);
+                return true;
+            })
+        );
+    }
+
+    // Action Management Methods
+    getActionsByTaskId(taskId: string): Observable<Action[]> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const task = this.mockTasks.find(t => t.id === taskId);
+                if (!task) {
+                    throw new Error('Task not found');
+                }
+                return task.actions || [];
+            })
+        );
+    }
+
+    createAction(taskId: string, actionData: Omit<Action, 'id' | 'isCompleted' | 'completedAt' | 'completedBy'>): Observable<Action> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const task = this.mockTasks.find(t => t.id === taskId);
+                if (!task) {
+                    throw new Error('Task not found');
+                }
+
+                const newAction: Action = {
+                    ...actionData,
+                    id: `${taskId}-${(task.actions?.length || 0) + 1}`,
+                    isCompleted: false
+                };
+
+                if (!task.actions) {
+                    task.actions = [];
+                }
+                task.actions.push(newAction);
+                task.updatedAt = new Date();
+
+                return newAction;
+            })
+        );
+    }
+
+    updateAction(taskId: string, actionId: string, actionData: Partial<Action>): Observable<Action> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const task = this.mockTasks.find(t => t.id === taskId);
+                if (!task || !task.actions) {
+                    throw new Error('Task or action not found');
+                }
+
+                const actionIndex = task.actions.findIndex(a => a.id === actionId);
+                if (actionIndex === -1) {
+                    throw new Error('Action not found');
+                }
+
+                task.actions[actionIndex] = {
+                    ...task.actions[actionIndex],
+                    ...actionData
+                };
+                task.updatedAt = new Date();
+
+                return task.actions[actionIndex];
+            })
+        );
+    }
+
+    deleteAction(taskId: string, actionId: string): Observable<boolean> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const task = this.mockTasks.find(t => t.id === taskId);
+                if (!task || !task.actions) {
+                    throw new Error('Task or action not found');
+                }
+
+                const actionIndex = task.actions.findIndex(a => a.id === actionId);
+                if (actionIndex === -1) {
+                    throw new Error('Action not found');
+                }
+
+                task.actions.splice(actionIndex, 1);
+                task.updatedAt = new Date();
+
+                return true;
+            })
+        );
+    }
+
+    completeAction(taskId: string, actionId: string): Observable<Action> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const task = this.mockTasks.find(t => t.id === taskId);
+                if (!task || !task.actions) {
+                    throw new Error('Task or action not found');
+                }
+
+                const action = task.actions.find(a => a.id === actionId);
+                if (!action) {
+                    throw new Error('Action not found');
+                }
+
+                const currentUser = this.getCurrentUserFromToken();
+                action.isCompleted = true;
+                action.completedAt = new Date();
+                action.completedBy = currentUser?.id;
+
+                task.updatedAt = new Date();
+
+                return action;
+            })
+        );
+    }
+
+    // Task Progress Methods
+    getTaskProgress(userId?: string): Observable<TaskProgress[]> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                let filteredProgress = [...this.mockTaskProgress];
+
+                if (userId) {
+                    filteredProgress = filteredProgress.filter(progress =>
+                        progress.userId === userId
+                    );
+                }
+
+                return filteredProgress;
+            })
+        );
+    }
+
+    updateTaskProgress(progress: TaskProgress): Observable<TaskProgress> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const progressIndex = this.mockTaskProgress.findIndex(p =>
+                    p.taskId === progress.taskId && p.userId === progress.userId
+                );
+
+                if (progressIndex === -1) {
+                    this.mockTaskProgress.push(progress);
+                } else {
+                    this.mockTaskProgress[progressIndex] = progress;
+                }
+
+                return progress;
+            })
+        );
+    }
+
+    startTask(taskId: string): Observable<TaskProgress> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const currentUser = this.getCurrentUserFromToken();
+                if (!currentUser) {
+                    throw new Error('User not authenticated');
+                }
+
+                const existingProgress = this.mockTaskProgress.find(p =>
+                    p.taskId === taskId && p.userId === currentUser.id
+                );
+
+                if (existingProgress) {
+                    return existingProgress;
+                }
+
+                const newProgress: TaskProgress = {
+                    taskId: taskId,
+                    userId: currentUser.id,
+                    completedActions: [],
+                    isCompleted: false,
+                    startedAt: new Date(),
+                    currentActionIndex: 0
+                };
+
+                this.mockTaskProgress.push(newProgress);
+                return newProgress;
+            })
+        );
+    }
+
+    completeTask(taskId: string): Observable<TaskProgress> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const currentUser = this.getCurrentUserFromToken();
+                if (!currentUser) {
+                    throw new Error('User not authenticated');
+                }
+
+                const progress = this.mockTaskProgress.find(p =>
+                    p.taskId === taskId && p.userId === currentUser.id
+                );
+
+                if (!progress) {
+                    throw new Error('Task progress not found');
+                }
+
+                progress.isCompleted = true;
+                progress.completedAt = new Date();
+
+                return progress;
+            })
+        );
+    }
+
+    // Task Suggestions Methods
+    getTaskSuggestions(page: number = 1, limit: number = 10, status?: string): Observable<PaginatedResponse<TaskSuggestion>> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                let filteredSuggestions = [...this.mockTaskSuggestions];
+
+                if (status) {
+                    filteredSuggestions = filteredSuggestions.filter(suggestion =>
+                        suggestion.status === status
+                    );
+                }
+
+                const startIndex = (page - 1) * limit;
+                const endIndex = startIndex + limit;
+                const paginatedSuggestions = filteredSuggestions.slice(startIndex, endIndex);
+
+                return {
+                    data: paginatedSuggestions,
+                    total: filteredSuggestions.length,
+                    page: page,
+                    limit: limit,
+                    totalPages: Math.ceil(filteredSuggestions.length / limit)
+                };
+            })
+        );
+    }
+
+    createTaskSuggestion(suggestion: Omit<TaskSuggestion, 'id' | 'createdAt'>): Observable<TaskSuggestion> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const newSuggestion: TaskSuggestion = {
+                    ...suggestion,
+                    id: (this.mockTaskSuggestions.length + 1).toString(),
+                    createdAt: new Date()
+                };
+
+                this.mockTaskSuggestions.push(newSuggestion);
+                return newSuggestion;
+            })
+        );
+    }
+
+    updateTaskSuggestion(id: string, suggestionData: Partial<TaskSuggestion>): Observable<TaskSuggestion> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const suggestionIndex = this.mockTaskSuggestions.findIndex(s => s.id === id);
+                if (suggestionIndex === -1) {
+                    throw new Error('Task suggestion not found');
+                }
+
+                this.mockTaskSuggestions[suggestionIndex] = {
+                    ...this.mockTaskSuggestions[suggestionIndex],
+                    ...suggestionData
+                };
+
+                return this.mockTaskSuggestions[suggestionIndex];
+            })
+        );
+    }
+
+    deleteTaskSuggestion(id: string): Observable<boolean> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                const suggestionIndex = this.mockTaskSuggestions.findIndex(s => s.id === id);
+                if (suggestionIndex === -1) {
+                    throw new Error('Task suggestion not found');
+                }
+
+                this.mockTaskSuggestions.splice(suggestionIndex, 1);
+                return true;
+            })
+        );
+    }
+
+    // Utility Methods
+    isAuthenticated(): boolean {
+        return !!this.tokenSubject.value;
+    }
+
+    getToken(): string | null {
+        return this.tokenSubject.value;
+    }
+
+    // File Upload Methods (mock implementation)
+    uploadFile(file: File, taskId: string, actionId?: string): Observable<{ url: string }> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                // Mock file upload - return a placeholder URL
+                const mockUrl = `https://mock-storage.com/files/${taskId}/${actionId || 'general'}/${file.name}`;
+                return { url: mockUrl };
+            })
+        );
+    }
+}

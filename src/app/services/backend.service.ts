@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import { User, UserRole, UserToken } from '../models/user.model';
+import { User, UserToken } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { Action } from '../models/action.model';
 
