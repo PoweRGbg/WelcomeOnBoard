@@ -13,6 +13,7 @@ import { AuthService } from '../../../services/auth.service';
 import { Task, TaskProgress } from '../../../models/task.model';
 import { Action } from '../../../models/action.model';
 import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dialog.component';
+import { BackendMockService } from '../../../services/backend-mock.service';
 
 @Component({
     selector: 'app-employee-tasks',
@@ -37,7 +38,7 @@ export class EmployeeTasksComponent implements OnInit {
     currentUserId: string | null = null;
 
     constructor(
-        private dataService: DataService,
+        private dataService: BackendMockService,
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar
@@ -53,6 +54,8 @@ export class EmployeeTasksComponent implements OnInit {
 
     loadTasks(): void {
         this.dataService.getTasks().subscribe(tasks => {
+            console.log('Tasks loaded:', tasks);
+            
             this.tasks = tasks;
         });
     }
