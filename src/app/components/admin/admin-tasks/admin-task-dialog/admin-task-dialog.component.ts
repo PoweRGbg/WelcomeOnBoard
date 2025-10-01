@@ -10,13 +10,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { DataService } from '../../../../services/data.service';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { BackendMockService } from '../../../../services/backend-mock.service';
 import { Task, TaskCreateRequest } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
 import { UserInfo } from '../../../../models/user.model';
 
 @Component({
-    selector: 'app-task-create-dialog',
+    selector: 'app-admin-task-dialog',
     standalone: true,
     imports: [
         CommonModule,
@@ -29,21 +30,23 @@ import { UserInfo } from '../../../../models/user.model';
         MatSelectModule,
         MatChipsModule,
         MatTooltipModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatCheckboxModule
     ],
-    templateUrl: './task-create-dialog.component.html',
-    styleUrl: './task-create-dialog.component.scss'
+    templateUrl: './admin-task-dialog.component.html',
+    styleUrl: './admin-task-dialog.component.scss'
 })
-export class TaskCreateDialogComponent implements OnInit {
+export class AdminTaskDialogComponent implements OnInit {
     taskForm: FormGroup;
     isEditMode = false;
-    categories = ['HR', 'IT', 'Finance', 'Operations', 'Training', 'Compliance', 'Other'];
+    categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
+    isLoading = false;
 
     constructor(
         private fb: FormBuilder,
-        private dataService: DataService,
+        private backendService: BackendMockService,
         private snackBar: MatSnackBar,
-        private dialogRef: MatDialogRef<TaskCreateDialogComponent>,
+        private dialogRef: MatDialogRef<AdminTaskDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { task?: Task; currentUser: UserInfo }
     ) {
         this.taskForm = this.createForm();
@@ -62,7 +65,9 @@ export class TaskCreateDialogComponent implements OnInit {
             description: [''],
             category: ['', Validators.required],
             url: [''],
-            action: this.fb.array([])
+            isActive: [true],
+            isInProgress: [false],
+            actions: this.fb.array([])
         });
     }
 
@@ -71,7 +76,9 @@ export class TaskCreateDialogComponent implements OnInit {
             name: task.name,
             description: task.description,
             category: task.category,
-            url: task.url
+            url: task.url,
+            isActive: task.isActive,
+            isInProgress: task.isInProgress
         });
 
         // Clear existing actions
@@ -136,6 +143,7 @@ export class TaskCreateDialogComponent implements OnInit {
 
     onSubmit(): void {
         if (this.taskForm.valid) {
+            this.isLoading = true;
             const formValue = this.taskForm.value;
 
             const actions: Action[] = formValue.actions.map((action: any) => ({
@@ -153,19 +161,33 @@ export class TaskCreateDialogComponent implements OnInit {
                 url: formValue.url,
                 actions: actions,
                 createdBy: this.data.currentUser.id,
-                isActive: true,
-                isInProgress: false
+                isActive: formValue.isActive,
+                isInProgress: formValue.isInProgress
             };
 
-            if (this.isEditMode && this.data.task) {
-                this.dataService.updateTask(this.data.task.id, taskData);
-                this.snackBar.open('Task updated successfully!', 'Close', { duration: 3000 });
-            } else {
-                this.dataService.createTask(taskData);
-                this.snackBar.open('Task created successfully!', 'Close', { duration: 3000 });
-            }
+            const operation = this.isEditMode && this.data.task
+                ? this.backendService.updateTask(this.data.task.id, taskData)
+                : this.backendService.createTask(taskData);
 
-            this.dialogRef.close(true);
+            operation.subscribe({
+                next: (result) => {
+                    this.isLoading = false;
+                    this.snackBar.open(
+                        `Task ${this.isEditMode ? 'updated' : 'created'} successfully!`,
+                        'Close',
+                        { duration: 3000 }
+                    );
+                    this.dialogRef.close(result);
+                },
+                error: (error) => {
+                    this.isLoading = false;
+                    this.snackBar.open(
+                        `Error ${this.isEditMode ? 'updating' : 'creating'} task: ${error.message}`,
+                        'Close',
+                        { duration: 5000 }
+                    );
+                }
+            });
         } else {
             this.snackBar.open('Please fill in all required fields', 'Close', { duration: 3000 });
         }
@@ -175,7 +197,3 @@ export class TaskCreateDialogComponent implements OnInit {
         this.dialogRef.close(false);
     }
 }
-
-
-
-

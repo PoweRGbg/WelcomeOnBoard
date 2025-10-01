@@ -1,0 +1,123 @@
+<div class="user-dialog">
+  <h2 mat-dialog-title>
+    {{ isEditMode ? 'Edit User' : 'Create New User' }}
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="userForm" class="user-form">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Username *</mat-label>
+          <input matInput formControlName="username" placeholder="Enter username">
+          <mat-error *ngIf="isFieldInvalid('username')">
+            {{ getFieldError('username') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Email *</mat-label>
+          <input matInput formControlName="email" placeholder="Enter email address">
+          <mat-error *ngIf="isFieldInvalid('email')">
+            {{ getFieldError('email') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>First Name *</mat-label>
+          <input matInput formControlName="firstName" placeholder="Enter first name">
+          <mat-error *ngIf="isFieldInvalid('firstName')">
+            {{ getFieldError('firstName') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Last Name *</mat-label>
+          <input matInput formControlName="lastName" placeholder="Enter last name">
+          <mat-error *ngIf="isFieldInvalid('lastName')">
+            {{ getFieldError('lastName') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="role-field">
+          <mat-label>Role *</mat-label>
+          <mat-select formControlName="role">
+            <mat-option *ngFor="let role of userRoles" [value]="role.value">
+              {{ role.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="isFieldInvalid('role')">
+            {{ getFieldError('role') }}
+          </mat-error>
+        </mat-form-field>
+
+        <div class="checkbox-group">
+          <mat-checkbox formControlName="isActive">
+            User is Active
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <!-- Password fields only for new users -->
+      <div *ngIf="!isEditMode" class="password-section">
+        <h3>Password</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Password *</mat-label>
+            <input matInput 
+                   [type]="hidePassword ? 'password' : 'text'" 
+                   formControlName="password" 
+                   placeholder="Enter password">
+            <button mat-icon-button 
+                    matSuffix 
+                    type="button"
+                    (click)="hidePassword = !hidePassword"
+                    [attr.aria-label]="'Hide password'"
+                    [attr.aria-pressed]="hidePassword">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="isFieldInvalid('password')">
+              {{ getFieldError('password') }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Confirm Password *</mat-label>
+            <input matInput 
+                   [type]="hideConfirmPassword ? 'password' : 'text'" 
+                   formControlName="confirmPassword" 
+                   placeholder="Confirm password">
+            <button mat-icon-button 
+                    matSuffix 
+                    type="button"
+                    (click)="hideConfirmPassword = !hideConfirmPassword"
+                    [attr.aria-label]="'Hide password'"
+                    [attr.aria-pressed]="hideConfirmPassword">
+              <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="isFieldInvalid('confirmPassword')">
+              {{ getFieldError('confirmPassword') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Edit mode info -->
+      <div *ngIf="isEditMode" class="edit-info">
+        <mat-icon>info</mat-icon>
+        <span>Password cannot be changed here. Use the password reset feature if needed.</span>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="isLoading">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="isLoading">
+      <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
+      {{ isEditMode ? 'Update User' : 'Create User' }}
+    </button>
+  </mat-dialog-actions>
+</div>

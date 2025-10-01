@@ -12,10 +12,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule } from '@angular/forms';
 import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { Task, TaskCreateRequest } from '../../../models/task.model';
-import { TaskCreateDialogComponent } from './task-create-dialog/task-create-dialog.component';
+import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
 import { Router } from '@angular/router';
 
 @Component({
@@ -35,6 +37,8 @@ import { Router } from '@angular/router';
         MatChipsModule,
         MatTooltipModule,
         MatSnackBarModule,
+        MatProgressSpinnerModule,
+        FormsModule
     ],
     templateUrl: './manager-tasks.component.html',
     styleUrl: './manager-tasks.component.scss'
@@ -43,6 +47,10 @@ export class ManagerTasksComponent implements OnInit {
     tasks: Task[] = [];
     displayedColumns: string[] = ['name', 'category', 'actions', 'completionCount', 'status', 'actions'];
     currentUserId: string | null = null;
+    isLoading = false;
+    searchTerm = '';
+    selectedCategory = '';
+    categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
 
     constructor(
         private dataService: DataService,
@@ -60,15 +68,41 @@ export class ManagerTasksComponent implements OnInit {
     }
 
     loadTasks(): void {
-        this.dataService.getTasks().subscribe(tasks => {
-            this.tasks = tasks;
+        this.isLoading = true;
+        const searchQuery = this.searchTerm.trim() || undefined;
+        const categoryFilter = this.selectedCategory || undefined;
+
+        this.dataService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
+            next: (tasks) => {
+                this.tasks = tasks;
+                this.isLoading = false;
+            },
+            error: (error) => {
+                this.isLoading = false;
+                this.snackBar.open(`Error loading tasks: ${error.message}`, 'Close', { duration: 5000 });
+            }
         });
     }
 
+    onSearchChange(): void {
+        this.loadTasks();
+    }
+
+    onCategoryChange(): void {
+        this.loadTasks();
+    }
+
+    clearSearch(): void {
+        this.searchTerm = '';
+        this.selectedCategory = '';
+        this.loadTasks();
+    }
+
     createTask(): void {
-        const dialogRef = this.dialog.open(TaskCreateDialogComponent, {
-            width: '800px',
-            data: { currentUserId: this.currentUserId }
+        const dialogRef = this.dialog.open(TaskDialogComponent, {
+            width: '90vw',
+            maxWidth: '900px',
+            data: { currentUser: { id: this.currentUserId!, username: '', firstName: '', lastName: '' }, allowStatusToggle: false }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -85,9 +119,10 @@ export class ManagerTasksComponent implements OnInit {
     }
 
     editTask(task: Task): void {
-        const dialogRef = this.dialog.open(TaskCreateDialogComponent, {
-            width: '800px',
-            data: { task, currentUserId: this.currentUserId }
+        const dialogRef = this.dialog.open(TaskDialogComponent, {
+            width: '90vw',
+            maxWidth: '900px',
+            data: { task: task, currentUser: { id: this.currentUserId!, username: '', firstName: '', lastName: '' }, allowStatusToggle: false }
         });
 
         dialogRef.afterClosed().subscribe(result => {

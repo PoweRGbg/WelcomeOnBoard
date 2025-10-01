@@ -1,4 +1,4 @@
-<div class="task-dialog">
+<div class="admin-task-dialog">
   <h2 mat-dialog-title>
     {{ isEditMode ? 'Edit Task' : 'Create New Task' }}
   </h2>
@@ -37,20 +37,29 @@
             Category is required
           </mat-error>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="url-field">
+          <mat-label>Task URL</mat-label>
+          <input matInput formControlName="url" placeholder="https://example.com">
+        </mat-form-field>
       </div>
 
       <div class="form-row">
-        <mat-form-field appearance="outline" class="url-field">
-            <mat-label>Task URL</mat-label>
-            <input matInput formControlName="url" placeholder="https://example.com">
-        </mat-form-field>
+        <div class="checkbox-group">
+          <mat-checkbox formControlName="isActive">
+            Task is Active
+          </mat-checkbox>
+          <mat-checkbox formControlName="isInProgress">
+            Task is In Progress
+          </mat-checkbox>
+        </div>
       </div>
 
       <div class="actions-section">
         <div class="actions-header">
           <h3>Actions</h3>
           <button mat-raised-button color="primary" type="button" (click)="addAction()">
-            <mat-icon>+</mat-icon>
+            <mat-icon>add</mat-icon>
             Add Action
           </button>
         </div>
@@ -91,6 +100,9 @@
                 <mat-error *ngIf="action.get('name')?.hasError('required')">
                   Action name is required
                 </mat-error>
+                <mat-error *ngIf="action.get('name')?.hasError('minlength')">
+                  Action name must be at least 3 characters
+                </mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="action-description">
@@ -120,12 +132,11 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onCancel()" [disabled]="isLoading">Cancel</button>
     <button mat-raised-button color="primary" (click)="onSubmit()" 
-            [disabled]="!taskForm.valid || actionsArray.length === 0">
+            [disabled]="!taskForm.valid || actionsArray.length === 0 || isLoading">
+      <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
       {{ isEditMode ? 'Update Task' : 'Create Task' }}
     </button>
   </mat-dialog-actions>
 </div>
-
-
