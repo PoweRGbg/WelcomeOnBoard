@@ -42,9 +42,9 @@ export interface TaskSuggestion {
 export interface TaskProgress {
     taskId: string;
     userId: string;
-    completedActions: string[];
+    actionsTotal: number;
+    actionsCompleted: number;
     isCompleted: boolean;
     startedAt: Date;
     completedAt?: Date;
-    currentActionIndex: number;
 }

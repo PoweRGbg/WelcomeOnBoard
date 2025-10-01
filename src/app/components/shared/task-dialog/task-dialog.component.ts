@@ -95,7 +95,7 @@ export class TaskDialogComponent implements OnInit {
         if (this.data.allowStatusToggle) {
             this.taskForm.patchValue({
                 isActive: task.isActive,
-                isInProgress: task.isInProgress
+                isInProgress: this.backendService.getTaskProgress(this.data.currentUser.id, task.id)
             });
         }
 
@@ -179,7 +179,6 @@ export class TaskDialogComponent implements OnInit {
                 actions: actions,
                 createdBy: this.data.currentUser.id,
                 isActive: this.data.allowStatusToggle ? formValue.isActive : true,
-                isInProgress: this.data.allowStatusToggle ? formValue.isInProgress : false
             };
 
             const operation = this.isEditMode && this.data.task

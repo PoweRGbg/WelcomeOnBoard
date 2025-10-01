@@ -15,7 +15,6 @@ export interface User {
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
-    startedTasks: StartedTask[];
 }
 export interface UserToken {
     id: string;
@@ -34,11 +33,4 @@ export interface UserInfo {
     username: string;
     firstName: string;
     lastName: string;
-}
-
-export interface StartedTask {
-    taskId: string;
-    actionCompleted: number; // last completed action index in the task's action list
-    startedAt: Date;
-    isInProgress: boolean;
 }

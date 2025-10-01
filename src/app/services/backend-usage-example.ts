@@ -70,7 +70,7 @@ export class BackendUsageExampleComponent implements OnInit {
                 role: UserRole.EMPLOYEE,
                 firstName: 'New',
                 lastName: 'User',
-                isActive: true
+                isActive: true,
             }).toPromise();
 
             console.log('User created:', newUser);

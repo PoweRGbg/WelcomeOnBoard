@@ -59,7 +59,7 @@ export class DashboardComponent implements OnInit {
         this.dataService.getTaskProgress(this.currentUser.id).subscribe(userProgress => {
             this.userStats.totalTasks = this.tasks.length;
             this.userStats.completedTasks = userProgress.filter(p => p.isCompleted).length;
-            this.userStats.inProgressTasks = userProgress.filter(p => !p.isCompleted && p.completedActions.length > 0).length;
+            this.userStats.inProgressTasks = userProgress.filter(p => !p.isCompleted && p.actionsCompleted > 0).length;
             this.userStats.pendingTasks = this.userStats.totalTasks - this.userStats.completedTasks - this.userStats.inProgressTasks;
         });
     }

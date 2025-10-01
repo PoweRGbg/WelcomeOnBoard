@@ -75,14 +75,14 @@ export class EmployeeTasksComponent implements OnInit {
     getTaskCompletionPercentage(task: Task): number {
         const progress = this.getTaskProgress(task);
         if (!progress) return 0;
-        return (progress.completedActions?.length / (task.actions?.length || 0)) * 100;
+        return (progress.actionsCompleted / progress.actionsTotal || 0) * 100;
     }
 
     getTaskStatus(task: Task): string {
         const progress = this.getTaskProgress(task);
         if (!progress) return 'Not Started';
         if (progress.isCompleted) return 'Completed';
-        if (progress.completedActions.length > 0) return 'In Progress';
+        if (progress.actionsCompleted < progress.actionsTotal) return 'In Progress';
         return 'Not Started';
     }
 
@@ -97,7 +97,7 @@ export class EmployeeTasksComponent implements OnInit {
 
     isTaskInProgress(task: Task): boolean {
         const progress = this.getTaskProgress(task);
-        return progress ? !progress.isCompleted && progress.completedActions.length > 0 : false;
+        return progress ? !progress.isCompleted && progress.actionsCompleted > 0 : false;
     }
 
     startTask(task: Task): void {
@@ -106,13 +106,13 @@ export class EmployeeTasksComponent implements OnInit {
         const progress: TaskProgress = {
             taskId: task.id,
             userId: this.currentUserId,
-            completedActions: [],
+            actionsCompleted: 0,
+            actionsTotal: task.actions?.length || 0,
             isCompleted: false,
             startedAt: new Date(),
-            currentActionIndex: 0
         };
 
-        this.dataService.updateTaskProgress(progress);
+        this.dataService.updateTaskProgress(progress.userId, progress.taskId);
         this.loadTaskProgress();
         this.snackBar.open('Task started!', 'Close', { duration: 3000 });
     }

@@ -99,7 +99,6 @@ export class ManagerSuggestionsComponent implements OnInit {
             actions: suggestion.actions || [],
             createdBy: suggestion.suggestedBy,
             isActive: true,
-            isInProgress: false
         };
 
         // Create the task
