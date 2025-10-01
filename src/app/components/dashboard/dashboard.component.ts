@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { DataService } from '../../services/data.service';
 import { User, UserRole } from '../../models/user.model';
 import { Task } from '../../models/task.model';
+import { BackendMockService } from '../../services/backend-mock.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -35,7 +36,7 @@ export class DashboardComponent implements OnInit {
 
     constructor(
         private authService: AuthService,
-        private dataService: DataService,
+        private dataService: BackendMockService,
         private router: Router
     ) { }
 
