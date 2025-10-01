@@ -42,25 +42,25 @@ export const routes: Routes = [
         path: 'manager/tasks',
         component: ManagerTasksComponent,
         canActivate: [AuthGuard, RoleGuard],
-        data: { roles: ['manager', 'ADMIN'] }
+        data: { roles: ['MANAGER', 'ADMIN'] }
     },
     {
         path: 'manager/suggestions',
         component: ManagerSuggestionsComponent,
         canActivate: [AuthGuard, RoleGuard],
-        data: { roles: ['manager', 'ADMIN'] }
+        data: { roles: ['MANAGER', 'ADMIN'] }
     },
     {
         path: 'employee/tasks',
         component: EmployeeTasksComponent,
         canActivate: [AuthGuard, RoleGuard],
-        data: { roles: ['employee', 'manager', 'ADMIN'] }
+        data: { roles: ['EMPLOYEE', 'MANAGER', 'ADMIN'] }
     },
     {
         path: 'employee/suggestions',
         component: EmployeeSuggestionsComponent,
         canActivate: [AuthGuard, RoleGuard],
-        data: { roles: ['employee', 'manager', 'ADMIN'] }
+        data: { roles: ['EMPLOYEE', 'manager', 'ADMIN'] }
     },
     {
         path: 'task/:id',
