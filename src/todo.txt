@@ -1,6 +1,2 @@
-- adding, deleting and editing users in admin mode
-- add passwords to login
-- eddditing tasks
-- deleting tasks
-- editing actions
 - changing actions' order
+- task can can be recurring so after completed it is 
