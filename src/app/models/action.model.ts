@@ -4,16 +4,8 @@ export interface Action {
     description?: string;
     imageUrl?: string;
     url?: string;
-    // order: number;
     isCompleted: boolean;
     completedAt?: Date;
     completedBy?: string;
 }
 
-// export interface ActionCreateRequest {
-//     name: string;
-//     description?: string;
-//     imageUrl?: string;
-//     url?: string;
-//     order: number;
-// }

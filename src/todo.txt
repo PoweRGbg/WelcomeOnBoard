@@ -1,2 +1,3 @@
 - changing actions' order
-- task can can be recurring so after completed it is 
+- task can can be recurring so after completed it can be restarted
+- task progress are saved in users or another database

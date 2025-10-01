@@ -54,8 +54,6 @@ export class EmployeeTasksComponent implements OnInit {
 
     loadTasks(): void {
         this.dataService.getTasks().subscribe(tasks => {
-            console.log('Tasks loaded:', tasks);
-            
             this.tasks = tasks;
         });
     }

@@ -25,7 +25,8 @@ export class BackendMockService {
             lastName: 'User',
             isActive: true,
             createdAt: new Date('2024-01-01'),
-            updatedAt: new Date('2024-01-01')
+            updatedAt: new Date('2024-01-01'),
+            startedTasks: [],
         },
         {
             id: '2',
@@ -37,7 +38,8 @@ export class BackendMockService {
             lastName: 'Manager',
             isActive: true,
             createdAt: new Date('2024-01-02'),
-            updatedAt: new Date('2024-01-02')
+            updatedAt: new Date('2024-01-02'),
+            startedTasks: [],
         },
         {
             id: '3',
@@ -49,7 +51,8 @@ export class BackendMockService {
             lastName: 'Employee',
             isActive: true,
             createdAt: new Date('2024-01-03'),
-            updatedAt: new Date('2024-01-03')
+            updatedAt: new Date('2024-01-03'),
+            startedTasks: [],
         },
         {
             id: '4',
@@ -61,7 +64,8 @@ export class BackendMockService {
             lastName: 'Smith',
             isActive: true,
             createdAt: new Date('2024-01-04'),
-            updatedAt: new Date('2024-01-04')
+            updatedAt: new Date('2024-01-04'),
+            startedTasks: [],
         }
     ];
 
@@ -108,8 +112,6 @@ export class BackendMockService {
             updatedAt: new Date('2024-01-01'),
             isActive: true,
             completionCount: 5,
-            lastCompletedAt: new Date('2024-01-15'),
-            isInProgress: false
         },
         {
             id: '2',
@@ -145,8 +147,6 @@ export class BackendMockService {
             updatedAt: new Date('2024-01-02'),
             isActive: true,
             completionCount: 3,
-            lastCompletedAt: new Date('2024-01-10'),
-            isInProgress: false
         },
         {
             id: '3',
@@ -182,8 +182,6 @@ export class BackendMockService {
             updatedAt: new Date('2024-01-03'),
             isActive: true,
             completionCount: 2,
-            lastCompletedAt: new Date('2024-01-12'),
-            isInProgress: false
         }
     ];
 
@@ -513,7 +511,6 @@ export class BackendMockService {
                     createdAt: new Date(),
                     updatedAt: new Date(),
                     completionCount: 0,
-                    isInProgress: false
                 };
 
                 this.mockTasks.push(newTask);
@@ -666,6 +663,8 @@ export class BackendMockService {
 
     // Task Progress Methods
     getTaskProgress(userId?: string): Observable<TaskProgress[]> {
+        console.log('Getting task progress for userId:', userId);
+        
         return this.simulateNetworkDelay().pipe(
             map(() => {
                 let filteredProgress = [...this.mockTaskProgress];
@@ -675,7 +674,6 @@ export class BackendMockService {
                         progress.userId === userId
                     );
                 }
-
                 return filteredProgress;
             })
         );
@@ -693,7 +691,6 @@ export class BackendMockService {
                 } else {
                     this.mockTaskProgress[progressIndex] = progress;
                 }
-
                 return progress;
             })
         );

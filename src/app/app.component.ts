@@ -76,8 +76,6 @@ export class AppComponent {
                 );
                 break;
         }
-        console.log('Current user:', this.currentUser.firstName, this.currentUser.lastName);
-        console.log('Menu items:', items);
         
         return items;
     }

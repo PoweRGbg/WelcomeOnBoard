@@ -142,27 +142,27 @@ export class ManagerTasksComponent implements OnInit {
     }
 
     duplicateTask(task: Task): void {
-        // const newTask: TaskCreateRequest = {
-        //     name: `${task.name} (Copy)`,
-        //     description: task.description,
-        //     category: task.category,
-        //     url: task.url,
-        //     actions: task.actions
-        // };
+        const newTask: TaskCreateRequest = {
+            name: `${task.name} (Copy)`,
+            description: task.description || '',
+            category: task.category,
+            url: task.url || '',
+            actions: task.actions || [],
+            isActive: task.isActive,
+            createdBy: this.currentUserId || '',
+        };
 
-        // this.dataService.createTask(newTask, this.currentUserId!);
-        // this.loadTasks();
-        // this.snackBar.open('Task duplicated successfully!', 'Close', { duration: 3000 });
+        this.dataService.createTask(newTask);
+        this.loadTasks();
+        this.snackBar.open('Task duplicated successfully!', 'Close', { duration: 3000 });
     }
 
     getTaskStatus(task: Task): string {
-        if (task.isInProgress) return 'In Progress';
         if (task.completionCount > 0) return 'Completed';
         return 'Not Started';
     }
 
     getTaskStatusColor(task: Task): string {
-        if (task.isInProgress) return 'warn';
         if (task.completionCount > 0) return 'primary';
         return 'basic';
     }

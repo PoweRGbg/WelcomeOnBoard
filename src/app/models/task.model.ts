@@ -13,8 +13,6 @@ export interface Task {
     updatedAt: Date;
     isActive: boolean;
     completionCount: number;
-    lastCompletedAt?: Date;
-    isInProgress: boolean;
 }
 
 export interface TaskCreateRequest {
@@ -25,7 +23,6 @@ export interface TaskCreateRequest {
     actions: Action[],    
     createdBy: string,
     isActive: boolean,
-    isInProgress: boolean
 }
 
 export interface TaskSuggestion {

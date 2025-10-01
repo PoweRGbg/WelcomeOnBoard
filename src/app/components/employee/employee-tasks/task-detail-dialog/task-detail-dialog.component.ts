@@ -125,10 +125,13 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     private updateProgress(): void {
+        
         if (!this.currentUserId) return;
-
+        
+        console.log('Updating progress...', this.currentUserId, this.task.id);
         this.dataService.getTaskProgress(this.currentUserId).subscribe(progress => {
             this.progress = progress.find(p => p.taskId === this.task.id) || null;
+            console.log('Updated progress:', this.progress);
         });
     }
 
