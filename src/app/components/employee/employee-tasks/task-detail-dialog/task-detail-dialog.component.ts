@@ -53,15 +53,20 @@ export class TaskDetailDialogComponent implements OnInit {
         if (this.currentUserId && this.task) {
             this.dataService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe( (taskProgress) => {
                 this.progress = taskProgress;
+                console.log('OnInit ', this.progress?.actionsCompleted, this.progress?.isCompleted);
+                
             });
         }
         this.updateCurrentActionIndex();
     }
 
     private updateCurrentActionIndex(): void {
-        this.currentActionIndex = this.progress?.actionsCompleted ?? 0;
+        if (this.progress?.actionsCompleted) {
+            this.currentActionIndex = this.progress.actionsCompleted - 1;
+        } else {
+            this.currentActionIndex = 0;
+        }
         console.log('Current action index set to:', this.currentActionIndex);
-        
     }
 
     getCompletionPercentage(): number {
