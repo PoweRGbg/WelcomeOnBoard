@@ -662,18 +662,21 @@ export class BackendMockService {
     }
 
     // Task Progress Methods
-    getTaskProgress(userId?: string, taskId?: string): Observable<TaskProgress[]> {
+    getTaskProgressByUserId(userId?: string, taskId?: string): Observable<TaskProgress[]> {
         console.log('Getting all task progress for userId:', userId);
         
         return this.simulateNetworkDelay().pipe(
             map(() => {
                 let filteredProgress: TaskProgress[] = [];
-                if (userId) {
+                if (userId && taskId) {
                     filteredProgress = this.mockTaskProgress.filter(progress =>
                         progress.userId === userId && progress.taskId === taskId
                     );
+                } else {
+                    filteredProgress = this.mockTaskProgress.filter(progress =>
+                        progress.userId === userId
+                    );
                 }
-
                 return filteredProgress;
             })
         );
@@ -730,24 +733,25 @@ export class BackendMockService {
                     throw new Error('User not authenticated');
                 }
 
-                const existingProgress = this.mockTaskProgress.find(p =>
-                    p.taskId === taskId && p.userId === currentUser.id
-                );
-
-                if (existingProgress) {
-                    return existingProgress;
+                const existingTask = this.mockTaskProgress.find((progress) => progress.taskId === taskId);
+                if (!existingTask) {
+                    throw new Error('No existing task to restart!');
                 }
 
+                const taskIndex = this.mockTaskProgress.indexOf(existingTask);
+                
                 const newProgress: TaskProgress = {
                     taskId: taskId,
                     userId: currentUser.id,
                     isCompleted: false,
                     startedAt: new Date(),
                     actionsCompleted: 0,
-                    actionsTotal: this.mockTasks.find(task => taskId === taskId)?.actions?.length ?? 0,
+                    actionsTotal: this.mockTasks.find(task => task.id === taskId)?.actions?.length ?? 0,
                 };
 
-                this.mockTaskProgress.push(newProgress);
+                this.mockTaskProgress[taskIndex] = newProgress;
+                console.log('After restart:', newProgress);
+                
                 return newProgress;
             })
         );

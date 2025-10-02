@@ -54,14 +54,13 @@ export class TaskDetailDialogComponent implements OnInit {
             this.dataService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe( (taskProgress) => {
                 this.progress = taskProgress;
                 console.log('OnInit ', this.progress?.actionsCompleted, this.progress?.isCompleted);
-                
             });
         }
         this.updateCurrentActionIndex();
     }
 
     private updateCurrentActionIndex(): void {
-        if (this.progress?.actionsCompleted) {
+        if (this.progress?.actionsCompleted && this.progress.actionsCompleted > 1) {
             this.currentActionIndex = this.progress.actionsCompleted - 1;
         } else {
             this.currentActionIndex = 0;
@@ -75,7 +74,10 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     isActionCompleted(action: Action): boolean {
-        return this.progress ? this.progress.actionsCompleted >= Number(action.id) : false;
+        if (!this.progress?.actionsCompleted) 
+            return false;
+        const actionId = Number(action.id.split('-')[1]);
+        return actionId < this.progress.actionsCompleted;
     }
 
     isActionCurrent(action: Action): boolean {
@@ -83,8 +85,10 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     isActionAvailable(action: Action): boolean {
-        const actionIndex = this.task.actions?.indexOf(action) || 0;
-        return actionIndex <= this.currentActionIndex;
+        if (!this.progress?.actionsCompleted) 
+            return false;
+        const actionId = Number(action.id.split('-')[1]);
+        return actionId === this.progress.actionsCompleted; 
     }
 
     toggleAction(action: Action): void {
@@ -103,7 +107,9 @@ export class TaskDetailDialogComponent implements OnInit {
 
     private completeAction(action: Action): void {
         // complete task progress
-        console.log('Completing');
+
+        console.log('Actions completed: ',
+            this.progress !== null ? this.progress.actionsCompleted : 'null');
         
         // this.dataService.completeAction(this.task.id, action.id);
         
@@ -114,9 +120,9 @@ export class TaskDetailDialogComponent implements OnInit {
         if (this.progress?.isCompleted) {
             this.snackBar.open('Congratulations! Task completed!', 'Close', { duration: 5000 });
         } else {
-            this.snackBar.open('Action completed!', 'Close', { duration: 2000 });
+            this.snackBar.open('Action completed!'+ this.currentActionIndex, 'Close', { duration: 2000 });
         }
-        console.log('Action completed:', action);
+        console.log('Action completed:', action.id);
         console.log('Current index is:', this.currentActionIndex);
     }
 
@@ -130,19 +136,14 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     private updateProgress(): void {
-        console.log('Updating progress!', this.currentUserId, this.progress);
+        console.log('Updating progress!',  this.progress?.actionsCompleted);
         
         if (!this.currentUserId || !this.progress) return;
-        console.log('Complete action in dataService sent');
-        this.dataService.completeAction(this.progress?.taskId, this.progress?.actionsCompleted.toString())
-        .subscribe(
-            (progress) => {
-                this.progress = progress; 
-                console.log('Set progress to:', this.progress);
-                
-                this.updateCurrentActionIndex();
-            }
-        );
+        console.log('Complete action in dataService sent', this.progress.actionsCompleted);
+        this.dataService.updateTaskProgress(this.progress.userId, this.progress.taskId)
+            .subscribe((taskProgress) =>{
+                console.log('TaskProgress got in updateProgress: ', taskProgress);
+            });
     }
 
     openImage(imageUrl: string): void {
