@@ -11,10 +11,8 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { Task, TaskProgress } from '../../../models/task.model';
-import { Action } from '../../../models/action.model';
 import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dialog.component';
 import { BackendMockService } from '../../../services/backend-mock.service';
-import { take } from 'rxjs';
 
 @Component({
     selector: 'app-employee-tasks',
@@ -62,16 +60,12 @@ export class EmployeeTasksComponent implements OnInit {
     loadTaskProgress(): void {
         if (!this.currentUserId) return;
 
-        const progress = this.dataService.getTaskProgressByUserId(this.currentUserId).subscribe(
-            (progress) => {
-                console.log('Got progress for user:', this.currentUserId, progress);
-                
-                this.taskProgress.clear();
-                progress.forEach(p => {
-                    this.taskProgress.set(p.taskId, p);
-                });
-        
+        this.dataService.getTaskProgressByUserId(this.currentUserId).subscribe((progress) => {
+            this.taskProgress.clear();
+            progress.forEach(p => {
+                this.taskProgress.set(p.taskId, p);
             });
+        });
     }
 
     getTaskProgress(task: Task): TaskProgress | null {
@@ -140,10 +134,9 @@ export class EmployeeTasksComponent implements OnInit {
     }
 
     restartTask(task: Task): void {
-        console.log('Restaring task:', task.id);
-        
         this.startTask(task);
         const progress = this.getTaskProgress(task);
+        
         const dialogRef = this.dialog.open(TaskDetailDialogComponent, {
             width: '900px',
             data: { task, progress, currentUserId: this.currentUserId }

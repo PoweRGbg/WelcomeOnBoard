@@ -51,11 +51,8 @@ export class TaskDetailDialogComponent implements OnInit {
 
     ngOnInit(): void {
         if (this.currentUserId && this.task) {
-            console.log('Init for task:', this.task);
-            
             this.dataService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe( (taskProgress) => {
                 this.progress = taskProgress;
-                console.log('OnInit ', this.progress?.actionsCompleted, this.progress?.isCompleted);
                 this.updateCurrentActionIndex();
             });
         }
@@ -66,7 +63,6 @@ export class TaskDetailDialogComponent implements OnInit {
             return;
         }
         this.currentActionIndex = this.progress.actionsCompleted - 1;
-        console.log('Current action index set to:', this.currentActionIndex);
     }
 
     getCompletionPercentage(): number {
@@ -115,9 +111,6 @@ export class TaskDetailDialogComponent implements OnInit {
     private completeAction(action: Action): void {
         // complete task progress
 
-        console.log('Actions completed: ',
-            this.progress !== null ? this.progress.actionsCompleted : 'null');
-        
         // this.dataService.completeAction(this.task.id, action.id);
         
         this.updateProgress();
@@ -127,10 +120,8 @@ export class TaskDetailDialogComponent implements OnInit {
         if (this.progress?.isCompleted) {
             this.snackBar.open('Congratulations! Task completed!', 'Close', { duration: 5000 });
         } else {
-            this.snackBar.open('Action completed!'+ this.currentActionIndex, 'Close', { duration: 2000 });
+            this.snackBar.open('Action completed!', 'Close', { duration: 2000 });
         }
-        console.log('Action completed:', action.id);
-        console.log('Current index is:', this.currentActionIndex);
     }
 
     private uncompleteAction(action: Action): void {
@@ -143,15 +134,9 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     private updateProgress(): void {
-        console.log('Updating progress!',  this.progress?.actionsCompleted);
-        
         if (!this.currentUserId || !this.progress) return;
-        console.log('Complete action in dataService sent', this.progress.actionsCompleted);
         this.dataService.updateTaskProgress(this.progress.userId, this.progress.taskId)
-            .subscribe((taskProgress) =>{
-                this.progress = taskProgress;
-                console.log('TaskProgress got in updateProgress: ', taskProgress);
-            });
+            .subscribe((taskProgress) => this.progress = taskProgress);
     }
 
     openImage(imageUrl: string): void {

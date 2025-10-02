@@ -42,8 +42,6 @@ export class AppComponent {
 
     ngOnInit(): void {
         this.authService.currentUser$.subscribe(user => {
-            console.log('AuthService currentUser$ emitted:', user);
-            
             this.currentUser = user;
             this.isLoggedIn = !!user; // Check if user object exists to set the login status
             this.dashboardMenuItems = this.getRoleBasedMenuItems();
