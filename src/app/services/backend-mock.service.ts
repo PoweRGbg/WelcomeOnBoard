@@ -683,8 +683,6 @@ export class BackendMockService {
     }
 
     getTaskProgressByTaskId(userId?: string, taskId?: string): Observable<TaskProgress | null> {
-        console.log('Getting single task progress for userId:', userId, 'task:', taskId);
-        
         return this.simulateNetworkDelay().pipe(
             map(() => {
                 let filteredProgress: TaskProgress | null = null;
@@ -692,7 +690,20 @@ export class BackendMockService {
                     filteredProgress = this.mockTaskProgress.find(progress =>
                         progress.userId === userId && progress.taskId === taskId
                     ) ?? null;
+                    if (!filteredProgress && taskId){
+                        // Create a brand new progress object for this task
+                        filteredProgress = {
+                            taskId,
+                            userId,
+                            startedAt: new Date(),
+                            actionsCompleted: 0,
+                            actionsTotal: this.mockTasks.find(task => task.id === taskId)?.actions?.length ?? 0,
+                            isCompleted: false,
+                        }
+                        this.mockTaskProgress.push(filteredProgress);
+                    }
                 }
+
 
                 return filteredProgress;
             })
@@ -702,7 +713,7 @@ export class BackendMockService {
     updateTaskProgress(userId: string, taskId: string, uncompleteAction?: boolean): Observable<TaskProgress> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
-                const taskProgress = this.mockTaskProgress.find(p =>
+                let taskProgress = this.mockTaskProgress.find(p =>
                     p.taskId === taskId && p.userId === userId
                 );
                 if (!taskProgress) {
@@ -711,13 +722,13 @@ export class BackendMockService {
                 const taskIndex = this.mockTaskProgress.indexOf(taskProgress);
                 if (taskProgress.actionsCompleted < taskProgress.actionsTotal) {
                     taskProgress.actionsCompleted += 1;
-                    console.log('Actions completed after update', taskProgress.actionsCompleted);
-                } else {
-                    console.log('Tasks completed after update');
+                } 
+
+                if (taskProgress.actionsCompleted === taskProgress.actionsTotal) {
                     taskProgress.isCompleted = true;
-                    taskProgress.actionsCompleted = 0;
                     taskProgress.completedAt = new Date();
                 }
+
                 // update progress in mockTaskProgress
                 this.mockTaskProgress[taskIndex] = taskProgress;
                 return taskProgress;
@@ -775,7 +786,8 @@ export class BackendMockService {
 
                 progress.isCompleted = true;
                 progress.completedAt = new Date();
-
+                console.log('Progress in completeTask:', progress);
+                
                 return progress;
             })
         );

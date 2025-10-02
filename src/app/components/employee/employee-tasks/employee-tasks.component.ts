@@ -118,9 +118,10 @@ export class EmployeeTasksComponent implements OnInit {
             startedAt: new Date(),
         };
 
-        this.dataService.startTask(progress.taskId);
-        this.loadTaskProgress();
-        this.snackBar.open('Task started!', 'Close', { duration: 3000 });
+        this.dataService.startTask(progress.taskId).subscribe(() =>{
+            this.loadTaskProgress();
+            this.snackBar.open('Task started!', 'Close', { duration: 3000 });
+        });
     }
 
     openTaskDetail(task: Task): void {

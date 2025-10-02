@@ -51,20 +51,21 @@ export class TaskDetailDialogComponent implements OnInit {
 
     ngOnInit(): void {
         if (this.currentUserId && this.task) {
+            console.log('Init for task:', this.task);
+            
             this.dataService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe( (taskProgress) => {
                 this.progress = taskProgress;
                 console.log('OnInit ', this.progress?.actionsCompleted, this.progress?.isCompleted);
+                this.updateCurrentActionIndex();
             });
         }
-        this.updateCurrentActionIndex();
     }
 
     private updateCurrentActionIndex(): void {
-        if (this.progress?.actionsCompleted && this.progress.actionsCompleted > 1) {
-            this.currentActionIndex = this.progress.actionsCompleted - 1;
-        } else {
-            this.currentActionIndex = 0;
+        if (!this.progress) {
+            return;
         }
+        this.currentActionIndex = this.progress.actionsCompleted - 1;
         console.log('Current action index set to:', this.currentActionIndex);
     }
 
@@ -74,21 +75,27 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     isActionCompleted(action: Action): boolean {
-        if (!this.progress?.actionsCompleted) 
+        if (!this.progress) 
             return false;
         const actionId = Number(action.id.split('-')[1]);
-        return actionId < this.progress.actionsCompleted;
+        return actionId <= this.progress.actionsCompleted;
     }
 
     isActionCurrent(action: Action): boolean {
-        return this.task.actions?.indexOf(action) === this.currentActionIndex;
+        if (!this.progress) {
+            return false;
+        }
+        const actionIndex = this.task.actions?.indexOf(action) ?? 0;
+        return actionIndex === this.progress.actionsCompleted;
     }
 
     isActionAvailable(action: Action): boolean {
-        if (!this.progress?.actionsCompleted) 
+        if (!this.progress) 
             return false;
+
         const actionId = Number(action.id.split('-')[1]);
-        return actionId === this.progress.actionsCompleted; 
+        
+        return actionId <= (this.progress.actionsCompleted + 1); 
     }
 
     toggleAction(action: Action): void {
@@ -142,6 +149,7 @@ export class TaskDetailDialogComponent implements OnInit {
         console.log('Complete action in dataService sent', this.progress.actionsCompleted);
         this.dataService.updateTaskProgress(this.progress.userId, this.progress.taskId)
             .subscribe((taskProgress) =>{
+                this.progress = taskProgress;
                 console.log('TaskProgress got in updateProgress: ', taskProgress);
             });
     }
