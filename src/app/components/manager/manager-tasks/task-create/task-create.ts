@@ -124,8 +124,9 @@ export class EmployeeSuggestionsComponent implements OnInit {
     loadMySuggestions(): void {
         if (!this.currentUserId) return;
 
-        const allSuggestions = this.backendService.getTaskSuggestions();
-        this.mySuggestions = allSuggestions.filter(s => s.suggestedBy === this.currentUserId);
+        this.backendService.getTaskSuggestions().subscribe((allSuggestions) =>{
+            this.mySuggestions = allSuggestions.data.filter(s => s.suggestedBy === this.currentUserId);
+        });
     }
 
     getStatusColor(status: string): string {
