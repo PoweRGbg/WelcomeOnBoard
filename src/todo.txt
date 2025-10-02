@@ -1,3 +1,4 @@
+- Uncomplete action in task progress
 - changing actions' order
 - task can can be recurring so after completed it can be restarted
-- task progress are saved in users or another database
+- create new collection with TaskProgress
