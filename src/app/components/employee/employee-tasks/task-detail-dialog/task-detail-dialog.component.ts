@@ -38,7 +38,7 @@ export class TaskDetailDialogComponent implements OnInit {
     currentActionIndex: number = 0;
 
     constructor(
-        @Inject(BACKEND_SERVICE) private dataService: IBackendService,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<TaskDetailDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { task: Task; currentUserId: string | null }
@@ -50,7 +50,7 @@ export class TaskDetailDialogComponent implements OnInit {
 
     ngOnInit(): void {
         if (this.currentUserId && this.task) {
-            this.dataService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe( (taskProgress) => {
+            this.backendService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe( (taskProgress) => {
                 this.progress = taskProgress;
                 this.updateCurrentActionIndex();
             });
@@ -110,7 +110,7 @@ export class TaskDetailDialogComponent implements OnInit {
     private completeAction(action: Action): void {
         // complete task progress
 
-        // this.dataService.completeAction(this.task.id, action.id);
+        // this.backendService.completeAction(this.task.id, action.id);
         
         this.updateProgress();
         this.updateCurrentActionIndex();
@@ -126,7 +126,7 @@ export class TaskDetailDialogComponent implements OnInit {
     private uncompleteAction(action: Action): void {
         if (!this.progress || !this.currentUserId) return;
 
-        this.dataService.updateTaskProgress(this.currentUserId, this.task.id);
+        this.backendService.updateTaskProgress(this.currentUserId, this.task.id);
         // this.updateProgress();
         this.updateCurrentActionIndex();
         this.snackBar.open('Action uncompleted', 'Close', { duration: 2000 });
@@ -134,7 +134,7 @@ export class TaskDetailDialogComponent implements OnInit {
 
     private updateProgress(): void {
         if (!this.currentUserId || !this.progress) return;
-        this.dataService.updateTaskProgress(this.progress.userId, this.progress.taskId)
+        this.backendService.updateTaskProgress(this.progress.userId, this.progress.taskId)
             .subscribe((taskProgress) => this.progress = taskProgress);
     }
 

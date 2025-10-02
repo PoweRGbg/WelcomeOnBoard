@@ -1,8 +1,8 @@
 import { Injectable, InjectionToken, Provider } from '@angular/core';
-import { BackendService, LoginResponse } from './backend.service';
+import { BackendService, LoginResponse, PaginatedResponse } from './backend.service';
 import { BackendMockService } from './backend-mock.service';
 import { environment } from '../../environments/environment';
-import { Task, TaskProgress } from '../models/task.model';
+import { Task, TaskProgress, TaskSuggestion } from '../models/task.model';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
 
@@ -43,10 +43,10 @@ export interface IBackendService {
     completeTask(taskId: string): Observable<TaskProgress>;
 
     // Task Suggestions
-    getTaskSuggestions(page?: number, limit?: number, status?: string): any;
-    createTaskSuggestion(suggestion: any): any;
-    updateTaskSuggestion(id: string, suggestionData: any): any;
-    deleteTaskSuggestion(id: string): any;
+    getTaskSuggestions(page?: number, limit?: number, status?: string): Observable<PaginatedResponse<TaskSuggestion>>;
+    createTaskSuggestion(suggestion: any): Observable<TaskSuggestion>;
+    updateTaskSuggestion(id: string, suggestionData: any): Observable<TaskSuggestion>;
+    deleteTaskSuggestion(id: string): Observable<boolean>;
 
     // Utility
     isAuthenticated(): boolean;

@@ -31,7 +31,7 @@ export class LoginComponent {
     userRoles = Object.values(UserRole);
 
     constructor(
-        @Inject(BACKEND_SERVICE) private dataService: IBackendService,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private fb: FormBuilder,
         private authService: AuthService,
         private router: Router
@@ -52,9 +52,9 @@ export class LoginComponent {
                 username: this.loginForm.value.username,
                 password: this.loginForm.value.password,
             }
-            this.dataService.login(loiginRequest).subscribe({
+            this.backendService.login(loiginRequest).subscribe({
                 next: () => {
-                    this.dataService.login(loiginRequest).subscribe((user) => {
+                    this.backendService.login(loiginRequest).subscribe((user) => {
                         this.authService.login(user.user);
                         this.router.navigate(['/dashboard']);
                     });

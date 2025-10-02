@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,14 +8,12 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { TaskSuggestion } from '../../../models/task.model';
 import { TaskCreateRequest } from '../../../models/task.model';
 import { UserInfo } from '../../../models/user.model';
-import { Action } from '../../../models/action.model';
 import { SuggestionReviewDialogComponent } from './suggestion-review-dialog/suggestion-review-dialog.component';
-import { first } from 'rxjs';
+import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-manager-suggestions',
@@ -40,7 +38,7 @@ export class ManagerSuggestionsComponent implements OnInit {
     currentUserId: string | null = null;
 
     constructor(
-        private dataService: DataService,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar
@@ -54,7 +52,7 @@ export class ManagerSuggestionsComponent implements OnInit {
     }
 
     loadSuggestions(): void {
-        this.dataService.getTaskSuggestions().subscribe(suggestions => {
+        this.backendService.getTaskSuggestions().subscribe(suggestions => {
             suggestions.data ? this.suggestions = suggestions.data : console.log("no suggestions.data");
         });
     }
@@ -108,10 +106,10 @@ export class ManagerSuggestionsComponent implements OnInit {
             firstName: '',
             lastName: ''
         }
-        this.dataService.createTask(taskData);
+        this.backendService.createTask(taskData);
 
         // Update suggestion status
-        this.dataService.updateTaskSuggestion(suggestion.id, {
+        this.backendService.updateTaskSuggestion(suggestion.id, {
             status: 'approved',
             reviewedAt: new Date(),
             reviewedBy: this.currentUserId!
@@ -122,7 +120,7 @@ export class ManagerSuggestionsComponent implements OnInit {
     }
 
     rejectSuggestion(suggestion: TaskSuggestion): void {
-        this.dataService.updateTaskSuggestion(suggestion.id, {
+        this.backendService.updateTaskSuggestion(suggestion.id, {
             status: 'rejected',
             reviewedAt: new Date(),
             reviewedBy: this.currentUserId!

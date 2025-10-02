@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -14,11 +14,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
-import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { Task, TaskCreateRequest } from '../../../models/task.model';
 import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
 import { Router } from '@angular/router';
+import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-manager-tasks',
@@ -53,7 +53,7 @@ export class ManagerTasksComponent implements OnInit {
     categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
 
     constructor(
-        private dataService: DataService,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
@@ -72,7 +72,7 @@ export class ManagerTasksComponent implements OnInit {
         const searchQuery = this.searchTerm.trim() || undefined;
         const categoryFilter = this.selectedCategory || undefined;
 
-        this.dataService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
+        this.backendService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
             next: (tasks) => {
                 this.tasks = tasks;
                 this.isLoading = false;
@@ -135,7 +135,7 @@ export class ManagerTasksComponent implements OnInit {
 
     deleteTask(task: Task): void {
         if (confirm(`Are you sure you want to delete task "${task.name}"?`)) {
-            this.dataService.deleteTask(task.id);
+            this.backendService.deleteTask(task.id);
             this.loadTasks();
             this.snackBar.open('Task deleted successfully!', 'Close', { duration: 3000 });
         }
@@ -152,7 +152,7 @@ export class ManagerTasksComponent implements OnInit {
             createdBy: this.currentUserId || '',
         };
 
-        this.dataService.createTask(newTask);
+        this.backendService.createTask(newTask);
         this.loadTasks();
         this.snackBar.open('Task duplicated successfully!', 'Close', { duration: 3000 });
     }

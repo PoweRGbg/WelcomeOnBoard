@@ -34,7 +34,7 @@ export class DashboardComponent implements OnInit {
     };
 
     constructor(
-        @Inject(BACKEND_SERVICE) private dataService: IBackendService,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private authService: AuthService,
         private router: Router
     ) { }
@@ -47,7 +47,7 @@ export class DashboardComponent implements OnInit {
             console.log('Current user in Dashboard:', user);
         });
         
-        this.dataService.getTasks().subscribe(tasks => {
+        this.backendService.getTasks().subscribe(tasks => {
             this.tasks = tasks;
             this.calculateStats();
         });
@@ -55,7 +55,7 @@ export class DashboardComponent implements OnInit {
 
     private calculateStats(): void {
         if (!this.currentUser) return;
-        this.dataService.getTaskProgress(this.currentUser.id).subscribe((userProgress) => {
+        this.backendService.getTaskProgress(this.currentUser.id).subscribe((userProgress) => {
             this.userStats.totalTasks = this.tasks.length;
             this.userStats.completedTasks = userProgress.filter(p => p.isCompleted).length;
             this.userStats.inProgressTasks = userProgress.filter(p => !p.isCompleted && p.actionsCompleted > 0).length;

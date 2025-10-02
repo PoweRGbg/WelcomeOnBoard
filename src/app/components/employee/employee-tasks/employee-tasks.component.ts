@@ -36,7 +36,7 @@ export class EmployeeTasksComponent implements OnInit {
     currentUserId: string | null = null;
 
     constructor(
-        @Inject(BACKEND_SERVICE) private dataService: IBackendService,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar
@@ -51,7 +51,7 @@ export class EmployeeTasksComponent implements OnInit {
     }
 
     loadTasks(): void {
-        this.dataService.getTasks().subscribe(tasks => {
+        this.backendService.getTasks().subscribe(tasks => {
             this.tasks = tasks;
         });
     }
@@ -59,7 +59,7 @@ export class EmployeeTasksComponent implements OnInit {
     loadTaskProgress(): void {
         if (!this.currentUserId) return;
 
-        this.dataService.getTaskProgress(this.currentUserId).subscribe((progress) => {
+        this.backendService.getTaskProgress(this.currentUserId).subscribe((progress) => {
             this.taskProgress.clear();
             progress.forEach(p => {
                 this.taskProgress.set(p.taskId, p);
@@ -111,7 +111,7 @@ export class EmployeeTasksComponent implements OnInit {
             startedAt: new Date(),
         };
 
-        this.dataService.startTask(progress.taskId).subscribe(() =>{
+        this.backendService.startTask(progress.taskId).subscribe(() =>{
             this.loadTaskProgress();
             this.snackBar.open('Task started!', 'Close', { duration: 3000 });
         });

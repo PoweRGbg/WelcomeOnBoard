@@ -633,21 +633,13 @@ export class BackendMockService {
     }
 
     completeAction(taskId: string, actionId: string): Observable<TaskProgress> {
-        console.log('CompleteAction in dataService');
-        
         return this.simulateNetworkDelay().pipe(
             map(() => {
-                console.log('Task in dataService', taskId);
-                
                 const currentUser = this.getCurrentUserFromToken();
-                // find progress
                 const taskProgressIndex = this.mockTaskProgress.findIndex(task =>
                     task.taskId === taskId && task.userId === currentUser?.id
                 );
-
                 let progressToUpdate = this.mockTaskProgress[taskProgressIndex];
-                console.log('Dataservice.completeaction progress to update:', progressToUpdate);
-                
                 progressToUpdate.actionsCompleted +=1;
 
                 if (progressToUpdate.actionsCompleted === progressToUpdate.actionsTotal) {
@@ -655,13 +647,13 @@ export class BackendMockService {
                 }
 
                 this.mockTaskProgress[taskProgressIndex] = progressToUpdate;
-                console.log('task progress after update:', this.mockTaskProgress[taskProgressIndex]);
                 return this.mockTaskProgress[taskProgressIndex];
             })
         );
     }
 
     // Task Progress Methods
+    
     // Get all tasks  
     getTaskProgress(userId?: string): Observable<TaskProgress[]> {
         return this.simulateNetworkDelay().pipe(

@@ -10,10 +10,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { DataService } from '../../../../services/data.service';
 import { Task, TaskCreateRequest } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
 import { UserInfo } from '../../../../models/user.model';
+import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-task-create-dialog',
@@ -40,8 +40,8 @@ export class TaskCreateDialogComponent implements OnInit {
     categories = ['HR', 'IT', 'Finance', 'Operations', 'Training', 'Compliance', 'Other'];
 
     constructor(
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private fb: FormBuilder,
-        private dataService: DataService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<TaskCreateDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { task?: Task; currentUser: UserInfo }
@@ -154,14 +154,13 @@ export class TaskCreateDialogComponent implements OnInit {
                 actions: actions,
                 createdBy: this.data.currentUser.id,
                 isActive: true,
-                isInProgress: false
             };
 
             if (this.isEditMode && this.data.task) {
-                this.dataService.updateTask(this.data.task.id, taskData);
+                this.backendService.updateTask(this.data.task.id, taskData);
                 this.snackBar.open('Task updated successfully!', 'Close', { duration: 3000 });
             } else {
-                this.dataService.createTask(taskData);
+                this.backendService.createTask(taskData);
                 this.snackBar.open('Task created successfully!', 'Close', { duration: 3000 });
             }
 

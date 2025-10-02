@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -9,10 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { DataService } from '../../../../services/data.service';
 import { AuthService } from '../../../../services/auth.service';
 import { TaskSuggestion } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
+import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-employee-suggestions',
@@ -39,8 +39,8 @@ export class EmployeeSuggestionsComponent implements OnInit {
     currentUserId: string | null = null;
 
     constructor(
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private fb: FormBuilder,
-        private dataService: DataService,
         private authService: AuthService,
         private snackBar: MatSnackBar
     ) {
@@ -111,7 +111,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
                 status: 'pending'
             };
 
-            this.dataService.createTaskSuggestion(suggestion);
+            this.backendService.createTaskSuggestion(suggestion);
             this.snackBar.open('Task suggestion submitted successfully!', 'Close', { duration: 3000 });
             this.suggestionForm.reset();
             this.actionsArray.clear();
@@ -124,7 +124,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
     loadMySuggestions(): void {
         if (!this.currentUserId) return;
 
-        const allSuggestions = this.dataService.getTaskSuggestions();
+        const allSuggestions = this.backendService.getTaskSuggestions();
         this.mySuggestions = allSuggestions.filter(s => s.suggestedBy === this.currentUserId);
     }
 
