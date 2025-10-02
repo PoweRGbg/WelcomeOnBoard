@@ -2,8 +2,11 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
@@ -25,12 +28,16 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
         MatProgressBarModule,
         MatTooltipModule,
         MatSnackBarModule,
-        MatDialogModule
+        MatInputModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        ReactiveFormsModule,
     ],
     templateUrl: './employee-tasks.component.html',
     styleUrl: './employee-tasks.component.scss'
 })
 export class EmployeeTasksComponent implements OnInit {
+    searchForm: FormGroup;
     tasks: Task[] = [];
     taskProgress: Map<string, TaskProgress> = new Map();
     currentUserId: string | null = null;
@@ -39,8 +46,11 @@ export class EmployeeTasksComponent implements OnInit {
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private authService: AuthService,
         private dialog: MatDialog,
-        private snackBar: MatSnackBar
-    ) { }
+        private snackBar: MatSnackBar,
+        private fb: FormBuilder,
+    ) {
+        this.searchForm = this.createForm();
+    }
 
     ngOnInit(): void {
         this.authService.currentUser$.subscribe(currentUser => {
@@ -167,5 +177,26 @@ export class EmployeeTasksComponent implements OnInit {
 
     openTaskUrl(url: string): void {
         window.open(url, '_blank');
+    }
+
+    protected onSearch(): void {
+        console.log('On search called');
+        const searchTerm = this.searchForm.value.taskName.toString();
+        console.log('Searching for:', searchTerm);
+        console.log('tasks:', this.tasks);
+        
+        
+        this.tasks = this.tasks.filter((task) => {
+            return task.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
+        });
+        if (this.tasks.length < 1 || searchTerm.length === 0) {
+            this.loadTasks();
+        }
+    }
+
+    private createForm(): FormGroup {
+        return this.fb.group({
+            taskName: ['', [Validators.required, Validators.minLength(3)]],
+        });
     }
 }

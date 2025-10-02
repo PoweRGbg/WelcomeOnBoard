@@ -3,9 +3,47 @@
     <mat-card-header>
       <mat-card-title>My Tasks</mat-card-title>
       <mat-card-subtitle>Complete your assigned tasks</mat-card-subtitle>
-    </mat-card-header>
+      </mat-card-header>
     
     <mat-card-content>
+      <mat-card>
+          <!-- <mat-card-header>
+            <div class="task-header">
+              <div class="task-title">
+                <mat-card-title>Filter tasks:</mat-card-title>
+              </div>
+            </div>
+          </mat-card-header> -->
+        <mat-card-content>
+          
+      <form [formGroup]="searchForm" (onChange)="onSearch()" class="suggestion-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Filter tasks *</mat-label>
+              <input matInput 
+                formControlName="taskName"
+                placeholder="Enter suggested task name"
+                (input)="onSearch()"
+              >
+              <mat-error *ngIf="searchForm.get('taskName')?.hasError('required')">
+                Task name is required
+              </mat-error>
+              <mat-error *ngIf="searchForm.get('taskName')?.hasError('minlength')">
+                Task name must be at least 3 characters
+              </mat-error>
+            </mat-form-field>
+            <!-- <button mat-raised-button 
+              color="primary"
+              type="submit" 
+              [disabled]="!searchForm.valid">
+              <mat-icon>send</mat-icon>
+                Submit Suggestion
+            </button> -->
+          </div>
+        </form>
+    
+        </mat-card-content>
+      </mat-card>
       <div class="tasks-grid">
         <mat-card *ngFor="let task of getSortedTasks()" 
                   class="task-card"
