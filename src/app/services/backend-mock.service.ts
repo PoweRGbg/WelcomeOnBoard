@@ -696,7 +696,7 @@ export class BackendMockService {
         );
     }
 
-    updateTaskProgress(userId: string, taskId: string): Observable<TaskProgress> {
+    updateTaskProgress(userId: string, taskId: string, uncompleteAction?: boolean): Observable<TaskProgress> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
                 const taskProgress = this.mockTaskProgress.find(p =>
@@ -706,9 +706,13 @@ export class BackendMockService {
                     throw new Error('Task progress not found');
                 }
                 const taskIndex = this.mockTaskProgress.indexOf(taskProgress);
-                taskProgress.actionsCompleted += 1;
-                if (taskProgress.actionsCompleted >= taskProgress.actionsTotal || 0) {
+                if (taskProgress.actionsCompleted < taskProgress.actionsTotal) {
+                    taskProgress.actionsCompleted += 1;
+                    console.log('Actions completed after update', taskProgress.actionsCompleted);
+                } else {
+                    console.log('Tasks completed after update');
                     taskProgress.isCompleted = true;
+                    taskProgress.actionsCompleted = 0;
                     taskProgress.completedAt = new Date();
                 }
                 // update progress in mockTaskProgress
