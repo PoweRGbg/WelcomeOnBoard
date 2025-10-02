@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,10 +12,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { BackendMockService } from '../../../services/backend-mock.service';
 import { Task } from '../../../models/task.model';
 import { UserInfo } from '../../../models/user.model';
 import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
+import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-admin-tasks',
@@ -47,9 +47,9 @@ export class AdminTasksComponent implements OnInit {
     categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
 
     constructor(
-        private backendService: BackendMockService,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private dialog: MatDialog,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
     ) { }
 
     ngOnInit(): void {

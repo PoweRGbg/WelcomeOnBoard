@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,8 +10,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { User, UserRole } from '../../../models/user.model';
-import { BackendMockService } from '../../../services/backend-mock.service';
 import { UserDialogComponent } from '../../shared/user-dialog/user-dialog.component';
+import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-admin-users',
@@ -38,7 +38,7 @@ export class AdminUsersComponent implements OnInit {
     currentUser: User | null = null;
 
     constructor(
-        private backendService: BackendMockService,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar
     ) { }

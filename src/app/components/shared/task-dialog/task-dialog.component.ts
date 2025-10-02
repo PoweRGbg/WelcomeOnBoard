@@ -11,10 +11,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { BackendMockService } from '../../../services/backend-mock.service';
 import { Task, TaskCreateRequest } from '../../../models/task.model';
 import { Action } from '../../../models/action.model';
 import { UserInfo } from '../../../models/user.model';
+import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 
 export interface TaskDialogData {
     task?: Task;
@@ -50,10 +50,10 @@ export class TaskDialogComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private backendService: BackendMockService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<TaskDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: TaskDialogData
+        @Inject(MAT_DIALOG_DATA) public data: TaskDialogData,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
     ) {
         this.taskForm = this.createForm();
         this.isEditMode = !!data.task;
@@ -186,7 +186,7 @@ export class TaskDialogComponent implements OnInit {
                 : this.backendService.createTask(taskData);
 
             operation.subscribe({
-                next: (result) => {
+                next: (result: Task) => {
                     this.isLoading = false;
                     this.snackBar.open(
                         `Task ${this.isEditMode ? 'updated' : 'created'} successfully!`,
@@ -195,7 +195,7 @@ export class TaskDialogComponent implements OnInit {
                     );
                     this.dialogRef.close(result);
                 },
-                error: (error) => {
+                error: (error: Error) => {
                     this.isLoading = false;
                     this.snackBar.open(
                         `Error ${this.isEditMode ? 'updating' : 'creating'} task: ${error.message}`,

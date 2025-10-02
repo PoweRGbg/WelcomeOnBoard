@@ -10,8 +10,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BackendMockService } from '../../../services/backend-mock.service';
 import { User, UserRole } from '../../../models/user.model';
+import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 
 export interface UserDialogData {
     user?: User;
@@ -51,10 +51,10 @@ export class UserDialogComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private backendService: BackendMockService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<UserDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: UserDialogData
+        @Inject(MAT_DIALOG_DATA) public data: UserDialogData,
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
     ) {
         this.userForm = this.createForm();
         this.isEditMode = !!data.user;

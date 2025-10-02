@@ -1,29 +1,32 @@
 import { Injectable, InjectionToken, Provider } from '@angular/core';
-import { BackendService } from './backend.service';
+import { BackendService, LoginResponse } from './backend.service';
 import { BackendMockService } from './backend-mock.service';
 import { environment } from '../../environments/environment';
+import { Task, TaskProgress } from '../models/task.model';
+import { Observable } from 'rxjs';
+import { User } from '../models/user.model';
 
 // Define a common interface for both services
 export interface IBackendService {
     // Authentication
-    login(credentials: any): any;
+    login(credentials: any): Observable<LoginResponse>;
     logout(): void;
     refreshToken(): any;
     getCurrentUser(): any;
 
     // User Management
-    getUsers(page?: number, limit?: number, search?: string): any;
-    getUserById(id: string): any;
-    createUser(userData: any): any;
-    updateUser(id: string, userData: any): any;
-    deleteUser(id: string): any;
+    getUsers(page?: number, limit?: number, search?: string): Observable<User[]>;
+    getUserById(id: string): Observable<User>;
+    createUser(userData: any): Observable<User>;
+    updateUser(id: string, userData: any): Observable<User>;
+    deleteUser(id: string): Observable<boolean>;
 
     // Task Management
-    getTasks(page?: number, limit?: number, category?: string, search?: string): any;
-    getTaskById(id: string): any;
-    createTask(taskData: any): any;
-    updateTask(id: string, taskData: any): any;
-    deleteTask(id: string): any;
+    getTasks(page?: number, limit?: number, category?: string, search?: string): Observable<Task[]>;
+    getTaskById(id: string): Observable<Task>;
+    createTask(taskData: any): Observable<Task>;
+    updateTask(id: string, taskData: any): Observable<Task>;
+    deleteTask(id: string): Observable<boolean>;
 
     // Action Management
     getActionsByTaskId(taskId: string): any;
@@ -33,10 +36,11 @@ export interface IBackendService {
     completeAction(taskId: string, actionId: string): any;
 
     // Task Progress
-    getTaskProgress(userId?: string): any;
-    updateTaskProgress(progress: any): any;
-    startTask(taskId: string): any;
-    completeTask(taskId: string): any;
+    getTaskProgress(userId?: string): Observable<TaskProgress[]>;
+    getTaskProgressByTaskId(userId?: string, taskId?: any): Observable<TaskProgress | null>;
+    updateTaskProgress(userId: any, taskId: any, uncompleteAction?: boolean): Observable<TaskProgress>;
+    startTask(taskId: string): Observable<TaskProgress>;
+    completeTask(taskId: string): Observable<TaskProgress>;
 
     // Task Suggestions
     getTaskSuggestions(page?: number, limit?: number, status?: string): any;
@@ -60,6 +64,8 @@ export function backendServiceFactory(
     backendService: BackendService,
     backendMockService: BackendMockService
 ): IBackendService {
+    console.log('USING SOMETHING', environment.useMockBackend);
+    
     return environment.useMockBackend ? backendMockService : backendService;
 }
 

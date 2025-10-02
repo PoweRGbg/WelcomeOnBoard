@@ -282,13 +282,33 @@ export class BackendService {
     }
 
     // Task Progress Methods
-    getTaskProgress(userId?: string): Observable<TaskProgress[]> {
+    getTaskProgress(userId?: string, taskId?: string): Observable<TaskProgress[]> {
         let params = new HttpParams();
         if (userId) {
             params = params.set('userId', userId);
+            if (taskId) {
+                params = params.set('taskId', taskId);
+            }
         }
 
         return this.http.get<TaskProgress[]>(`${this.baseUrl}/task-progress`, {
+            headers: this.headers,
+            params
+        }).pipe(
+            map(response => response),
+            catchError(this.handleError)
+        );
+    }
+    getTaskProgressByTaskId(userId?: string, taskId?: string): Observable<TaskProgress> {
+        let params = new HttpParams();
+        if (userId) {
+            params = params.set('userId', userId);
+            if (taskId) {
+                params = params.set('taskId', taskId);
+            }
+        }
+
+        return this.http.get<TaskProgress>(`${this.baseUrl}/task-progress`, {
             headers: this.headers,
             params
         }).pipe(

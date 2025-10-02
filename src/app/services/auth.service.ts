@@ -1,8 +1,7 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { Inject, Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { User, UserRole } from '../models/user.model';
-import { BackendService } from './backend.service';
-import { BackendMockService } from './backend-mock.service';
+import { BACKEND_SERVICE, IBackendService } from './backend-service.factory';
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +10,9 @@ export class AuthService {
     private currentUserSubject = new BehaviorSubject<User | null>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
 
-    constructor(private backendService: BackendMockService) {
+    constructor(
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
+    ) {
         this.checkAuthStatus();
     }
 

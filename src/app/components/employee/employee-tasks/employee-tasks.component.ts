@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,11 +8,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { DataService } from '../../../services/data.service';
 import { AuthService } from '../../../services/auth.service';
 import { Task, TaskProgress } from '../../../models/task.model';
 import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dialog.component';
-import { BackendMockService } from '../../../services/backend-mock.service';
+import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-employee-tasks',
@@ -37,7 +36,7 @@ export class EmployeeTasksComponent implements OnInit {
     currentUserId: string | null = null;
 
     constructor(
-        private dataService: BackendMockService,
+        @Inject(BACKEND_SERVICE) private dataService: IBackendService,
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar
@@ -60,7 +59,7 @@ export class EmployeeTasksComponent implements OnInit {
     loadTaskProgress(): void {
         if (!this.currentUserId) return;
 
-        this.dataService.getTaskProgressByUserId(this.currentUserId).subscribe((progress) => {
+        this.dataService.getTaskProgress(this.currentUserId).subscribe((progress) => {
             this.taskProgress.clear();
             progress.forEach(p => {
                 this.taskProgress.set(p.taskId, p);

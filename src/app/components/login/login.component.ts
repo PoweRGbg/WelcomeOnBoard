@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,10 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../services/auth.service';
-import { DataService } from '../../services/data.service';
 import { UserRole } from '../../models/user.model';
-import { BackendService, LoginResponse } from '../../services/backend.service';
-import { BackendMockService } from '../../services/backend-mock.service';
+import { BACKEND_SERVICE, IBackendService } from '../../services/backend-service.factory';
 
 @Component({
     selector: 'app-login',
@@ -33,9 +31,9 @@ export class LoginComponent {
     userRoles = Object.values(UserRole);
 
     constructor(
+        @Inject(BACKEND_SERVICE) private dataService: IBackendService,
         private fb: FormBuilder,
         private authService: AuthService,
-        private dataService: BackendMockService,
         private router: Router
     ) {
         const currentUser = this.authService.getCurrentUser();
@@ -57,12 +55,11 @@ export class LoginComponent {
             this.dataService.login(loiginRequest).subscribe({
                 next: () => {
                     this.dataService.login(loiginRequest).subscribe((user) => {
-                        console.log('Login successful', user.user);
                         this.authService.login(user.user);
                         this.router.navigate(['/dashboard']);
                     });
                 },
-                error: (err) => {
+                error: (err: Error) => {
                     alert('Login failed: ' + err.message);
                 }
             });

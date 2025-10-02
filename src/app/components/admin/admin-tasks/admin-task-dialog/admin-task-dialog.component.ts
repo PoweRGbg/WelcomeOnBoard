@@ -11,10 +11,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { BackendMockService } from '../../../../services/backend-mock.service';
 import { Task, TaskCreateRequest } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
 import { UserInfo } from '../../../../models/user.model';
+import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-admin-task-dialog',
@@ -43,8 +43,8 @@ export class AdminTaskDialogComponent implements OnInit {
     isLoading = false;
 
     constructor(
+        @Inject(BACKEND_SERVICE) private backendService: IBackendService,        
         private fb: FormBuilder,
-        private backendService: BackendMockService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<AdminTaskDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { task?: Task; currentUser: UserInfo }
@@ -78,7 +78,6 @@ export class AdminTaskDialogComponent implements OnInit {
             category: task.category,
             url: task.url,
             isActive: task.isActive,
-            isInProgress: task.isInProgress
         });
 
         // Clear existing actions
@@ -162,7 +161,6 @@ export class AdminTaskDialogComponent implements OnInit {
                 actions: actions,
                 createdBy: this.data.currentUser.id,
                 isActive: formValue.isActive,
-                isInProgress: formValue.isInProgress
             };
 
             const operation = this.isEditMode && this.data.task

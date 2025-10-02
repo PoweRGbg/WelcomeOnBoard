@@ -2,3 +2,4 @@
 - changing actions' order
 - task can can be recurring so after completed it can be restarted
 - create new collection with TaskProgress
+- filter tasks by search bar

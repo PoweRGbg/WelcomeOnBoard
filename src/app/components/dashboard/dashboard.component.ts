@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -6,10 +6,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { AuthService } from '../../services/auth.service';
-import { DataService } from '../../services/data.service';
 import { User, UserRole } from '../../models/user.model';
 import { Task } from '../../models/task.model';
-import { BackendMockService } from '../../services/backend-mock.service';
+import { BACKEND_SERVICE, IBackendService } from '../../services/backend-service.factory';
 
 @Component({
     selector: 'app-dashboard',
@@ -35,8 +34,8 @@ export class DashboardComponent implements OnInit {
     };
 
     constructor(
+        @Inject(BACKEND_SERVICE) private dataService: IBackendService,
         private authService: AuthService,
-        private dataService: BackendMockService,
         private router: Router
     ) { }
 
@@ -56,7 +55,7 @@ export class DashboardComponent implements OnInit {
 
     private calculateStats(): void {
         if (!this.currentUser) return;
-        this.dataService.getTaskProgressByUserId(this.currentUser.id).subscribe(userProgress => {
+        this.dataService.getTaskProgress(this.currentUser.id).subscribe((userProgress) => {
             this.userStats.totalTasks = this.tasks.length;
             this.userStats.completedTasks = userProgress.filter(p => p.isCompleted).length;
             this.userStats.inProgressTasks = userProgress.filter(p => !p.isCompleted && p.actionsCompleted > 0).length;

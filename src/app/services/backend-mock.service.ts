@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, of, throwError, delay } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { User, UserRole, UserToken } from '../models/user.model';
+import { Observable, BehaviorSubject, of, delay } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { User, UserRole } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { Action } from '../models/action.model';
 import { LoginRequest, LoginResponse, PaginatedResponse } from './backend.service';
@@ -662,17 +662,13 @@ export class BackendMockService {
     }
 
     // Task Progress Methods
-    // Get all tasks
-    getTaskProgressByUserId(userId?: string, taskId?: string): Observable<TaskProgress[]> {
+    // Get all tasks  
+    getTaskProgress(userId?: string): Observable<TaskProgress[]> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
                 let filteredProgress: TaskProgress[] = [];
-                if (userId && taskId) {
-                    filteredProgress = this.mockTaskProgress.filter(progress =>
-                        progress.userId === userId && progress.taskId === taskId
-                    );
-                } else {
-                    filteredProgress = this.mockTaskProgress.filter(progress =>
+                if (userId) {
+                    filteredProgress = this.mockTaskProgress.filter((progress) =>
                         progress.userId === userId
                     );
                 }

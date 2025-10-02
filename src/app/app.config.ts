@@ -7,6 +7,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { routes } from './app.routes';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
+import { BACKEND_SERVICE, BACKEND_SERVICE_PROVIDER } from './services/backend-service.factory';
+import { BackendService } from './services/backend.service';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -22,6 +24,7 @@ export const appConfig: ApplicationConfig = {
             provide: HTTP_INTERCEPTORS,
             useClass: ErrorInterceptor,
             multi: true
-        }
+        },
+        BACKEND_SERVICE_PROVIDER,
     ]
 };

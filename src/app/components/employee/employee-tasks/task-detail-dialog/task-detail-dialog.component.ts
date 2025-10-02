@@ -9,10 +9,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { DataService } from '../../../../services/data.service';
 import { Task, TaskProgress } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
-import { BackendMockService } from '../../../../services/backend-mock.service';
+import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-service.factory';
 
 @Component({
     selector: 'app-task-detail-dialog',
@@ -39,7 +38,7 @@ export class TaskDetailDialogComponent implements OnInit {
     currentActionIndex: number = 0;
 
     constructor(
-        private dataService: BackendMockService,
+        @Inject(BACKEND_SERVICE) private dataService: IBackendService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<TaskDetailDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { task: Task; currentUserId: string | null }
