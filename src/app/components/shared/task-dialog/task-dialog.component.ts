@@ -121,7 +121,6 @@ export class TaskDialogComponent implements OnInit {
             description: [existingAction?.description || ''],
             imageUrl: [existingAction?.imageUrl || ''],
             url: [existingAction?.url || ''],
-            order: [this.actionsArray.length + 1]
         });
 
         this.actionsArray.push(actionForm);

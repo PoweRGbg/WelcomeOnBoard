@@ -149,7 +149,7 @@ export class AdminTaskDialogComponent implements OnInit {
                 name: action.name,
                 description: action.description,
                 imageUrl: action.imageUrl,
-                url: action.url,
+                url: action.url.length ? action.url : undefined,
                 order: action.order
             }));
 
@@ -157,7 +157,7 @@ export class AdminTaskDialogComponent implements OnInit {
                 name: formValue.name,
                 description: formValue.description,
                 category: formValue.category,
-                url: formValue.url,
+                url: formValue.url.strip().length ? formValue.url : undefined,
                 actions: actions,
                 createdBy: this.data.currentUser.id,
                 isActive: formValue.isActive,

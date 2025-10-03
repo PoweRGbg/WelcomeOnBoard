@@ -19,7 +19,7 @@ export interface TaskCreateRequest {
     name: string,
     description: string,
     category: string,
-    url: string,
+    url?: string,
     actions: Action[],    
     createdBy: string,
     isActive: boolean,

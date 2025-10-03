@@ -217,6 +217,20 @@ export class BackendService {
     }
 
     createTask(taskData: TaskCreateRequest): Observable<Task> {
+        console.log('Trying to create task with:', taskData);
+        if (!taskData.url?.length) {
+            console.log('URL is empty! Deleting');
+            taskData.url = undefined;
+        }
+
+        taskData.actions.forEach((action) => {
+            if (!action.imageUrl)
+                action.imageUrl = undefined;
+            if (!action.url)
+                action.url = undefined;
+            // delete action['order'];
+        });
+        
         return this.http.post<Task>(`${this.baseUrl}/tasks`, taskData, { headers: this.headers })
             .pipe(
                 map(response => response),

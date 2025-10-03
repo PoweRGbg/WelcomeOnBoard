@@ -138,19 +138,20 @@ export class TaskCreateDialogComponent implements OnInit {
         if (this.taskForm.valid) {
             const formValue = this.taskForm.value;
 
-            const actions: Action[] = formValue.actions.map((action: any) => ({
+            const actions: Action[] = formValue.actions.map((action: Action) => ({
                 name: action.name,
                 description: action.description,
                 imageUrl: action.imageUrl,
-                url: action.url,
-                order: action.order
-            }));
+                url: action.url?.length ? action.url : undefined,
+            }))
+            console.log('Actions on submit', actions);
+            
 
             const taskData: TaskCreateRequest = {
                 name: formValue.name,
                 description: formValue.description,
                 category: formValue.category,
-                url: formValue.url,
+                url: formValue.url.length ? formValue.url : undefined,
                 actions: actions,
                 createdBy: this.data.currentUser.id,
                 isActive: true,
