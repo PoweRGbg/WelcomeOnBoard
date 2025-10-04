@@ -1,5 +1,5 @@
 export const environment = {
-    production: true,
-    useMockBackend: false, // Set to false for production
-    apiUrl: 'https://your-production-api.com'
+    production: false,
+    useMockBackend: false, // Set to true for local testing without API
+    apiUrl: 'http://protocols.nightscout.bg/api'
 };
