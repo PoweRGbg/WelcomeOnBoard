@@ -29,7 +29,8 @@ export interface PaginatedResponse<T> {
     providedIn: 'root'
 })
 export class BackendService {
-    private baseUrl = 'http://localhost:3030'; // Update this to your actual backend URL
+    // private baseUrl = 'http://localhost:3030'; // Use this with local database
+    private baseUrl = 'https://protocols.nightscout.bg/api'; // Update this to your actual backend URL
     private tokenSubject = new BehaviorSubject<string | null>(null);
     public token$ = this.tokenSubject.asObservable();
 
