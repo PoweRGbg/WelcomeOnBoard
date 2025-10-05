@@ -697,15 +697,9 @@ export class BackendMockService {
         );
     }
 
-    updateTaskProgress(userId: string, taskId: string, uncompleteAction?: boolean): Observable<TaskProgress> {
+    updateTaskProgress(taskProgress: TaskProgress, uncompleteAction?: boolean): Observable<TaskProgress> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
-                let taskProgress = this.mockTaskProgress.find(p =>
-                    p.taskId === taskId && p.userId === userId
-                );
-                if (!taskProgress) {
-                    throw new Error('Task progress not found');
-                }
                 const taskIndex = this.mockTaskProgress.indexOf(taskProgress);
                 if (taskProgress.actionsCompleted < taskProgress.actionsTotal) {
                     taskProgress.actionsCompleted += 1;

@@ -38,7 +38,7 @@ export interface IBackendService {
     // Task Progress
     getTaskProgress(userId?: string): Observable<TaskProgress[]>;
     getTaskProgressByTaskId(userId?: string, taskId?: any): Observable<TaskProgress | null>;
-    updateTaskProgress(userId: any, taskId: any, uncompleteAction?: boolean): Observable<TaskProgress>;
+    updateTaskProgress(progress: TaskProgress, uncompleteAction?: boolean): Observable<TaskProgress>;
     startTask(taskId: string): Observable<TaskProgress>;
     completeTask(taskId: string): Observable<TaskProgress>;
 

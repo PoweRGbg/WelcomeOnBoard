@@ -57,7 +57,9 @@ export class TaskDetailDialogComponent implements OnInit {
                 }
                 console.log('Task on init:', this.task);
                 
-                if (!!taskProgress || Array.isArray(taskProgress)) {
+                if (!taskProgress || Array.isArray(taskProgress)) {
+                    console.log("No task progress or It is array", !taskProgress, taskProgress);
+                    
                     this.progress = {
                         taskId: this.task.id,
                         userId: this.currentUserId,
@@ -72,8 +74,6 @@ export class TaskDetailDialogComponent implements OnInit {
                     this.progress = taskProgress;
                 }
                 this.updateCurrentActionIndex();
-                console.log('TaskProgress is Array on init!', this.currentUserId, this.task.id);
-                
             });
         }
     }
@@ -120,11 +120,13 @@ export class TaskDetailDialogComponent implements OnInit {
         if (!this.currentUserId || !this.isActionAvailable(action)) return;
 
         const isCompleted = this.isActionCompleted(action);
-
+        
         if (isCompleted) {
+            console.log('Completing action');
             // Uncomplete action
             this.uncompleteAction(action);
         } else {
+            console.log('Un-completing action', action);
             // Complete action
             this.completeAction(action);
         }
@@ -132,9 +134,6 @@ export class TaskDetailDialogComponent implements OnInit {
 
     private completeAction(action: Action): void {
         // complete task progress
-
-        // this.backendService.completeAction(this.task.id, action.id);
-        
         this.updateProgress();
         this.updateCurrentActionIndex();
         
@@ -149,17 +148,17 @@ export class TaskDetailDialogComponent implements OnInit {
     private uncompleteAction(action: Action): void {
         if (!this.progress || !this.currentUserId) return;
 
-        this.backendService.updateTaskProgress(this.currentUserId, this.task.id);
+        this.backendService.updateTaskProgress(this.progress, true);
         // this.updateProgress();
         this.updateCurrentActionIndex();
         this.snackBar.open('Action uncompleted', 'Close', { duration: 2000 });
     }
 
     private updateProgress(): void {
-        console.log('Updating ', this.progress, this.currentUserId);
+        console.log('Updating in updateProgress ', this.progress, this.currentUserId);
         if (!this.currentUserId || !this.progress) return;
         
-        this.backendService.updateTaskProgress(this.progress.userId, this.progress.taskId)
+        this.backendService.updateTaskProgress(this.progress)
             .subscribe((taskProgress) => this.progress = taskProgress);
     }
 

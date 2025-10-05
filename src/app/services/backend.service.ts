@@ -120,7 +120,6 @@ export class BackendService {
         }
         // decode token to get user info
         const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('Decoded token payload:', payload);
         
         const loggedUser: UserToken = {
             id: payload.sub,
@@ -211,7 +210,7 @@ export class BackendService {
     }
 
     getTaskById(id: string): Observable<Task> {
-        return this.http.get<Task>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
+        return this.http.get<Task>(`${this.baseUrl}/tasks?id=${id}`, { headers: this.headers })
             .pipe(
                 map(response => response),
                 catchError(this.handleError)
@@ -224,14 +223,6 @@ export class BackendService {
             console.log('URL is empty! Deleting');
             taskData.url = undefined;
         }
-
-        taskData.actions.forEach((action) => {
-            if (!action.imageUrl)
-                action.imageUrl = undefined;
-            if (!action.url)
-                action.url = undefined;
-            // delete action['order'];
-        });
         
         return this.http.post<Task>(`${this.baseUrl}/tasks`, taskData, { headers: this.headers })
             .pipe(
@@ -240,12 +231,22 @@ export class BackendService {
             );
     }
 
-    updateTask(id: string, taskData: Partial<Task> | TaskCreateRequest): Observable<Task> {
-        return this.http.put<Task>(`${this.baseUrl}/tasks/${id}`, taskData, { headers: this.headers })
+    updateTask(id: string, taskData: Task): Observable<Task> {
+        if (taskData.actions) {
+            taskData.actions.forEach((action) => {
+                if (!action.imageUrl)
+                    action.imageUrl = undefined;
+                if (!action.url)
+                    action.url = undefined;
+            });
+        }
+        return this.http.post<Task>(`${this.baseUrl}/tasks?id=${id}`,
+            taskData, { headers: this.headers })
             .pipe(
                 map(response => response),
                 catchError(this.handleError)
             );
+        
     }
 
     deleteTask(id: string): Observable<boolean> {
@@ -298,13 +299,10 @@ export class BackendService {
     }
 
     // Task Progress Methods
-    getTaskProgress(userId?: string, taskId?: string): Observable<TaskProgress[]> {
+    getTaskProgress(userId?: string): Observable<TaskProgress[]> {
         let params = new HttpParams();
         if (userId) {
             params = params.set('userId', userId);
-            if (taskId) {
-                params = params.set('taskId', taskId);
-            }
         }
 
         return this.http.get<TaskProgress[]>(`${this.baseUrl}/task-progress`, {
@@ -315,32 +313,27 @@ export class BackendService {
             catchError(this.handleError)
         );
     }
-    getTaskProgressByTaskId(userId?: string, taskId?: string): Observable<TaskProgress> {
+    getTaskProgressByTaskId(taskId?: string): Observable<TaskProgress> {
         let params = new HttpParams();
-        if (userId) {
-            params = params.set('userId', userId);
-            if (taskId) {
-                console.log('getTaskProgressByTaskId Setting taskId', taskId);
-                
-                params = params.set('id', taskId);
-            }
+        if (!taskId) {
+            throw new Error('Cannot get progress when no actionId is provided in getTaskProgressById()')
         }
 
-        return this.http.get<TaskProgress>(`${this.baseUrl}/task-progress`, {
+        return this.http.get<TaskProgress>(`${this.baseUrl}/task-progress/task/${taskId}`, {
             headers: this.headers,
             params
         }).pipe(
-            map(response => response),
             catchError(this.handleError)
         );
     }
 
-    updateTaskProgress(progress: TaskProgress): Observable<TaskProgress> {
-        console.log('Updating task progress for ', progress.userId, progress.taskId);
+    updateTaskProgress(progress: TaskProgress, uncompleteAction?: boolean): Observable<TaskProgress> {
+        let params = new HttpParams();
+        params = params.set('id', progress.taskId);
         
-        return this.http.put<TaskProgress>(`${this.baseUrl}/task-progress`, progress, { headers: this.headers })
+        return this.http.patch<TaskProgress>(`${this.baseUrl}/task-progress/${progress.taskId}`,
+            progress, { headers: this.headers })
             .pipe(
-                map(response => response),
                 catchError(this.handleError)
             );
     }
