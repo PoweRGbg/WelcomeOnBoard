@@ -5,6 +5,7 @@ import { map, catchError, tap } from 'rxjs/operators';
 import { User, UserToken } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { Action } from '../models/action.model';
+import { environment } from '../../environments/environment';
 
 export interface LoginRequest {
     username: string;
@@ -30,7 +31,7 @@ export interface PaginatedResponse<T> {
 })
 export class BackendService {
     // private baseUrl = 'http://localhost:3030'; // Use this with local database
-    private baseUrl = 'https://protocols.nightscout.bg/api'; // Update this to your actual backend URL
+    private baseUrl = environment.production ? environment.apiUrl : environment.apiUrlLocal;  // Update this to your actual backend URL
     private tokenSubject = new BehaviorSubject<string | null>(null);
     public token$ = this.tokenSubject.asObservable();
 
@@ -319,7 +320,9 @@ export class BackendService {
         if (userId) {
             params = params.set('userId', userId);
             if (taskId) {
-                params = params.set('taskId', taskId);
+                console.log('getTaskProgressByTaskId Setting taskId', taskId);
+                
+                params = params.set('id', taskId);
             }
         }
 
@@ -333,6 +336,8 @@ export class BackendService {
     }
 
     updateTaskProgress(progress: TaskProgress): Observable<TaskProgress> {
+        console.log('Updating task progress for ', progress.userId, progress.taskId);
+        
         return this.http.put<TaskProgress>(`${this.baseUrl}/task-progress`, progress, { headers: this.headers })
             .pipe(
                 map(response => response),

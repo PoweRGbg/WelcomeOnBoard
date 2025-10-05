@@ -63,6 +63,7 @@ export class EmployeeTasksComponent implements OnInit {
     loadTasks(): void {
         this.backendService.getTasks().subscribe(tasks => {
             this.tasks = tasks;
+            console.log('Tasks got it backend getTasks():', tasks);
         });
     }
 
@@ -128,6 +129,8 @@ export class EmployeeTasksComponent implements OnInit {
     }
 
     openTaskDetail(task: Task): void {
+        console.log('Open task detail for task', task);
+        
         const progress = this.getTaskProgress(task);
         const dialogRef = this.dialog.open(TaskDetailDialogComponent, {
             width: '900px',

@@ -41,18 +41,39 @@ export class TaskDetailDialogComponent implements OnInit {
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<TaskDetailDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { task: Task; currentUserId: string | null }
+        @Inject(MAT_DIALOG_DATA) public data: { task: Task; currentUserId: string | null; progress: TaskProgress }
     ) {
         this.task = data.task;
-        this.progress = null; 
         this.currentUserId = data.currentUserId;
+        this.progress = data.progress;
     }
 
     ngOnInit(): void {
         if (this.currentUserId && this.task) {
-            this.backendService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe( (taskProgress) => {
-                this.progress = taskProgress;
+            this.backendService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe((taskProgress) => {
+                // TODO if no current progress initiate
+                if (!this.currentUserId || !this.task) {
+                    throw new Error('No user or task provided!');
+                }
+                console.log('Task on init:', this.task);
+                
+                if (!!taskProgress || Array.isArray(taskProgress)) {
+                    this.progress = {
+                        taskId: this.task.id,
+                        userId: this.currentUserId,
+                        actionsCompleted: 0,
+                        actionsTotal: this.task.actions?.length ?? 0,
+                        startedAt: new Date(),
+                        isCompleted: false,
+                    }
+                    console.log('Created new task progress');
+                    
+                } else {
+                    this.progress = taskProgress;
+                }
                 this.updateCurrentActionIndex();
+                console.log('TaskProgress is Array on init!', this.currentUserId, this.task.id);
+                
             });
         }
     }
@@ -61,7 +82,9 @@ export class TaskDetailDialogComponent implements OnInit {
         if (!this.progress) {
             return;
         }
-        this.currentActionIndex = this.progress.actionsCompleted - 1;
+        this.currentActionIndex = this.progress.actionsCompleted - 1 <= 0 ? 0 : this.progress.actionsCompleted - 1;
+        console.log('set current action index to', this.currentActionIndex);
+        
     }
 
     getCompletionPercentage(): number {
@@ -70,10 +93,11 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     isActionCompleted(action: Action): boolean {
-        if (!this.progress) 
+        if (!this.progress || !this.task.isActive)
             return false;
-        const actionId = Number(action.id.split('-')[1]);
-        return actionId <= this.progress.actionsCompleted;
+        const actionIndex = this.task.actions?.indexOf(action) ?? 0;
+
+        return actionIndex === this.progress.actionsCompleted + 1;
     }
 
     isActionCurrent(action: Action): boolean {
@@ -85,11 +109,10 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     isActionAvailable(action: Action): boolean {
-        if (!this.progress) 
+        if (!this.progress || !this.task.isActive) 
             return false;
+        const actionId = this.task.actions?.findIndex( (actionInTask) => actionInTask.id === action.id) ?? 0;
 
-        const actionId = Number(action.id.split('-')[1]);
-        
         return actionId <= (this.progress.actionsCompleted + 1); 
     }
 
@@ -133,7 +156,9 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     private updateProgress(): void {
+        console.log('Updating ', this.progress, this.currentUserId);
         if (!this.currentUserId || !this.progress) return;
+        
         this.backendService.updateTaskProgress(this.progress.userId, this.progress.taskId)
             .subscribe((taskProgress) => this.progress = taskProgress);
     }
