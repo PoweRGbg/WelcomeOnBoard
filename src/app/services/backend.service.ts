@@ -219,11 +219,9 @@ export class BackendService {
 
     createTask(taskData: TaskCreateRequest): Observable<Task> {
         console.log('Trying to create task with:', taskData);
-        if (!taskData.url?.length) {
-            console.log('URL is empty! Deleting');
-            taskData.url = undefined;
-        }
-        
+        // removing unused URL properties from task and actions
+        taskData = this.stripUnusedTaskData(taskData);
+
         return this.http.post<Task>(`${this.baseUrl}/tasks`, taskData, { headers: this.headers })
             .pipe(
                 map(response => response),
@@ -250,6 +248,7 @@ export class BackendService {
     }
 
     deleteTask(id: string): Observable<boolean> {
+        // TODO Update the service in BE to use .findOne({ id:333 }).remove().exec();
         return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
             .pipe(
                 map(response => response.deleted),
@@ -259,11 +258,6 @@ export class BackendService {
 
     // Task Progress Methods
     getTaskProgressByUserId(userId?: string): Observable<TaskProgress[]> {
-        // let params = new HttpParams();
-        // if (userId) {
-        //     params = params.set('userId', userId);
-        // }
-
         return this.http.get<TaskProgress[]>(`${this.baseUrl}/task-progress/${userId}`, {
             headers: this.headers,
             // params
@@ -385,6 +379,21 @@ export class BackendService {
                 map(response => response),
                 catchError(this.handleError)
             );
+    }
+
+    private stripUnusedTaskData(taskData: TaskCreateRequest): TaskCreateRequest {
+        if (!taskData.url?.length) {
+            console.log('URL is empty! Deleting');
+            taskData.url = undefined;
+        }
+
+        // As of now we do not need imageURLs in actions as they are not implemented in BE
+        taskData.actions.forEach((action) =>{
+            action.url = action.url?.length ? action.url : undefined;
+            action.imageUrl = undefined;
+        });
+
+        return taskData;
     }
 }
 

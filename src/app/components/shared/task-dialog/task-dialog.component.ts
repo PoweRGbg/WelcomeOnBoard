@@ -122,7 +122,7 @@ export class TaskDialogComponent implements OnInit {
             imageUrl: [existingAction?.imageUrl || ''],
             url: [existingAction?.url || ''],
         });
-
+        
         this.actionsArray.push(actionForm);
     }
 

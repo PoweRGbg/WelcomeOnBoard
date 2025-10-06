@@ -101,7 +101,7 @@ export class TaskDetailDialogComponent implements OnInit {
         const actionIndex = this.task.actions?.indexOf(action) ?? 0;
         console.log('ActionsComleted ', actionIndex, this.progress.actionsCompleted);
         
-        return actionIndex === this.progress.actionsCompleted;
+        return actionIndex + 1 === this.progress.actionsCompleted;
     }
 
     isActionCurrent(action: Action): boolean {
@@ -125,7 +125,7 @@ export class TaskDetailDialogComponent implements OnInit {
 
         const isCompleted = this.isActionCompleted(action);
         
-        if (isCompleted) {
+        if (!isCompleted) {
             console.log('Completing action');
             // Uncomplete action
             this.completeAction();
@@ -138,6 +138,14 @@ export class TaskDetailDialogComponent implements OnInit {
 
     private completeAction(): void {
         // complete task progress
+        if (!this.progress) {
+            console.log('No progress to update action for!!!');
+            return;
+        }
+        this.progress = {
+            ...this.progress,
+            actionsCompleted: this.progress?.actionsCompleted + 1,
+        }
         this.updateProgress();
         this.updateCurrentActionIndex();
         
