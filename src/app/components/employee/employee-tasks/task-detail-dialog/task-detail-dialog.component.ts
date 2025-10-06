@@ -46,16 +46,18 @@ export class TaskDetailDialogComponent implements OnInit {
         this.task = data.task;
         this.currentUserId = data.currentUserId;
         this.progress = data.progress;
+        console.log('OnInit progress:', this.progress);
     }
 
     ngOnInit(): void {
         if (this.currentUserId && this.task) {
-            this.backendService.getTaskProgressByTaskId(this.currentUserId, this.task.id).subscribe((taskProgress) => {
+            this.backendService.getTaskProgressByTaskId(this.task.id).subscribe((taskProgress) => {
                 // TODO if no current progress initiate
                 if (!this.currentUserId || !this.task) {
                     throw new Error('No user or task provided!');
                 }
-                console.log('Task on init:', this.task);
+                
+                console.log('Progress onInit:', taskProgress);
                 
                 if (!taskProgress || Array.isArray(taskProgress)) {
                     console.log("No task progress or It is array", !taskProgress, taskProgress);
@@ -71,6 +73,8 @@ export class TaskDetailDialogComponent implements OnInit {
                     console.log('Created new task progress');
                     
                 } else {
+                    console.log('setting progress to taskProgress');
+                    
                     this.progress = taskProgress;
                 }
                 this.updateCurrentActionIndex();
@@ -124,15 +128,15 @@ export class TaskDetailDialogComponent implements OnInit {
         if (isCompleted) {
             console.log('Completing action');
             // Uncomplete action
-            this.uncompleteAction(action);
+            this.completeAction();
         } else {
             console.log('Un-completing action', action);
             // Complete action
-            this.completeAction(action);
+            this.uncompleteAction();
         }
     }
 
-    private completeAction(action: Action): void {
+    private completeAction(): void {
         // complete task progress
         this.updateProgress();
         this.updateCurrentActionIndex();
@@ -145,7 +149,7 @@ export class TaskDetailDialogComponent implements OnInit {
         }
     }
 
-    private uncompleteAction(action: Action): void {
+    private uncompleteAction(): void {
         if (!this.progress || !this.currentUserId) return;
 
         this.backendService.updateTaskProgress(this.progress, true);

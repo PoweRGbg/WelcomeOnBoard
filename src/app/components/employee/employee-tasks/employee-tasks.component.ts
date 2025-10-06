@@ -70,7 +70,7 @@ export class EmployeeTasksComponent implements OnInit {
     loadTaskProgress(): void {
         if (!this.currentUserId) return;
 
-        this.backendService.getTaskProgress(this.currentUserId).subscribe((progress) => {
+        this.backendService.getTaskProgressByUserId(this.currentUserId).subscribe((progress) => {
             this.taskProgress.clear();
             progress.forEach(p => {
                 this.taskProgress.set(p.taskId, p);

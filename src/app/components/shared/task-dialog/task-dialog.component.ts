@@ -95,7 +95,7 @@ export class TaskDialogComponent implements OnInit {
         if (this.data.allowStatusToggle) {
             this.taskForm.patchValue({
                 isActive: task.isActive,
-                isInProgress: this.backendService.getTaskProgressByTaskId(this.data.currentUser.id, task.id)
+                isInProgress: this.backendService.getTaskProgressByTaskId(task.id)
             });
         }
 

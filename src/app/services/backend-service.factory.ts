@@ -28,15 +28,8 @@ export interface IBackendService {
     updateTask(id: string, taskData: any): Observable<Task>;
     deleteTask(id: string): Observable<boolean>;
 
-    // Action Management
-    getActionsByTaskId(taskId: string): any;
-    createAction(taskId: string, actionData: any): any;
-    updateAction(taskId: string, actionId: string, actionData: any): any;
-    deleteAction(taskId: string, actionId: string): any;
-    completeAction(taskId: string, actionId: string): any;
-
     // Task Progress
-    getTaskProgress(userId?: string): Observable<TaskProgress[]>;
+    getTaskProgressByUserId(userId?: string): Observable<TaskProgress[]>;
     getTaskProgressByTaskId(userId?: string, taskId?: any): Observable<TaskProgress | null>;
     updateTaskProgress(progress: TaskProgress, uncompleteAction?: boolean): Observable<TaskProgress>;
     startTask(taskId: string): Observable<TaskProgress>;

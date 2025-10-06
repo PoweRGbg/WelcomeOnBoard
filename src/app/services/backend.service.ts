@@ -30,8 +30,8 @@ export interface PaginatedResponse<T> {
     providedIn: 'root'
 })
 export class BackendService {
-    // private baseUrl = 'http://localhost:3030'; // Use this with local database
-    private baseUrl = environment.production ? environment.apiUrl : environment.apiUrlLocal;  // Update this to your actual backend URL
+    // private baseUrl = 'http://localhost:3030';
+    private baseUrl = environment.production ? environment.apiUrl : environment.apiUrlLocal;
     private tokenSubject = new BehaviorSubject<string | null>(null);
     public token$ = this.tokenSubject.asObservable();
 
@@ -257,49 +257,8 @@ export class BackendService {
             );
     }
 
-    // Action Management Methods
-    getActionsByTaskId(taskId: string): Observable<Action[]> {
-        return this.http.get<Action[]>(`${this.baseUrl}/tasks/${taskId}/actions`, { headers: this.headers })
-            .pipe(
-                map(response => response),
-                catchError(this.handleError)
-            );
-    }
-
-    createAction(taskId: string, actionData: Omit<Action, 'id' | 'isCompleted' | 'completedAt' | 'completedBy'>): Observable<Action> {
-        return this.http.post<Action>(`${this.baseUrl}/tasks/${taskId}/actions`, actionData, { headers: this.headers })
-            .pipe(
-                map(response => response),
-                catchError(this.handleError)
-            );
-    }
-
-    updateAction(taskId: string, actionId: string, actionData: Partial<Action>): Observable<Action> {
-        return this.http.put<Action>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}`, actionData, { headers: this.headers })
-            .pipe(
-                map(response => response),
-                catchError(this.handleError)
-            );
-    }
-
-    deleteAction(taskId: string, actionId: string): Observable<boolean> {
-        return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}`, { headers: this.headers })
-            .pipe(
-                map(response => response.deleted),
-                catchError(this.handleError)
-            );
-    }
-
-    completeAction(taskId: string, actionId: string): Observable<Action> {
-        return this.http.post<Action>(`${this.baseUrl}/tasks/${taskId}/actions/${actionId}/complete`, {}, { headers: this.headers })
-            .pipe(
-                map(response => response),
-                catchError(this.handleError)
-            );
-    }
-
     // Task Progress Methods
-    getTaskProgress(userId?: string): Observable<TaskProgress[]> {
+    getTaskProgressByUserId(userId?: string): Observable<TaskProgress[]> {
         let params = new HttpParams();
         if (userId) {
             params = params.set('userId', userId);
@@ -326,10 +285,13 @@ export class BackendService {
             catchError(this.handleError)
         );
     }
+    // Omit<User, 'id' | 'createdAt' | 'updatedAt' >
 
     updateTaskProgress(progress: TaskProgress, uncompleteAction?: boolean): Observable<TaskProgress> {
         let params = new HttpParams();
         params = params.set('id', progress.taskId);
+        console.log('Sending progress:', progress);
+        
         
         return this.http.patch<TaskProgress>(`${this.baseUrl}/task-progress/${progress.taskId}`,
             progress, { headers: this.headers })

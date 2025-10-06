@@ -655,7 +655,7 @@ export class BackendMockService {
     // Task Progress Methods
     
     // Get all tasks  
-    getTaskProgress(userId?: string): Observable<TaskProgress[]> {
+    getTaskProgressByUserId(userId?: string): Observable<TaskProgress[]> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
                 let filteredProgress: TaskProgress[] = [];

@@ -55,7 +55,7 @@ export class DashboardComponent implements OnInit {
 
     private calculateStats(): void {
         if (!this.currentUser) return;
-        this.backendService.getTaskProgress(this.currentUser.id).subscribe((userProgress) => {
+        this.backendService.getTaskProgressByUserId(this.currentUser.id).subscribe((userProgress) => {
             this.userStats.totalTasks = this.tasks.length;
             this.userStats.completedTasks = userProgress.filter(p => p.isCompleted).length;
             this.userStats.inProgressTasks = userProgress.filter(p => !p.isCompleted && p.actionsCompleted > 0).length;
