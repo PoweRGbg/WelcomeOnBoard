@@ -259,14 +259,14 @@ export class BackendService {
 
     // Task Progress Methods
     getTaskProgressByUserId(userId?: string): Observable<TaskProgress[]> {
-        let params = new HttpParams();
-        if (userId) {
-            params = params.set('userId', userId);
-        }
+        // let params = new HttpParams();
+        // if (userId) {
+        //     params = params.set('userId', userId);
+        // }
 
-        return this.http.get<TaskProgress[]>(`${this.baseUrl}/task-progress`, {
+        return this.http.get<TaskProgress[]>(`${this.baseUrl}/task-progress/${userId}`, {
             headers: this.headers,
-            params
+            // params
         }).pipe(
             map(response => response),
             catchError(this.handleError)
@@ -285,7 +285,6 @@ export class BackendService {
             catchError(this.handleError)
         );
     }
-    // Omit<User, 'id' | 'createdAt' | 'updatedAt' >
 
     updateTaskProgress(progress: TaskProgress, uncompleteAction?: boolean): Observable<TaskProgress> {
         let params = new HttpParams();

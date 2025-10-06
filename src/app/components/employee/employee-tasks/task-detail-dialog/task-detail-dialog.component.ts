@@ -32,10 +32,10 @@ import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-s
     styleUrl: './task-detail-dialog.component.scss'
 })
 export class TaskDetailDialogComponent implements OnInit {
-    task: Task;
-    progress: TaskProgress | null;
-    currentUserId: string | null;
-    currentActionIndex: number = 0;
+    protected task: Task;
+    protected progress: TaskProgress | null;
+    protected currentUserId: string | null;
+    protected currentActionIndex: number = 0;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -52,7 +52,6 @@ export class TaskDetailDialogComponent implements OnInit {
     ngOnInit(): void {
         if (this.currentUserId && this.task) {
             this.backendService.getTaskProgressByTaskId(this.task.id).subscribe((taskProgress) => {
-                // TODO if no current progress initiate
                 if (!this.currentUserId || !this.task) {
                     throw new Error('No user or task provided!');
                 }
@@ -100,8 +99,9 @@ export class TaskDetailDialogComponent implements OnInit {
         if (!this.progress || !this.task.isActive)
             return false;
         const actionIndex = this.task.actions?.indexOf(action) ?? 0;
-
-        return actionIndex === this.progress.actionsCompleted + 1;
+        console.log('ActionsComleted ', actionIndex, this.progress.actionsCompleted);
+        
+        return actionIndex === this.progress.actionsCompleted;
     }
 
     isActionCurrent(action: Action): boolean {
