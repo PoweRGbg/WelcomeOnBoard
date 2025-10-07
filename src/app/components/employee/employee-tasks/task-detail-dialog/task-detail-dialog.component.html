@@ -41,9 +41,9 @@
       <div class="actions-list">
         <mat-card *ngFor="let action of task.actions; let i = index" 
                   class="action-card"
-                  [class.completed]="isActionCompleted(action)"
+                  [class.completed]="isActionCompleted(i)"
                   [class.current]="isActionCurrent(action)"
-                  [class.locked]="!isActionAvailable(action)">
+                  [class.locked]="!isActionAvailable(i)">
           
           <mat-card-content>
             <div class="action-header">
@@ -79,11 +79,12 @@
 
           <mat-card-actions>
             <mat-checkbox 
-              [checked]="isActionCompleted(action)"
-              [disabled]="!isActionAvailable(action)"
-              (change)="toggleAction(action)"
+              [checked]="i < (progress?.actionsCompleted ?? 0)"
+              [disabled]="!isActionAvailable(i)"
+              
+              (change)="onProgressChange(i)"
               class="action-checkbox">
-              {{ isActionCompleted(action) ? 'Completed' : 'Mark as Complete' }}
+              {{ isActionCompleted(i) ? 'Completed' : 'Mark as Complete' }}
             </mat-checkbox>
           </mat-card-actions>
         </mat-card>

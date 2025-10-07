@@ -12,6 +12,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { Task, TaskProgress } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-service.factory';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-task-detail-dialog',
@@ -50,15 +51,11 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (this.currentUserId && this.task) {
+        if (this.task) {
             this.backendService.getTaskProgressByTaskId(this.task.id).subscribe((taskProgress) => {
-                if (!this.currentUserId || !this.task) {
-                    throw new Error('No user or task provided!');
-                }
                 
                 console.log('Progress onInit:', taskProgress);
-                
-                if (!taskProgress || Array.isArray(taskProgress)) {
+                if ((!taskProgress || Array.isArray(taskProgress)) && this.currentUserId) {
                     console.log("No task progress or It is array", !taskProgress, taskProgress);
                     
                     this.progress = {
@@ -69,24 +66,34 @@ export class TaskDetailDialogComponent implements OnInit {
                         isCompleted: false,
                     }
                     console.log('Created new task progress');
-                    
                 } else {
-                    console.log('setting progress to taskProgress');
-                    
-                    this.progress = taskProgress;
+                    if (Object.keys(taskProgress ?? {}).includes('_id')) {
+                        // Strange where these properties come from
+                        this.progress = this.toTaskProgress(taskProgress);
+                    } else {
+                        this.progress = taskProgress;
+                    }
                 }
                 this.updateCurrentActionIndex();
             });
         }
     }
 
-    private updateCurrentActionIndex(): void {
-        if (!this.progress) {
-            return;
+    onProgressChange(index: number) {
+        // const newProgress = (event.target as HTMLInputElement).value;
+        console.log(`Index changed: ${index}`);
+        if (this.progress) {
+            if (this.progress?.actionsCompleted === index){
+                this.progress.actionsCompleted += 1;
+            } else {
+                this.progress.actionsCompleted -= 1;
+            }
+            
+            this.progress.isCompleted = this.progress.actionsCompleted === this.progress.actionsTotal;
+            console.log('This progress is completed:', this.progress.isCompleted);
+            
+            this.updateProgress();
         }
-        this.currentActionIndex = this.progress.actionsCompleted - 1 <= 0 ? 0 : this.progress.actionsCompleted - 1;
-        console.log('set current action index to', this.currentActionIndex);
-        
     }
 
     getCompletionPercentage(): number {
@@ -94,12 +101,8 @@ export class TaskDetailDialogComponent implements OnInit {
         return (this.progress.actionsCompleted / (this.task.actions?.length ?? 0)) * 100;
     }
 
-    isActionCompleted(action: Action): boolean {
-        if (!this.progress || !this.task.isActive)
-            return false;
-        const actionIndex = this.task.actions?.indexOf(action) ?? 0;
-
-        return actionIndex + 1 === this.progress.actionsCompleted;
+    isActionCompleted(actionIndex: number): boolean {
+        return actionIndex < (this.progress?.actionsCompleted ?? 0);
     }
 
     isActionCurrent(action: Action): boolean {
@@ -110,42 +113,54 @@ export class TaskDetailDialogComponent implements OnInit {
         return actionIndex === this.progress.actionsCompleted;
     }
 
-    isActionAvailable(action: Action): boolean {
-        if (!this.progress || !this.task.isActive) 
-            return false;
-        const actionId = this.task.actions?.findIndex( (actionInTask) => actionInTask.id === action.id) ?? 0;
+    isActionAvailable(actionIndex: number): boolean {
+        // index to be different from completedActions or completedActions-1
+        if (actionIndex === 0 && this.progress?.actionsCompleted === 0) {
+            return true;
+        }        
 
-        return actionId <= (this.progress.actionsCompleted + 1); 
+        if (this.progress?.isCompleted) {
+            return false;
+        }
+
+        return (actionIndex === this.progress?.actionsCompleted) ||
+            (actionIndex === (this.progress?.actionsCompleted ?? 0) - 1); 
     }
 
-    toggleAction(action: Action): void {
+    toggleAction(action: number): void {
         if (!this.currentUserId || !this.isActionAvailable(action)) return;
-
+        
         const isCompleted = this.isActionCompleted(action);
         
         if (!isCompleted) {
-            console.log('Completing action');
-            // Uncomplete action
+            console.log('Completing action', action);
             this.completeAction();
         } else {
             console.log('Un-completing action', action);
-            // Complete action
-            this.uncompleteAction();
+            this.completeAction(true);
         }
     }
 
-    private completeAction(): void {
-        // complete task progress
+    private completeAction(uncompleteAction?: boolean): void {
         if (!this.progress) {
             console.log('No progress to update action for!!!');
             return;
         }
+
+        let actionsCompleted = uncompleteAction ?
+            this.progress?.actionsCompleted - 1 :
+            this.progress.actionsCompleted + 1;
+
+        if (actionsCompleted < 0){
+            actionsCompleted = 0
+        }
+
         this.progress = {
             ...this.progress,
-            actionsCompleted: this.progress?.actionsCompleted + 1,
+            actionsCompleted,
         }
-        this.updateProgress();
         this.updateCurrentActionIndex();
+        this.updateProgress();
         
         // Check if task is completed
         if (this.progress?.isCompleted) {
@@ -169,7 +184,9 @@ export class TaskDetailDialogComponent implements OnInit {
         if (!this.currentUserId || !this.progress) return;
         
         this.backendService.updateTaskProgress(this.progress)
-            .subscribe((taskProgress) => this.progress = taskProgress);
+            .subscribe(() => {
+                this.updateCurrentActionIndex();
+            });
     }
 
     openImage(imageUrl: string): void {
@@ -185,16 +202,39 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     getActionStatusText(action: Action): string {
-        if (this.isActionCompleted(action)) return 'Completed';
+        const actionIndex = this.task.actions?.indexOf(action) ?? 0;
+        if (this.isActionCompleted(actionIndex)) return 'Completed';
         if (this.isActionCurrent(action)) return 'Current Action';
-        if (this.isActionAvailable(action)) return 'Available';
+        if (this.isActionAvailable(actionIndex)) return 'Available';
         return 'Locked';
     }
 
     getActionStatusColor(action: Action): string {
-        if (this.isActionCompleted(action)) return 'primary';
+        const actionIndex = this.task.actions?.indexOf(action) ?? 0;
+
+        if (this.isActionCompleted(actionIndex)) return 'primary';
         if (this.isActionCurrent(action)) return 'warn';
-        if (this.isActionAvailable(action)) return 'basic';
+        if (this.isActionAvailable(actionIndex)) return 'basic';
         return 'basic';
+    }
+
+    private updateCurrentActionIndex(): void {
+        if (!this.progress) {
+            return;
+        }
+        this.currentActionIndex = this.progress.actionsCompleted <= 1 ? 0 : this.progress.actionsCompleted - 1 
+        console.log('set current action index to',
+            this.currentActionIndex, 'completed actions',
+            this.progress.actionsCompleted);
+    }
+
+    private toTaskProgress(taskProgress: any): TaskProgress {
+        return {
+            taskId: taskProgress.taskId,
+            userId: taskProgress.userId,
+            actionsTotal: taskProgress.actionsTotal,
+            actionsCompleted: taskProgress.actionsCompleted,
+            isCompleted: taskProgress.isCompleted,
+        }
     }
 }

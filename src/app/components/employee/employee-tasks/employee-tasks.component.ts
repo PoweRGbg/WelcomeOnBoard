@@ -76,6 +76,8 @@ export class EmployeeTasksComponent implements OnInit {
                 this.taskProgress.set(p.taskId, p);
             });
         });
+        console.log('Task progress got', this.taskProgress);
+        
     }
 
     getTaskProgress(task: Task): TaskProgress | null {

@@ -1,6 +1,8 @@
 TODO
 -=-=-=-=-=-=-=-=-=-
-- Deactivation of tasks does not work
-- Filter task in list by category
-- Refresh task progress after completetion
+- Admin => Deactivation of tasks does not work
+- Employee => Filter task in list by category
+- Employee => Refresh task progress after task completetion
 - Clear logging from testing
+- BE: taskProgress is not completing in BE on update or when got
+- BE: FIX find by userId in
