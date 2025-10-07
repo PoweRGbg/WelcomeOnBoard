@@ -6,4 +6,4 @@ TODO
 - Clear logging from testing
 - translate to cyrilic
 - BE: taskProgress is not completing in BE on update or when got
-- BE: FIX find by userId in
+- BE: Fix creating new progress because of wrong properties
