@@ -4,5 +4,6 @@ TODO
 - Employee => Filter task in list by category
 - Employee => Refresh task progress after task completetion
 - Clear logging from testing
+- translate to cyrilic
 - BE: taskProgress is not completing in BE on update or when got
 - BE: FIX find by userId in
