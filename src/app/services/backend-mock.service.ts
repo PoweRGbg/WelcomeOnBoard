@@ -233,7 +233,6 @@ export class BackendMockService {
             taskId: '1',
             userId: '3',
             isCompleted: false,
-            startedAt: new Date('2024-01-08'),
             completedAt: undefined,
             actionsCompleted: 1,
             actionsTotal: this.mockTasks[0].actions?.length || 0,
@@ -242,7 +241,6 @@ export class BackendMockService {
             taskId: '2',
             userId: '3',
             isCompleted: true,
-            startedAt: new Date('2024-01-09'),
             completedAt: new Date('2024-01-10'),
             actionsCompleted: 2,
             actionsTotal: this.mockTasks[1].actions?.length || 0,
@@ -682,7 +680,6 @@ export class BackendMockService {
                         filteredProgress = {
                             taskId,
                             userId,
-                            startedAt: new Date(),
                             actionsCompleted: 0,
                             actionsTotal: this.mockTasks.find(task => task.id === taskId)?.actions?.length ?? 0,
                             isCompleted: false,
@@ -736,7 +733,6 @@ export class BackendMockService {
                     taskId: taskId,
                     userId: currentUser.id,
                     isCompleted: false,
-                    startedAt: new Date(),
                     actionsCompleted: 0,
                     actionsTotal: this.mockTasks.find(task => task.id === taskId)?.actions?.length ?? 0,
                 };

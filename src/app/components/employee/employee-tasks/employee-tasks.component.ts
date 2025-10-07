@@ -119,7 +119,6 @@ export class EmployeeTasksComponent implements OnInit {
             actionsCompleted: 0,
             actionsTotal: task.actions?.length || 0,
             isCompleted: false,
-            startedAt: new Date(),
         };
 
         this.backendService.startTask(progress.taskId).subscribe(() =>{

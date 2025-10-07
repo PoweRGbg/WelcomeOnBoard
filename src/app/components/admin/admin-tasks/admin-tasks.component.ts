@@ -144,6 +144,8 @@ export class AdminTasksComponent implements OnInit {
     }
 
     toggleTaskStatus(task: Task): void {
+        console.log('Updating task status: ', task);
+        
         const updatedTask = { ...task, isActive: !task.isActive };
         this.isLoading = true;
 

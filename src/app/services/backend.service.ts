@@ -238,7 +238,7 @@ export class BackendService {
                     action.url = undefined;
             });
         }
-        return this.http.post<Task>(`${this.baseUrl}/tasks?id=${id}`,
+        return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`,
             taskData, { headers: this.headers })
             .pipe(
                 map(response => response),
@@ -251,7 +251,11 @@ export class BackendService {
         // TODO Update the service in BE to use .findOne({ id:333 }).remove().exec();
         return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
             .pipe(
-                map(response => response.deleted),
+                map((response) => {
+                    console.log('After deletion:', response);
+                    
+                    return response.deleted;
+                }),
                 catchError(this.handleError)
             );
     }

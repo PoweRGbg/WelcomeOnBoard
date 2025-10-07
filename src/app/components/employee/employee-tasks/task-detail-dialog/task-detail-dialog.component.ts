@@ -66,7 +66,6 @@ export class TaskDetailDialogComponent implements OnInit {
                         userId: this.currentUserId,
                         actionsCompleted: 0,
                         actionsTotal: this.task.actions?.length ?? 0,
-                        startedAt: new Date(),
                         isCompleted: false,
                     }
                     console.log('Created new task progress');
@@ -99,8 +98,7 @@ export class TaskDetailDialogComponent implements OnInit {
         if (!this.progress || !this.task.isActive)
             return false;
         const actionIndex = this.task.actions?.indexOf(action) ?? 0;
-        console.log('ActionsComleted ', actionIndex, this.progress.actionsCompleted);
-        
+
         return actionIndex + 1 === this.progress.actionsCompleted;
     }
 
