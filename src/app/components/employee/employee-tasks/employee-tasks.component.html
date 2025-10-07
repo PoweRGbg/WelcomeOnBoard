@@ -22,23 +22,10 @@
               <mat-label>Filter tasks *</mat-label>
               <input matInput 
                 formControlName="taskName"
-                placeholder="Enter suggested task name"
+                placeholder="Filter by task name or description"
                 (input)="onSearch()"
               >
-              <mat-error *ngIf="searchForm.get('taskName')?.hasError('required')">
-                Task name is required
-              </mat-error>
-              <mat-error *ngIf="searchForm.get('taskName')?.hasError('minlength')">
-                Task name must be at least 3 characters
-              </mat-error>
             </mat-form-field>
-            <!-- <button mat-raised-button 
-              color="primary"
-              type="submit" 
-              [disabled]="!searchForm.valid">
-              <mat-icon>send</mat-icon>
-                Submit Suggestion
-            </button> -->
           </div>
         </form>
     

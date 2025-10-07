@@ -7,3 +7,4 @@ TODO
 - translate to cyrilic
 - BE: taskProgress is not completing in BE on update or when got
 - BE: Fix creating new progress because of wrong properties
+- BE: FindByUserId is returning extra properties

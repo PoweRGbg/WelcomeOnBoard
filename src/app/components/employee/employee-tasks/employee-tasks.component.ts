@@ -148,7 +148,9 @@ export class EmployeeTasksComponent implements OnInit {
 
     restartTask(task: Task): void {
         this.startTask(task);
-        const progress = this.getTaskProgress(task);
+        let progress = this.getTaskProgress(task);
+        progress!.actionsCompleted = 0;
+        progress!.isCompleted = false;
         
         const dialogRef = this.dialog.open(TaskDetailDialogComponent, {
             width: '900px',

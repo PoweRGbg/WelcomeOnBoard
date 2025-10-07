@@ -264,12 +264,12 @@ export class BackendService {
     getTaskProgressByUserId(userId?: string): Observable<TaskProgress[]> {
         return this.http.get<TaskProgress[]>(`${this.baseUrl}/task-progress/${userId}`, {
             headers: this.headers,
-            // params
         }).pipe(
             map(response => response),
             catchError(this.handleError)
         );
     }
+
     getTaskProgressByTaskId(taskId?: string): Observable<TaskProgress> {
         let params = new HttpParams();
         if (!taskId) {
@@ -288,7 +288,6 @@ export class BackendService {
         let params = new HttpParams();
         params = params.set('id', progress.taskId);
         console.log('Sending progress:', progress);
-        
         
         return this.http.patch<TaskProgress>(`${this.baseUrl}/task-progress/${progress.taskId}`,
             progress, { headers: this.headers })

@@ -47,14 +47,13 @@ export class TaskDetailDialogComponent implements OnInit {
         this.task = data.task;
         this.currentUserId = data.currentUserId;
         this.progress = data.progress;
-        console.log('OnInit progress:', this.progress);
     }
 
     ngOnInit(): void {
-        if (this.task) {
+        if (this.task && !this.progress) {
             this.backendService.getTaskProgressByTaskId(this.task.id).subscribe((taskProgress) => {
                 
-                console.log('Progress onInit:', taskProgress);
+                console.log('Progress fetched onInit:', taskProgress);
                 if ((!taskProgress || Array.isArray(taskProgress)) && this.currentUserId) {
                     console.log("No task progress or It is array", !taskProgress, taskProgress);
                     
@@ -76,6 +75,13 @@ export class TaskDetailDialogComponent implements OnInit {
                 }
                 this.updateCurrentActionIndex();
             });
+        } else {
+            console.log('Got task progress from other component:', this.data.progress);
+            
+            this.progress = this.toTaskProgress(this.progress);
+            if ( this.progress.actionsCompleted === 0 && !this.progress.isCompleted ){
+                this.updateProgress();
+            }
         }
     }
 
