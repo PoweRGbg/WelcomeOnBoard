@@ -1,0 +1,6 @@
+TODO
+-=-=-=-=-=-=-=-=-=-
+- Deactivation of tasks does not work
+- Filter task in list by category
+- Refresh task progress after completetion
+- Clear logging from testing

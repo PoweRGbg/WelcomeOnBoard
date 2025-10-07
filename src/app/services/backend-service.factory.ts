@@ -57,8 +57,6 @@ export function backendServiceFactory(
     backendService: BackendService,
     backendMockService: BackendMockService
 ): IBackendService {
-    console.log('USING SOMETHING', environment.useMockBackend);
-    
     return environment.useMockBackend ? backendMockService : backendService;
 }
 
