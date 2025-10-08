@@ -66,7 +66,6 @@ export class AdminTaskDialogComponent implements OnInit {
             category: ['', Validators.required],
             url: [''],
             isActive: [true],
-            isInProgress: [false],
             actions: this.fb.array([])
         });
     }

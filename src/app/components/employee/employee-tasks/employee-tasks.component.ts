@@ -62,8 +62,7 @@ export class EmployeeTasksComponent implements OnInit {
 
     loadTasks(): void {
         this.backendService.getTasks().subscribe(tasks => {
-            this.tasks = tasks;
-            console.log('Tasks got it backend getTasks():', tasks);
+            this.tasks = tasks.filter((task) => task.isActive);
         });
     }
 
@@ -76,8 +75,6 @@ export class EmployeeTasksComponent implements OnInit {
                 this.taskProgress.set(p.taskId, p);
             });
         });
-        console.log('Task progress got', this.taskProgress);
-        
     }
 
     getTaskProgress(task: Task): TaskProgress | null {
@@ -186,17 +183,15 @@ export class EmployeeTasksComponent implements OnInit {
     }
 
     protected onSearch(): void {
-        console.log('On search called');
         const searchTerm = this.searchForm.value.taskName.toString();
         console.log('Searching for:', searchTerm);
         console.log('tasks:', this.tasks);
-        
-        
-        this.tasks = this.tasks.filter((task) => {
-            return task.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
-        });
-        if (this.tasks.length < 1 || searchTerm.length === 0) {
+        if (!searchTerm.length) {
             this.loadTasks();
+        } else {
+            this.tasks = this.tasks.filter((task) => {
+                return task.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
+            });
         }
     }
 

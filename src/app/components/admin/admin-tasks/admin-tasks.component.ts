@@ -144,9 +144,14 @@ export class AdminTasksComponent implements OnInit {
     }
 
     toggleTaskStatus(task: Task): void {
-        console.log('Updating task status: ', task);
-        
-        const updatedTask = { ...task, isActive: !task.isActive };
+        const updatedTask = { 
+            ...task,
+            isActive: !task.isActive,
+            createdBy: task.createdBy.id,
+            updatedAt: undefined,
+            createdAt: undefined,
+            id: undefined,
+        };
         this.isLoading = true;
 
         this.backendService.updateTask(task.id, updatedTask).subscribe({

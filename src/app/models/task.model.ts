@@ -9,8 +9,8 @@ export interface Task {
     url?: string;
     actions?: Action[];
     createdBy: UserInfo;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
     isActive: boolean;
     completionCount: number;
 }
@@ -45,5 +45,4 @@ export interface TaskProgress {
     actionsTotal: number;
     actionsCompleted: number;
     isCompleted: boolean;
-    completedAt?: Date;
 }

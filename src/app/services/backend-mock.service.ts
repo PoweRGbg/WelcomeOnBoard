@@ -233,7 +233,6 @@ export class BackendMockService {
             taskId: '1',
             userId: '3',
             isCompleted: false,
-            completedAt: undefined,
             actionsCompleted: 1,
             actionsTotal: this.mockTasks[0].actions?.length || 0,
         },
@@ -241,7 +240,6 @@ export class BackendMockService {
             taskId: '2',
             userId: '3',
             isCompleted: true,
-            completedAt: new Date('2024-01-10'),
             actionsCompleted: 2,
             actionsTotal: this.mockTasks[1].actions?.length || 0,
         }
@@ -704,7 +702,6 @@ export class BackendMockService {
 
                 if (taskProgress.actionsCompleted === taskProgress.actionsTotal) {
                     taskProgress.isCompleted = true;
-                    taskProgress.completedAt = new Date();
                 }
 
                 // update progress in mockTaskProgress
@@ -762,7 +759,6 @@ export class BackendMockService {
                 }
 
                 progress.isCompleted = true;
-                progress.completedAt = new Date();
                 console.log('Progress in completeTask:', progress);
                 
                 return progress;

@@ -1,10 +1,11 @@
 TODO
 -=-=-=-=-=-=-=-=-=-
+- Check for expired token -> Clear and go to login, maybe show popup
 - Admin => Deactivation of tasks does not work
+- Admin => When creating task try to set URL's to empty sting
 - Employee => Filter task in list by category
-- Employee => Refresh task progress after task completetion
+- Employee => Is task started only for this user when started ? Progress available for other users ???
+- Employee => Add 'started on' to cards 
 - Clear logging from testing
 - translate to cyrilic
-- BE: taskProgress is not completing in BE on update or when got
 - BE: Fix creating new progress because of wrong properties
-- BE: FindByUserId is returning extra properties

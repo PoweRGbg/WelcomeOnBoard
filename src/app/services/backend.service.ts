@@ -140,15 +140,12 @@ export class BackendService {
         if (search) {
             params = params.set('search', search);
         }
-        console.log('Getting users with params:', params.toString());
         
         return this.http.get<User[]>(`${this.baseUrl}/users`, {
             headers: this.headers,
             params
         }).pipe(
             map(response => {
-                console.log('Received users response:', response);
-                
                 return response
             }),
             catchError(this.handleError)
@@ -218,7 +215,6 @@ export class BackendService {
     }
 
     createTask(taskData: TaskCreateRequest): Observable<Task> {
-        console.log('Trying to create task with:', taskData);
         // removing unused URL properties from task and actions
         taskData = this.stripUnusedTaskData(taskData);
 

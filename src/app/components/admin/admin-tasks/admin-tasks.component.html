@@ -62,9 +62,6 @@
                 <mat-chip *ngIf="!task.isActive" color="warn" selected>
                   Inactive
                 </mat-chip>
-                <!-- <mat-chip *ngIf="task.isInProgress" color="accent" selected>
-                  In Progress
-                </mat-chip> -->
               </div>
             </mat-card-subtitle>
           </mat-card-header>
@@ -81,10 +78,6 @@
                 <mat-icon>check_circle</mat-icon>
                 <span>{{ task.completionCount }} completions</span>
               </div>
-              <!-- <div class="meta-item" *ngIf="task.lastCompletedAt">
-                <mat-icon>schedule</mat-icon>
-                <span>Last completed: {{ task.lastCompletedAt | date:'short' }}</span>
-              </div> -->
             </div>
 
             <div class="task-created-info">

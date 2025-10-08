@@ -77,7 +77,6 @@ export class TaskDialogComponent implements OnInit {
         // Add status controls only if allowed
         if (this.data.allowStatusToggle) {
             form.addControl('isActive', this.fb.control(true));
-            form.addControl('isInProgress', this.fb.control(false));
         }
 
         return form;
@@ -95,7 +94,6 @@ export class TaskDialogComponent implements OnInit {
         if (this.data.allowStatusToggle) {
             this.taskForm.patchValue({
                 isActive: task.isActive,
-                isInProgress: this.backendService.getTaskProgressByTaskId(task.id)
             });
         }
 

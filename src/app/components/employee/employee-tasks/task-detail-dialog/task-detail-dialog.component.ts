@@ -53,10 +53,8 @@ export class TaskDetailDialogComponent implements OnInit {
         if (this.task && !this.progress) {
             this.backendService.getTaskProgressByTaskId(this.task.id).subscribe((taskProgress) => {
                 
-                console.log('Progress fetched onInit:', taskProgress);
+                console.log('Progress fetched onInit because no such was passed:', taskProgress);
                 if ((!taskProgress || Array.isArray(taskProgress)) && this.currentUserId) {
-                    console.log("No task progress or It is array", !taskProgress, taskProgress);
-                    
                     this.progress = {
                         taskId: this.task.id,
                         userId: this.currentUserId,
