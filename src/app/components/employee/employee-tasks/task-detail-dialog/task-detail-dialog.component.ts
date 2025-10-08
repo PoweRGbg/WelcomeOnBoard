@@ -51,9 +51,8 @@ export class TaskDetailDialogComponent implements OnInit {
 
     ngOnInit(): void {
         if (this.task && !this.progress) {
-            this.backendService.getTaskProgressByTaskId(this.task.id).subscribe((taskProgress) => {
+            this.backendService.getTaskProgressByTaskId(this.currentUserId ?? undefined, this.task.id).subscribe((taskProgress) => {
                 
-                console.log('Progress fetched onInit because no such was passed:', taskProgress);
                 if ((!taskProgress || Array.isArray(taskProgress)) && this.currentUserId) {
                     this.progress = {
                         taskId: this.task.id,
@@ -62,7 +61,6 @@ export class TaskDetailDialogComponent implements OnInit {
                         actionsTotal: this.task.actions?.length ?? 0,
                         isCompleted: false,
                     }
-                    console.log('Created new task progress');
                 } else {
                     if (Object.keys(taskProgress ?? {}).includes('_id')) {
                         // Strange where these properties come from
@@ -74,8 +72,6 @@ export class TaskDetailDialogComponent implements OnInit {
                 this.updateCurrentActionIndex();
             });
         } else {
-            console.log('Got task progress from other component:', this.data.progress);
-            
             this.progress = this.toTaskProgress(this.progress);
             if ( this.progress.actionsCompleted === 0 && !this.progress.isCompleted ){
                 this.updateProgress();
@@ -84,8 +80,6 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     onProgressChange(index: number) {
-        // const newProgress = (event.target as HTMLInputElement).value;
-        console.log(`Index changed: ${index}`);
         if (this.progress) {
             if (this.progress?.actionsCompleted === index){
                 this.progress.actionsCompleted += 1;
@@ -94,8 +88,6 @@ export class TaskDetailDialogComponent implements OnInit {
             }
             
             this.progress.isCompleted = this.progress.actionsCompleted === this.progress.actionsTotal;
-            console.log('This progress is completed:', this.progress.isCompleted);
-            
             this.updateProgress();
         }
     }
@@ -137,7 +129,6 @@ export class TaskDetailDialogComponent implements OnInit {
         const isCompleted = this.isActionCompleted(action);
         
         if (!isCompleted) {
-            console.log('Completing action', action);
             this.completeAction();
         } else {
             console.log('Un-completing action', action);
@@ -184,7 +175,6 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     private updateProgress(): void {
-        console.log('Updating in updateProgress ', this.progress, this.currentUserId);
         if (!this.currentUserId || !this.progress) return;
         
         this.backendService.updateTaskProgress(this.progress)

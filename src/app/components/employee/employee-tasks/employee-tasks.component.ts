@@ -120,15 +120,13 @@ export class EmployeeTasksComponent implements OnInit {
             isCompleted: false,
         };
 
-        this.backendService.startTask(progress.taskId).subscribe(() =>{
+        this.backendService.updateTaskProgress(progress).subscribe(() =>{
             this.loadTaskProgress();
             this.snackBar.open('Task started!', 'Close', { duration: 3000 });
         });
     }
 
     openTaskDetail(task: Task): void {
-        console.log('Open task detail for task', task);
-        
         const progress = this.getTaskProgress(task);
         const dialogRef = this.dialog.open(TaskDetailDialogComponent, {
             width: '900px',
@@ -138,7 +136,7 @@ export class EmployeeTasksComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result || result === undefined) {
                 this.loadTaskProgress();
-                this.snackBar.open('Task progress updated!', 'Close', { duration: 3000 });
+                this.snackBar.open('Task status updated!', 'Close', { duration: 3000 });
             }
         });
     }
@@ -184,8 +182,6 @@ export class EmployeeTasksComponent implements OnInit {
 
     protected onSearch(): void {
         const searchTerm = this.searchForm.value.taskName.toString();
-        console.log('Searching for:', searchTerm);
-        console.log('tasks:', this.tasks);
         if (!searchTerm.length) {
             this.loadTasks();
         } else {

@@ -244,11 +244,10 @@ export class BackendService {
     }
 
     deleteTask(id: string): Observable<boolean> {
-        // TODO Update the service in BE to use .findOne({ id:333 }).remove().exec();
         return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
             .pipe(
                 map((response) => {
-                    console.log('After deletion:', response);
+                    console.log('Response after deletion:', response);
                     
                     return response.deleted;
                 }),
@@ -266,13 +265,13 @@ export class BackendService {
         );
     }
 
-    getTaskProgressByTaskId(taskId?: string): Observable<TaskProgress> {
+    getTaskProgressByTaskId(userId?: string, taskId?: string): Observable<TaskProgress> {
         let params = new HttpParams();
         if (!taskId) {
             throw new Error('Cannot get progress when no actionId is provided in getTaskProgressById()')
         }
 
-        return this.http.get<TaskProgress>(`${this.baseUrl}/task-progress/task/${taskId}`, {
+        return this.http.get<TaskProgress>(`${this.baseUrl}/task-progress/task/${userId}/${taskId}`, {
             headers: this.headers,
             params
         }).pipe(
@@ -293,7 +292,7 @@ export class BackendService {
     }
 
     startTask(taskId: string): Observable<TaskProgress> {
-        return this.http.post<TaskProgress>(`${this.baseUrl}/tasks/${taskId}/start`, {}, { headers: this.headers })
+        return this.http.post<TaskProgress>(`${this.baseUrl}/task-progress/${taskId}/start`, {}, { headers: this.headers })
             .pipe(
                 map(response => response),
                 catchError(this.handleError)
@@ -301,7 +300,7 @@ export class BackendService {
     }
 
     completeTask(taskId: string): Observable<TaskProgress> {
-        return this.http.post<TaskProgress>(`${this.baseUrl}/tasks/${taskId}/complete`, {}, { headers: this.headers })
+        return this.http.post<TaskProgress>(`${this.baseUrl}/task-progress/${taskId}/complete`, {}, { headers: this.headers })
             .pipe(
                 map(response => response),
                 catchError(this.handleError)
@@ -381,11 +380,6 @@ export class BackendService {
     }
 
     private stripUnusedTaskData(taskData: TaskCreateRequest): TaskCreateRequest {
-        if (!taskData.url?.length) {
-            console.log('URL is empty! Deleting');
-            taskData.url = undefined;
-        }
-
         // As of now we do not need imageURLs in actions as they are not implemented in BE
         taskData.actions.forEach((action) =>{
             action.url = action.url?.length ? action.url : undefined;
