@@ -32,7 +32,6 @@ export class AuthService {
     }
 
     logout(): void {
-        console.log('Logging out user in authService:');
         this.currentUserSubject.next(null);
         this.backendService.logout();
     }
@@ -43,8 +42,6 @@ export class AuthService {
     }
 
     isAuthenticated(): boolean {
-        console.log('AuthService isAuthenticated check:', this.backendService.isAuthenticated(), this.currentUserSubject.value);
-        
         return this.backendService.isAuthenticated() && !!this.currentUserSubject.value;
     }
 

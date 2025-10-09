@@ -6,4 +6,9 @@ TODO
 - Manager => Create cards only for it's category
 - Clear logging from testing
 - translate to cyrilic
-- BE: Fix creating new progress because of wrong properties
+- FE: Disabled tasks appear in all tasks, also in completed and ***
+- Add recuring tasks
+- Add task due dates
+- 
+- Make tasks with due dates appear first in taks list
+- BE: Fix creating new progress because of wrong properties ?!?

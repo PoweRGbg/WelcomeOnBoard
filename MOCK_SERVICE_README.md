@@ -99,7 +99,7 @@ export const environment = {
 
 ### Using the Service
 
-The mock service implements the same interface as the real backend service, so no code changes are needed when switching between them.
+The mock service implements almost the same interface as the real backend service, so no code changes are needed when switching between them.
 
 ```typescript
 // Inject the service using the factory
@@ -133,11 +133,3 @@ To switch between mock and real services:
 1. **Use Mock Service**: Set `useMockBackend: true` in environment.ts
 2. **Use Real API**: Set `useMockBackend: false` in environment.ts
 3. **Build for Production**: The production build automatically uses the real API
-
-## Benefits
-
-- **No API Required**: Test the application without setting up a backend
-- **Consistent Data**: Predictable test data for reliable testing
-- **Realistic Behavior**: Simulates network delays and API responses
-- **Easy Switching**: Toggle between mock and real services with a single flag
-- **Complete Coverage**: All backend functionality is mocked

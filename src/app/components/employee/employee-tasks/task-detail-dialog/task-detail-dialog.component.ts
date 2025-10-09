@@ -131,14 +131,12 @@ export class TaskDetailDialogComponent implements OnInit {
         if (!isCompleted) {
             this.completeAction();
         } else {
-            console.log('Un-completing action', action);
             this.completeAction(true);
         }
     }
 
     private completeAction(uncompleteAction?: boolean): void {
         if (!this.progress) {
-            console.log('No progress to update action for!!!');
             return;
         }
 
@@ -217,9 +215,6 @@ export class TaskDetailDialogComponent implements OnInit {
             return;
         }
         this.currentActionIndex = this.progress.actionsCompleted <= 1 ? 0 : this.progress.actionsCompleted - 1 
-        console.log('set current action index to',
-            this.currentActionIndex, 'completed actions',
-            this.progress.actionsCompleted);
     }
 
     private toTaskProgress(taskProgress: any): TaskProgress {

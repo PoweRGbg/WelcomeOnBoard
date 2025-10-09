@@ -83,7 +83,6 @@ export class BackendService {
 
     logout(): void {
         this.clearTokens();
-        console.log('User logged out, tokens cleared in backend service');
         this.tokenSubject.next(null); // Check authentication status after logout
     }
 
@@ -247,8 +246,6 @@ export class BackendService {
         return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/tasks/${id}`, { headers: this.headers })
             .pipe(
                 map((response) => {
-                    console.log('Response after deletion:', response);
-                    
                     return response.deleted;
                 }),
                 catchError(this.handleError)
@@ -282,8 +279,6 @@ export class BackendService {
     updateTaskProgress(progress: TaskProgress, uncompleteAction?: boolean): Observable<TaskProgress> {
         let params = new HttpParams();
         params = params.set('id', progress.taskId);
-        console.log('Sending progress:', progress);
-        
         return this.http.patch<TaskProgress>(`${this.baseUrl}/task-progress/${progress.taskId}`,
             progress, { headers: this.headers })
             .pipe(
