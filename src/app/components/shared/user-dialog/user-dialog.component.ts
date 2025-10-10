@@ -67,10 +67,8 @@ export class UserDialogComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: UserDialogData,
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
     ) {
-        this.userForm = this.createForm();
         this.isEditMode = !!data.user;
-        console.log('In component constructor, isEditMode:', !!data.user);
-        
+        this.userForm = this.createForm();
     }
 
     ngOnInit(): void {
@@ -98,8 +96,6 @@ export class UserDialogComponent implements OnInit {
 
         // Add password fields only for new users
         if (!this.isEditMode) {
-            console.log('We are not in edit mode');
-            
             form.addControl('password', this.fb.control('', [
                 Validators.required,
                 Validators.minLength(6),
@@ -114,8 +110,6 @@ export class UserDialogComponent implements OnInit {
     }
 
     private populateForm(user: User): void {
-        console.log('Populating form with user data:', user);
-        
         this.userForm.patchValue({
             username: user.username,
             email: user.email,
@@ -128,13 +122,7 @@ export class UserDialogComponent implements OnInit {
     }
 
     onSubmit(): void {
-        // Clear validation errors before validation
-        
-
-        console.log('User form submitted:', this.userForm.controls);
-        
         if (this.userForm.valid) {
-            // Check password confirmation for new users
             if (!this.isEditMode) {
                 const password = this.userForm.get('password')?.value;
                 const confirmPassword = this.userForm.get('confirmPassword')?.value;
@@ -165,7 +153,7 @@ export class UserDialogComponent implements OnInit {
             }
 
             const operation = this.isEditMode && this.data.user
-                ? this.backendService.updateUser(this.data.user.id, userData)
+                ? this.backendService.updateUser(this.data.user._id, userData)
                 : this.backendService.createUser(userData as Omit<User, 'id' | 'createdAt' | 'updatedAt'>);
 
             operation.subscribe({

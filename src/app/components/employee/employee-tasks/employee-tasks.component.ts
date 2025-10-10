@@ -54,7 +54,7 @@ export class EmployeeTasksComponent implements OnInit {
 
     ngOnInit(): void {
         this.authService.currentUser$.subscribe(currentUser => {
-            this.currentUserId = currentUser?.id || null;
+            this.currentUserId = currentUser?._id || null;
             this.loadTasks();
             this.loadTaskProgress();
         });

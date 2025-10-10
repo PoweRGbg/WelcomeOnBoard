@@ -12,6 +12,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { User, UserRole } from '../../../models/user.model';
 import { UserDialogComponent } from '../../shared/user-dialog/user-dialog.component';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
+import { toUser } from '../../../common/utils';
 
 @Component({
     selector: 'app-admin-users',
@@ -52,7 +53,7 @@ export class AdminUsersComponent implements OnInit {
         this.isLoading = true;
         this.backendService.getUsers().subscribe({
             next: (users) => {
-                this.users = users;
+                this.users = users.map((user) => toUser(user));
                 this.isLoading = false;
             },
             error: (error) => {
@@ -86,8 +87,6 @@ export class AdminUsersComponent implements OnInit {
             this.snackBar.open('User not authenticated', 'Close', { duration: 3000 });
             return;
         }
-
-        console.log('Editing user:', user);
         
         const dialogRef = this.dialog.open(UserDialogComponent, {
             width: '90vw',
@@ -105,7 +104,7 @@ export class AdminUsersComponent implements OnInit {
     deleteUser(user: User): void {
         if (confirm(`Are you sure you want to delete user "${user.username}"?`)) {
             this.isLoading = true;
-            this.backendService.deleteUser(user.id).subscribe({
+            this.backendService.deleteUser(user._id).subscribe({
                 next: () => {
                     this.isLoading = false;
                     this.snackBar.open('User deleted successfully!', 'Close', { duration: 3000 });
@@ -123,7 +122,7 @@ export class AdminUsersComponent implements OnInit {
         const updatedUser = { ...user, isActive: !user.isActive };
         this.isLoading = true;
 
-        this.backendService.updateUser(user.id, updatedUser).subscribe({
+        this.backendService.updateUser(user._id, updatedUser).subscribe({
             next: () => {
                 this.isLoading = false;
                 this.snackBar.open(

@@ -4,7 +4,6 @@ import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { User, UserToken } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
-import { Action } from '../models/action.model';
 import { environment } from '../../environments/environment';
 
 export interface LoginRequest {
@@ -137,10 +136,8 @@ export class BackendService {
         }
         // decode token to get user info
         const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('User:', payload.username);
-        
         const loggedUser: UserToken = {
-            id: payload.sub,
+            _id: payload.sub,
             username: payload.username,
             role: payload.role,
             createdAt: new Date(payload.iat * 1000),
@@ -207,7 +204,7 @@ export class BackendService {
     }
 
     updateUser(id: string, userData: Partial<User>): Observable<User> {
-        return this.http.put<User>(`${this.baseUrl}/users/${id}`, userData, { headers: this.headers })
+        return this.http.patch<User>(`${this.baseUrl}/users/${id}`, userData, { headers: this.headers })
             .pipe(
                 map(response => response),
                 catchError(this.handleError)

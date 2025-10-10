@@ -5,20 +5,18 @@ export enum UserRole {
 }
 
 export interface User {
-    id: string;
+    _id: string;
     username: string;
-    password: string;
+    password?: string;
     email: string;
     role: UserRole;
     department?: string;
     firstName: string;
     lastName: string;
     isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
 }
 export interface UserToken {
-    id: string;
+    _id: string;
     username: string;
     password?: string;
     email?: string;

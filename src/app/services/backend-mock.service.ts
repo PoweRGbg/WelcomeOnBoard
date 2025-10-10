@@ -16,7 +16,7 @@ export class BackendMockService {
     // Mock data storage
     private mockUsers: User[] = [
         {
-            id: '1',
+            _id: '1',
             username: 'admin',
             password: 'admin123',
             email: 'admin@company.com',
@@ -24,11 +24,9 @@ export class BackendMockService {
             firstName: 'Admin',
             lastName: 'User',
             isActive: true,
-            createdAt: new Date('2024-01-01'),
-            updatedAt: new Date('2024-01-01'),
         },
         {
-            id: '2',
+            _id: '2',
             username: 'manager1',
             password: 'manager123',
             email: 'manager1@company.com',
@@ -36,11 +34,9 @@ export class BackendMockService {
             firstName: 'John',
             lastName: 'Manager',
             isActive: true,
-            createdAt: new Date('2024-01-02'),
-            updatedAt: new Date('2024-01-02'),
         },
         {
-            id: '3',
+            _id: '3',
             username: 'employee1',
             password: 'employee123',
             email: 'employee1@company.com',
@@ -48,11 +44,9 @@ export class BackendMockService {
             firstName: 'Jane',
             lastName: 'Employee',
             isActive: true,
-            createdAt: new Date('2024-01-03'),
-            updatedAt: new Date('2024-01-03'),
         },
         {
-            id: '4',
+            _id: '4',
             username: 'employee2',
             password: 'employee123',
             email: 'employee2@company.com',
@@ -60,8 +54,6 @@ export class BackendMockService {
             firstName: 'Bob',
             lastName: 'Smith',
             isActive: true,
-            createdAt: new Date('2024-01-04'),
-            updatedAt: new Date('2024-01-04'),
         }
     ];
 
@@ -255,7 +247,7 @@ export class BackendMockService {
 
     private generateMockToken(user: User): string {
         const payload = {
-            sub: user.id,
+            sub: user._id,
             username: user.username,
             role: user.role,
             iat: Math.floor(Date.now() / 1000),
@@ -271,7 +263,7 @@ export class BackendMockService {
         }
         try {
             const payload = JSON.parse(atob(token));
-            return this.mockUsers.find(user => user.id === payload.sub) || null;
+            return this.mockUsers.find(user => user._id === payload.sub) || null;
         } catch {
             return null;
         }
@@ -299,7 +291,7 @@ export class BackendMockService {
                 const response: LoginResponse = {
                     user: { ...user, password: undefined } as unknown as User,
                     token: token,
-                    refreshToken: 'mock-refresh-token-' + user.id
+                    refreshToken: 'mock-refresh-token-' + user._id
                 };
 
                 this.setToken(token);
@@ -324,7 +316,7 @@ export class BackendMockService {
                 }
 
                 const userId = refreshToken.split('-').pop();
-                const user = this.mockUsers.find(u => u.id === userId);
+                const user = this.mockUsers.find(u => u._id === userId);
 
                 if (!user) {
                     throw new Error('Invalid refresh token');
@@ -409,7 +401,7 @@ export class BackendMockService {
     getUserById(id: string): Observable<User> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
-                const user = this.mockUsers.find(u => u.id === id);
+                const user = this.mockUsers.find(u => u._id === id);
                 if (!user) {
                     throw new Error('User not found');
                 }
@@ -423,9 +415,7 @@ export class BackendMockService {
             map(() => {
                 const newUser: User = {
                     ...userData,
-                    id: (this.mockUsers.length + 1).toString(),
-                    createdAt: new Date(),
-                    updatedAt: new Date()
+                    _id: (this.mockUsers.length + 1).toString(),
                 };
                 this.mockUsers.push(newUser);
                 return { ...newUser, password: undefined } as unknown as User;
@@ -436,7 +426,7 @@ export class BackendMockService {
     updateUser(id: string, userData: Partial<User>): Observable<User> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
-                const userIndex = this.mockUsers.findIndex(u => u.id === id);
+                const userIndex = this.mockUsers.findIndex(u => u._id === id);
                 if (userIndex === -1) {
                     throw new Error('User not found');
                 }
@@ -444,7 +434,6 @@ export class BackendMockService {
                 this.mockUsers[userIndex] = {
                     ...this.mockUsers[userIndex],
                     ...userData,
-                    updatedAt: new Date()
                 };
 
                 return { ...this.mockUsers[userIndex], password: undefined } as unknown as User;
@@ -455,7 +444,7 @@ export class BackendMockService {
     deleteUser(id: string): Observable<boolean> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
-                const userIndex = this.mockUsers.findIndex(u => u.id === id);
+                const userIndex = this.mockUsers.findIndex(u => u._id === id);
                 if (userIndex === -1) {
                     throw new Error('User not found');
                 }
@@ -508,7 +497,7 @@ export class BackendMockService {
     createTask(taskData: TaskCreateRequest): Observable<Task> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
-                const createdBy = this.mockUsers.find(u => u.id === taskData.createdBy);
+                const createdBy = this.mockUsers.find(u => u._id === taskData.createdBy);
                 if (!createdBy) {
                     throw new Error('User not found');
                 }
@@ -517,7 +506,7 @@ export class BackendMockService {
                     ...taskData,
                     id: (this.mockTasks.length + 1).toString(),
                     createdBy: {
-                        id: createdBy.id,
+                        id: createdBy._id,
                         username: createdBy.username,
                         firstName: createdBy.firstName,
                         lastName: createdBy.lastName
@@ -655,7 +644,7 @@ export class BackendMockService {
             map(() => {
                 const currentUser = this.getCurrentUserFromToken();
                 const taskProgressIndex = this.mockTaskProgress.findIndex(task =>
-                    task.taskId === taskId && task.userId === currentUser?.id
+                    task.taskId === taskId && task.userId === currentUser?._id
                 );
                 let progressToUpdate = this.mockTaskProgress[taskProgressIndex];
                 progressToUpdate.actionsCompleted +=1;
@@ -750,7 +739,7 @@ export class BackendMockService {
                 
                 const newProgress: TaskProgress = {
                     taskId: taskId,
-                    userId: currentUser.id,
+                    userId: currentUser._id,
                     isCompleted: false,
                     actionsCompleted: 0,
                     actionsTotal: this.mockTasks.find(task => task.id === taskId)?.actions?.length ?? 0,
@@ -773,7 +762,7 @@ export class BackendMockService {
                 }
 
                 const progress = this.mockTaskProgress.find(p =>
-                    p.taskId === taskId && p.userId === currentUser.id
+                    p.taskId === taskId && p.userId === currentUser._id
                 );
 
                 if (!progress) {

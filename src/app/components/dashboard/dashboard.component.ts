@@ -53,7 +53,7 @@ export class DashboardComponent implements OnInit {
 
     private calculateStats(): void {
         if (!this.currentUser) return;
-        this.backendService.getTaskProgressByUserId(this.currentUser.id).subscribe((userProgress) => {
+        this.backendService.getTaskProgressByUserId(this.currentUser._id).subscribe((userProgress) => {
             const activeTasks = this.tasks.filter((task) => task.isActive).length;
             this.userStats.totalTasks = activeTasks;
             
