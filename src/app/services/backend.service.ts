@@ -30,7 +30,6 @@ export interface PaginatedResponse<T> {
     providedIn: 'root'
 })
 export class BackendService {
-    // private baseUrl = 'http://localhost:3030';
     private baseUrl = environment.production ? environment.apiUrl : environment.apiUrlLocal;
     private tokenSubject = new BehaviorSubject<string | null>(null);
     public token$ = this.tokenSubject.asObservable();
@@ -67,6 +66,25 @@ export class BackendService {
     // Authentication Methods
     login(credentials: LoginRequest): Observable<LoginResponse> {
         return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, credentials)
+            .pipe(
+                map(response => {
+                    return response;
+                }),
+                tap(response => {
+                    this.setToken(response.token);
+                    if (response.refreshToken) {
+                        localStorage.setItem('refreshToken', response.refreshToken);
+                    }
+                }),
+                catchError(this.handleError)
+            );
+    }
+
+    extendSession(userId: string): Observable<LoginResponse> {
+        // ?!? this.refreshToken()
+        const token = localStorage.getItem('authToken');
+
+        return this.http.post<LoginResponse>(`${this.baseUrl}/auth/extend-session`, { token, userId })
             .pipe(
                 map(response => {
                     return response;
@@ -119,6 +137,11 @@ export class BackendService {
         }
         // decode token to get user info
         const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('User:', payload.username);
+        console.log('logged in:', new Date(payload['iat']));
+        console.log('Session expires:', new Date(payload['exp']));
+        console.log('Now is:', new Date());
+        
         
         const loggedUser: UserToken = {
             id: payload.sub,
@@ -141,6 +164,26 @@ export class BackendService {
         }
         
         return this.http.get<User[]>(`${this.baseUrl}/users`, {
+            headers: this.headers,
+            params
+        }).pipe(
+            map(response => {
+                return response
+            }),
+            catchError(this.handleError)
+        );
+    }
+
+    getDepartments(page: number = 1, limit: number = 10, search?: string): Observable<string[]> {
+        let params = new HttpParams()
+            .set('page', page.toString())
+            .set('limit', limit.toString());
+
+        if (search) {
+            params = params.set('search', search);
+        }
+        
+        return this.http.get<string[]>(`${this.baseUrl}/users/departments`, {
             headers: this.headers,
             params
         }).pipe(

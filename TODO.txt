@@ -3,10 +3,11 @@ TODO
 - Check for expired token -> Clear and go to login, maybe show popup
 - Employee => Filter task in list by category
 - Employee => Add 'started on' to cards 
-- Manager => Create cards only for it's category
-- Clear logging from testing
-- translate to cyrilic
-- FE: Disabled tasks appear in all tasks, also in completed and ***
+- Admin/Manager => Move add action to the bottom of the card
+- Manager => Create tasks only for his/her's department
+- Admin => add input for new department when adding user/manager
+- translate to Bulgarian
+- 
 - Add recuring tasks
 - Add task due dates
 - 

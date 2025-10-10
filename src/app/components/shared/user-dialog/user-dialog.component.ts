@@ -43,6 +43,7 @@ export class UserDialogComponent implements OnInit {
     isLoading = false;
     hidePassword = true;
     hideConfirmPassword = true;
+    departments: string[] = []
     userRoles = [
         { value: UserRole.ADMIN, label: 'Administrator' },
         { value: UserRole.MANAGER, label: 'Manager' },
@@ -61,6 +62,9 @@ export class UserDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.backendService.getDepartments().subscribe(
+            (departments) => this.departments = departments);
+            
         if (this.isEditMode && this.data.user) {
             this.populateForm(this.data.user);
         }
@@ -73,6 +77,7 @@ export class UserDialogComponent implements OnInit {
             firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
             lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
             role: ['', Validators.required],
+            department: ['', Validators.required],
             isActive: [true]
         }) as FormGroup;
 
@@ -98,6 +103,7 @@ export class UserDialogComponent implements OnInit {
             firstName: user.firstName,
             lastName: user.lastName,
             role: user.role,
+            department: user.department,
             isActive: user.isActive
         });
     }

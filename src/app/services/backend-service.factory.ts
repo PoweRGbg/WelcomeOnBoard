@@ -13,13 +13,14 @@ export interface IBackendService {
     logout(): void;
     refreshToken(): any;
     getCurrentUser(): any;
-
+    
     // User Management
     getUsers(page?: number, limit?: number, search?: string): Observable<User[]>;
     getUserById(id: string): Observable<User>;
     createUser(userData: any): Observable<User>;
     updateUser(id: string, userData: any): Observable<User>;
     deleteUser(id: string): Observable<boolean>;
+    getDepartments(): Observable<string[]>;
 
     // Task Management
     getTasks(page?: number, limit?: number, category?: string, search?: string): Observable<Task[]>;

@@ -384,6 +384,28 @@ export class BackendMockService {
         );
     }
 
+    getDepartments(page: number = 1, limit: number = 10, search?: string): Observable<string[]> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                let filteredUsers = [...this.mockUsers];
+
+                if (search) {
+                    filteredUsers = filteredUsers.filter(user =>
+                        user.username.toLowerCase().includes(search.toLowerCase()) ||
+                        user.firstName.toLowerCase().includes(search.toLowerCase()) ||
+                        user.lastName.toLowerCase().includes(search.toLowerCase()) ||
+                        user.email.toLowerCase().includes(search.toLowerCase())
+                    );
+                }
+
+                const startIndex = (page - 1) * limit;
+                const endIndex = startIndex + limit;
+
+                return filteredUsers.slice(startIndex, endIndex).map(user => user.department ? user.department : 'unknown');
+            })
+        );
+    }
+
     getUserById(id: string): Observable<User> {
         return this.simulateNetworkDelay().pipe(
             map(() => {

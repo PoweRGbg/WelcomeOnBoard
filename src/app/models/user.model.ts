@@ -10,6 +10,7 @@ export interface User {
     password: string;
     email: string;
     role: UserRole;
+    department?: string;
     firstName: string;
     lastName: string;
     isActive: boolean;
@@ -34,3 +35,4 @@ export interface UserInfo {
     firstName: string;
     lastName: string;
 }
+
