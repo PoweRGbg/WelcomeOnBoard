@@ -1,5 +1,4 @@
-- Uncomplete action in task progress
+- fix mess after change to user._id
 - changing actions' order
 - task can can be recurring so after completed it can be restarted
-- create new collection with TaskProgress
-- filter tasks by search bar
+- filter tasks by category
