@@ -54,6 +54,8 @@ export class EmployeeTasksComponent implements OnInit {
 
     ngOnInit(): void {
         this.authService.currentUser$.subscribe(currentUser => {
+            console.log('Current user:', currentUser);
+            
             this.currentUserId = currentUser?._id || null;
             this.loadTasks();
             this.loadTaskProgress();
@@ -68,7 +70,6 @@ export class EmployeeTasksComponent implements OnInit {
 
     loadTaskProgress(): void {
         if (!this.currentUserId) return;
-
         this.backendService.getTaskProgressByUserId(this.currentUserId).subscribe((progress) => {
             this.taskProgress.clear();
             progress.forEach(p => {

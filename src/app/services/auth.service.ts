@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { User, UserRole } from '../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from './backend-service.factory';
+import { toUser } from '../common/utils';
 
 @Injectable({
     providedIn: 'root'
@@ -20,7 +21,7 @@ export class AuthService {
         if (this.backendService.isAuthenticated()) {
             const loggedUser = this.backendService.getCurrentUser();
             if (loggedUser) {
-                this.currentUserSubject.next(loggedUser);
+                this.currentUserSubject.next(toUser(loggedUser));
             } else {
                 this.logout();
             }
@@ -28,7 +29,9 @@ export class AuthService {
     }
 
     login(loggedUser: User): void {
-        this.currentUserSubject.next(loggedUser);
+        console.log('Logged in user:', loggedUser);
+        
+        this.currentUserSubject.next(toUser(loggedUser));
     }
 
     logout(): void {

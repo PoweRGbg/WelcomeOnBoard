@@ -221,7 +221,6 @@ export class BackendService {
 
     // Task Management Methods
     getTasks(page: number = 1, limit: number = 10, category?: string, search?: string): Observable<Task[]> {
-        this.getDepartments().subscribe(departments => console.log('Departments:', departments));
         let params = new HttpParams()
             .set('page', page.toString())
             .set('limit', limit.toString());
@@ -290,11 +289,18 @@ export class BackendService {
     }
 
     // Task Progress Methods
-    getTaskProgressByUserId(userId?: string): Observable<TaskProgress[]> {
+    getTaskProgressByUserId(userId: string): Observable<TaskProgress[]> {
+        if (!userId) {
+            throw new Error('Cannot get progress when no userId is provided in getTaskProgressByUserId()')
+        }
         return this.http.get<TaskProgress[]>(`${this.baseUrl}/task-progress/${userId}`, {
             headers: this.headers,
         }).pipe(
-            map(response => response),
+            map(response => {
+                console.log('Got task progress', response);
+                
+                return response
+            }),
             catchError(this.handleError)
         );
     }
