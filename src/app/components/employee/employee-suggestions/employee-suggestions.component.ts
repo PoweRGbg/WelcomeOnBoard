@@ -108,7 +108,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
                 suggestedBy: this.currentUserId!,
                 taskName: formValue.taskName,
                 description: formValue.description,
-                category: formValue.category,
+                department: formValue.department,
                 url: formValue.url,
                 actions: actions,
                 status: 'pending'

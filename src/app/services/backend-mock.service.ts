@@ -70,7 +70,7 @@ export class BackendMockService {
             id: '1',
             name: 'Complete Employee Onboarding',
             description: 'Complete all required onboarding tasks for new employees',
-            category: 'Onboarding',
+            department: 'Onboarding',
             url: 'https://company.com/onboarding',
             actions: [
                 {
@@ -113,7 +113,7 @@ export class BackendMockService {
             id: '2',
             name: 'Security Training',
             description: 'Complete mandatory security awareness training',
-            category: 'Training',
+            department: 'Training',
             url: 'https://company.com/security-training',
             actions: [
                 {
@@ -148,7 +148,7 @@ export class BackendMockService {
             id: '3',
             name: 'Equipment Setup',
             description: 'Set up and configure work equipment',
-            category: 'Equipment',
+            department: 'Equipment',
             url: 'https://company.com/equipment',
             actions: [
                 {
@@ -187,7 +187,7 @@ export class BackendMockService {
             suggestedBy: '3',
             taskName: 'Team Building Workshop',
             description: 'Organize team building activities for new employees',
-            category: 'Team Building',
+            department: 'Team Building',
             url: 'https://company.com/team-building',
             actions: [
                 {
@@ -209,7 +209,7 @@ export class BackendMockService {
             suggestedBy: '4',
             taskName: 'Mentorship Program',
             description: 'Pair new employees with experienced mentors',
-            category: 'Development',
+            department: 'Development',
             url: 'https://company.com/mentorship',
             actions: [
                 {
@@ -474,7 +474,7 @@ export class BackendMockService {
 
                 if (category) {
                     filteredTasks = filteredTasks.filter(task =>
-                        task.category.toLowerCase() === category.toLowerCase()
+                        task.department.toLowerCase() === category.toLowerCase()
                     );
                 }
 

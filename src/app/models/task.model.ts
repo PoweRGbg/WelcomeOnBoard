@@ -5,7 +5,7 @@ export interface Task {
     id: string;
     name: string;
     description?: string;
-    category: string;
+    department: string;
     url?: string;
     actions?: Action[];
     createdBy: UserInfo;
@@ -18,7 +18,7 @@ export interface Task {
 export interface TaskCreateRequest {
     name: string,
     description: string,
-    category: string,
+    department: string,
     url?: string,
     actions: Action[],    
     createdBy: string,
@@ -30,7 +30,7 @@ export interface TaskSuggestion {
     suggestedBy: string;
     taskName: string;
     description?: string;
-    category: string;
+    department: string;
     url?: string;
     actions?: Action[];
     status: 'pending' | 'approved' | 'rejected';

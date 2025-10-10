@@ -39,12 +39,12 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
     styleUrl: './admin-tasks.component.scss'
 })
 export class AdminTasksComponent implements OnInit {
-    tasks: Task[] = [];
-    isLoading = false;
-    currentUser: UserInfo | null = null;
-    searchTerm = '';
-    selectedCategory = '';
-    categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
+    protected tasks: Task[] = [];
+    protected isLoading = false;
+    protected currentUser: UserInfo | null = null;
+    protected searchTerm = '';
+    protected selectedDepartment = '';
+    protected departments = ['All departments'];
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -60,9 +60,18 @@ export class AdminTasksComponent implements OnInit {
     loadTasks(): void {
         this.isLoading = true;
         const searchQuery = this.searchTerm.trim() || undefined;
-        const categoryFilter = this.selectedCategory || undefined;
+        const departmentFilter = this.selectedDepartment || undefined;
+        this.backendService.getDepartments().subscribe({
+            next: (departments) => {
+                this.departments = departments;
+            },
+            error: (error) => {
+                this.isLoading = false;
+                this.snackBar.open(`Error loading departments: ${error.message}`, 'Close', { duration: 5000 });
+            }
+        })
 
-        this.backendService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
+        this.backendService.getTasks(1, 50, departmentFilter, searchQuery).subscribe({
             next: (tasks) => {
                 this.tasks = tasks;
                 this.isLoading = false;
@@ -78,13 +87,13 @@ export class AdminTasksComponent implements OnInit {
         this.loadTasks();
     }
 
-    onCategoryChange(): void {
+    onDepartmentChange(): void {
         this.loadTasks();
     }
 
     clearSearch(): void {
         this.searchTerm = '';
-        this.selectedCategory = '';
+        this.selectedDepartment = '';
         this.loadTasks();
     }
 

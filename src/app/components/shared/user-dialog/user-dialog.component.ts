@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +17,14 @@ export interface UserDialogData {
     user?: User;
     currentUser: User;
 }
+
+const customDepartmentLength = (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (value.length < 2 || value.length > 50) {
+        return { customDepartmentLength: true };
+    }
+    return null;
+};
 
 @Component({
     selector: 'app-user-dialog',
@@ -43,7 +51,9 @@ export class UserDialogComponent implements OnInit {
     isLoading = false;
     hidePassword = true;
     hideConfirmPassword = true;
-    departments: string[] = []
+    departments: string[] = ['All Departments'];
+    department = '';
+    
     userRoles = [
         { value: UserRole.ADMIN, label: 'Administrator' },
         { value: UserRole.MANAGER, label: 'Manager' },
@@ -59,11 +69,15 @@ export class UserDialogComponent implements OnInit {
     ) {
         this.userForm = this.createForm();
         this.isEditMode = !!data.user;
+        console.log('In component constructor, isEditMode:', !!data.user);
+        
     }
 
     ngOnInit(): void {
         this.backendService.getDepartments().subscribe(
-            (departments) => this.departments = departments);
+            (departments) => { 
+                this.departments = ['All Departments', ...departments, 'Other'];
+            });
             
         if (this.isEditMode && this.data.user) {
             this.populateForm(this.data.user);
@@ -78,11 +92,14 @@ export class UserDialogComponent implements OnInit {
             lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
             role: ['', Validators.required],
             department: ['', Validators.required],
+            customDepartment: [''],
             isActive: [true]
         }) as FormGroup;
 
         // Add password fields only for new users
         if (!this.isEditMode) {
+            console.log('We are not in edit mode');
+            
             form.addControl('password', this.fb.control('', [
                 Validators.required,
                 Validators.minLength(6),
@@ -97,6 +114,8 @@ export class UserDialogComponent implements OnInit {
     }
 
     private populateForm(user: User): void {
+        console.log('Populating form with user data:', user);
+        
         this.userForm.patchValue({
             username: user.username,
             email: user.email,
@@ -109,6 +128,11 @@ export class UserDialogComponent implements OnInit {
     }
 
     onSubmit(): void {
+        // Clear validation errors before validation
+        
+
+        console.log('User form submitted:', this.userForm.controls);
+        
         if (this.userForm.valid) {
             // Check password confirmation for new users
             if (!this.isEditMode) {
@@ -123,6 +147,7 @@ export class UserDialogComponent implements OnInit {
 
             this.isLoading = true;
             const formValue = this.userForm.value;
+            const department = formValue.department === 'Other' ? formValue.customDepartment : formValue.department;
 
             const userData: Partial<User> = {
                 username: formValue.username,
@@ -130,7 +155,8 @@ export class UserDialogComponent implements OnInit {
                 firstName: formValue.firstName,
                 lastName: formValue.lastName,
                 role: formValue.role,
-                isActive: formValue.isActive
+                isActive: formValue.isActive,
+                department,
             };
 
             // Add password for new users
@@ -194,6 +220,18 @@ export class UserDialogComponent implements OnInit {
             const requiredLength = field.errors?.['maxlength']?.requiredLength;
             return `${this.getFieldLabel(fieldName)} must not exceed ${requiredLength} characters`;
         }
+        if (field?.hasError('Department')) {
+            return 'Please select a department';
+        }
+
+        if (field?.hasError('role')) {
+            return 'Please select a role';
+        }
+
+        if (field?.hasError('customDepartment')) {
+            const requiredLength = field.errors?.['customDepartment']?.requiredLength;
+            return `${this.getFieldLabel(fieldName)} must be at least ${requiredLength} characters`;
+        }
         return '';
     }
 
@@ -205,13 +243,18 @@ export class UserDialogComponent implements OnInit {
             lastName: 'Last Name',
             password: 'Password',
             confirmPassword: 'Confirm Password',
-            role: 'Role'
+            role: 'Role',
+            Department: 'Department',
+            customDepartment: 'Other Department',
         };
         return labels[fieldName] || fieldName;
     }
 
     isFieldInvalid(fieldName: string): boolean {
         const field = this.userForm.get(fieldName);
+        if(!!(field && field.invalid && (field.dirty || field.touched))){
+            console.log('Field', fieldName, 'is invalid');
+        };
         return !!(field && field.invalid && (field.dirty || field.touched));
     }
 }

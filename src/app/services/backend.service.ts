@@ -138,10 +138,6 @@ export class BackendService {
         // decode token to get user info
         const payload = JSON.parse(atob(token.split('.')[1]));
         console.log('User:', payload.username);
-        console.log('logged in:', new Date(payload['iat']));
-        console.log('Session expires:', new Date(payload['exp']));
-        console.log('Now is:', new Date());
-        
         
         const loggedUser: UserToken = {
             id: payload.sub,
@@ -228,6 +224,7 @@ export class BackendService {
 
     // Task Management Methods
     getTasks(page: number = 1, limit: number = 10, category?: string, search?: string): Observable<Task[]> {
+        this.getDepartments().subscribe(departments => console.log('Departments:', departments));
         let params = new HttpParams()
             .set('page', page.toString())
             .set('limit', limit.toString());

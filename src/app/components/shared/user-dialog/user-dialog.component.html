@@ -61,6 +61,28 @@
         </div>
       </div>
 
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="role-field">
+          <mat-label>Department *</mat-label>
+          <mat-select formControlName="department">
+            <mat-option *ngFor="let department of departments" [value]="department">
+              {{ department }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="isFieldInvalid('department')">
+            {{ getFieldError('department') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Other department *</mat-label>
+          <input matInput formControlName="customDepartment" placeholder="Enter last name">
+          <mat-error *ngIf="isFieldInvalid('customDepartment')">
+            {{ getFieldError('customDepartment') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
       <!-- Password fields only for new users -->
       <div *ngIf="!isEditMode" class="password-section">
         <h3>Password</h3>

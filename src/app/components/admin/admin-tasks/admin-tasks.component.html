@@ -18,11 +18,11 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="category-field">
-            <mat-label>Category</mat-label>
-            <mat-select [(ngModel)]="selectedCategory" (selectionChange)="onCategoryChange()">
-              <mat-option value="">All Categories</mat-option>
-              <mat-option *ngFor="let category of categories" [value]="category">
-                {{ category }}
+            <mat-label>Department</mat-label>
+            <mat-select [(ngModel)]="selectedDepartment" (selectionChange)="onDepartmentChange()">
+              <mat-option value="">All Departments</mat-option>
+              <mat-option *ngFor="let department of departments" [value]="department">
+                {{ department }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -30,7 +30,7 @@
           <button mat-icon-button 
                   (click)="clearSearch()" 
                   matTooltip="Clear search"
-                  *ngIf="searchTerm || selectedCategory">
+                  *ngIf="searchTerm || selectedDepartment">
             <mat-icon>clear</mat-icon>
           </button>
         </div>
@@ -57,7 +57,7 @@
             <mat-card-subtitle>
               <div class="chip-container">
                 <mat-chip [color]="task.isActive ? 'primary' : 'warn'" selected>
-                  {{ task.category }}
+                  {{ task.department }}
                 </mat-chip>
                 <mat-chip *ngIf="!task.isActive" color="warn" selected>
                   Inactive

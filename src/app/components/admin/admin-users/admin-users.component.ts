@@ -87,6 +87,8 @@ export class AdminUsersComponent implements OnInit {
             return;
         }
 
+        console.log('Editing user:', user);
+        
         const dialogRef = this.dialog.open(UserDialogComponent, {
             width: '90vw',
             maxWidth: '600px',

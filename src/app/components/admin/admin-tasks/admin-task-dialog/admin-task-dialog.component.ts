@@ -37,10 +37,10 @@ import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-s
     styleUrl: './admin-task-dialog.component.scss'
 })
 export class AdminTaskDialogComponent implements OnInit {
-    taskForm: FormGroup;
-    isEditMode = false;
-    categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
-    isLoading = false;
+    protected taskForm: FormGroup;
+    protected isEditMode = false;
+    protected departments: string[] = [];
+    protected isLoading = false;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,        
@@ -57,13 +57,18 @@ export class AdminTaskDialogComponent implements OnInit {
         if (this.isEditMode && this.data.task) {
             this.populateForm(this.data.task);
         }
+
+        this.backendService.getDepartments().subscribe(
+            (departments) => { 
+                this.departments = [ ...departments, 'Other'];
+            });
     }
 
     private createForm(): FormGroup {
         return this.fb.group({
             name: ['', [Validators.required, Validators.minLength(3)]],
             description: [''],
-            category: ['', Validators.required],
+            department: ['', Validators.required],
             url: [''],
             isActive: [true],
             actions: this.fb.array([])
@@ -74,7 +79,7 @@ export class AdminTaskDialogComponent implements OnInit {
         this.taskForm.patchValue({
             name: task.name,
             description: task.description,
-            category: task.category,
+            department: task.department,
             url: task.url,
             isActive: task.isActive,
         });
@@ -155,7 +160,7 @@ export class AdminTaskDialogComponent implements OnInit {
             const taskData: TaskCreateRequest = {
                 name: formValue.name,
                 description: formValue.description,
-                category: formValue.category,
+                department: formValue.category,
                 url: formValue.url.strip().length ? formValue.url : undefined,
                 actions: actions,
                 createdBy: this.data.currentUser.id,

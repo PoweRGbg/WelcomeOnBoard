@@ -145,7 +145,7 @@ export class ManagerTasksComponent implements OnInit {
         const newTask: TaskCreateRequest = {
             name: `${task.name} (Copy)`,
             description: task.description || '',
-            category: task.category,
+            department: task.department,
             url: task.url || '',
             actions: task.actions || [],
             isActive: task.isActive,

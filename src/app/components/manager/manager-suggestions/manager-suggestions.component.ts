@@ -92,7 +92,7 @@ export class ManagerSuggestionsComponent implements OnInit {
         const taskData: TaskCreateRequest = {
             name: suggestion.taskName,
             description: suggestion.description || '',
-            category: suggestion.category,
+            department: suggestion.department,
             url: suggestion.url || '',
             actions: suggestion.actions || [],
             createdBy: suggestion.suggestedBy,

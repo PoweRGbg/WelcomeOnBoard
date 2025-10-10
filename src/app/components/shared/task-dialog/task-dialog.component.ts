@@ -69,7 +69,7 @@ export class TaskDialogComponent implements OnInit {
         const form = this.fb.group({
             name: ['', [Validators.required, Validators.minLength(3)]],
             description: [''],
-            category: ['', Validators.required],
+            department: ['', Validators.required],
             url: [''],
             actions: this.fb.array([])
         }) as FormGroup;
@@ -86,7 +86,7 @@ export class TaskDialogComponent implements OnInit {
         this.taskForm.patchValue({
             name: task.name,
             description: task.description,
-            category: task.category,
+            department: task.department,
             url: task.url
         });
 
@@ -171,7 +171,7 @@ export class TaskDialogComponent implements OnInit {
             const taskData: TaskCreateRequest = {
                 name: formValue.name,
                 description: formValue.description,
-                category: formValue.category,
+                department: formValue.category,
                 url: formValue.url,
                 actions: actions,
                 createdBy: this.data.currentUser.id,
