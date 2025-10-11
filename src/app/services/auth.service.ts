@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { User, UserRole } from '../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from './backend-service.factory';
-import { toUser } from '../common/utils';
+import { BackendService } from './backend.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +12,7 @@ export class AuthService {
     public currentUser$ = this.currentUserSubject.asObservable();
 
     constructor(
-        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
+        @Inject(BACKEND_SERVICE) private backendService: BackendService,
     ) {
         this.checkAuthStatus();
     }
@@ -21,7 +21,13 @@ export class AuthService {
         if (this.backendService.isAuthenticated()) {
             const loggedUser = this.backendService.getCurrentUser();
             if (loggedUser) {
-                this.currentUserSubject.next(toUser(loggedUser));
+                try {
+                    this.currentUserSubject.next(loggedUser);
+                } catch (error) {
+                    console.error(error);
+                    this.logout()
+                }
+                
             } else {
                 this.logout();
             }
@@ -29,9 +35,7 @@ export class AuthService {
     }
 
     login(loggedUser: User): void {
-        console.log('Logged in user:', loggedUser);
-        
-        this.currentUserSubject.next(toUser(loggedUser));
+        this.currentUserSubject.next(loggedUser);
     }
 
     logout(): void {
@@ -40,8 +44,16 @@ export class AuthService {
     }
 
     getCurrentUser(): User | null {
-        this.backendService.getCurrentUser();
-        return this.currentUserSubject.value;
+        try {
+            this.backendService.getCurrentUser();
+            if (this.currentUserSubject.value) {
+                return this.currentUserSubject.value;
+            } else {
+                return null;
+            }
+        } catch {
+            throw Error('Cannot get current user in AuthService');
+        }
     }
 
     isAuthenticated(): boolean {
@@ -72,10 +84,5 @@ export class AuthService {
 
     isManagerOrAdmin(): boolean {
         return this.hasAnyRole([UserRole.MANAGER, UserRole.ADMIN]);
-    }
-
-    refreshUser(): void {
-        const user = this.backendService.getCurrentUser();
-        this.currentUserSubject.next(user);
     }
 }

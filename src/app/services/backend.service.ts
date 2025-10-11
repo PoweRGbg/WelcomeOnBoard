@@ -5,6 +5,7 @@ import { map, catchError, tap } from 'rxjs/operators';
 import { User, UserToken } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { environment } from '../../environments/environment';
+import { toUser } from '../common/utils';
 
 export interface LoginRequest {
     username: string;
@@ -67,7 +68,11 @@ export class BackendService {
         return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, credentials)
             .pipe(
                 map(response => {
-                    return response;
+                    return {
+                        token: response.token,
+                        user: toUser(response.user),
+                        refreshToken: response.refreshToken,
+                    };
                 }),
                 tap(response => {
                     this.setToken(response.token);
@@ -132,6 +137,7 @@ export class BackendService {
     getCurrentUser(): User | null {
         const token = this.tokenSubject.value;
         if (!token) {
+            new Error('No token found'); 
             return null;
         }
         // decode token to get user info

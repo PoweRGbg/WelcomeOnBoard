@@ -10,6 +10,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../services/auth.service';
 import { UserRole } from '../../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from '../../services/backend-service.factory';
+import { toUser } from '../../common/utils';
+import { BackendService } from '../../services/backend.service';
 
 @Component({
     selector: 'app-login',
@@ -31,7 +33,7 @@ export class LoginComponent {
     userRoles = Object.values(UserRole);
 
     constructor(
-        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
+        @Inject(BACKEND_SERVICE) private backendService: BackendService,
         private fb: FormBuilder,
         private authService: AuthService,
         private router: Router

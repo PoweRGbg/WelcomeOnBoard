@@ -41,7 +41,9 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit(): void {
         this.authService.currentUser$.subscribe(user => {
-            console.log('Current user in dashboard:', user);
+            if (!user || !user._id) {
+                console.error('No user data in AuthService observable');
+            }
             this.currentUser = user;
             this.authService.getCurrentUser();
         });
@@ -54,8 +56,6 @@ export class DashboardComponent implements OnInit {
 
     private calculateStats(): void {
         if (!this.currentUser) return;
-        console.log('In calculateStats(), currentUser:', this.currentUser);
-        
         this.backendService.getTaskProgressByUserId(this.currentUser._id).subscribe((userProgress) => {
             const activeTasks = this.tasks.filter((task) => task.isActive).length;
             this.userStats.totalTasks = activeTasks;
