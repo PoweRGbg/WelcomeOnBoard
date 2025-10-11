@@ -48,7 +48,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.currentUserId = this.authService.getCurrentUser()?.id || null;
+        this.currentUserId = this.authService.getCurrentUser()?._id || null;
         this.loadMySuggestions();
     }
 
@@ -56,7 +56,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
         return this.fb.group({
             taskName: ['', [Validators.required, Validators.minLength(3)]],
             description: [''],
-            category: ['', Validators.required],
+            department: ['', Validators.required],
             url: [''],
             actions: this.fb.array([])
         });
@@ -105,7 +105,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
                 suggestedBy: this.currentUserId!,
                 taskName: formValue.taskName,
                 description: formValue.description,
-                category: formValue.category,
+                department: formValue.department,
                 url: formValue.url,
                 actions: actions,
                 status: 'pending'

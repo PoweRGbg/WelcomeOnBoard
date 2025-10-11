@@ -83,11 +83,11 @@ export class AdminTasksComponent implements OnInit {
         });
     }
 
-    onSearchChange(): void {
+    protected onSearchChange(): void {
         this.loadTasks();
     }
 
-    onDepartmentChange(): void {
+    protected onDepartmentChange(): void {
         this.loadTasks();
     }
 
@@ -156,7 +156,7 @@ export class AdminTasksComponent implements OnInit {
         const updatedTask = { 
             ...task,
             isActive: !task.isActive,
-            createdBy: task.createdBy.id,
+            createdBy: task.createdBy._id,
             updatedAt: undefined,
             createdAt: undefined,
             id: undefined,

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatInputModule } from '@angular/material/input';
@@ -15,6 +15,8 @@ import { AuthService } from '../../../services/auth.service';
 import { Task, TaskProgress } from '../../../models/task.model';
 import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dialog.component';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-employee-tasks',
@@ -32,50 +34,87 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
         MatDialogModule,
         MatFormFieldModule,
         ReactiveFormsModule,
+        MatSelectModule,
+        FormsModule
     ],
     templateUrl: './employee-tasks.component.html',
-    styleUrl: './employee-tasks.component.scss'
+    styleUrl: './employee-tasks.component.scss',
 })
 export class EmployeeTasksComponent implements OnInit {
-    searchForm: FormGroup;
-    tasks: Task[] = [];
-    taskProgress: Map<string, TaskProgress> = new Map();
-    currentUserId: string | null = null;
+    protected searchForm: FormGroup;
+    protected tasks: Task[] = [];
+    protected taskProgress: Map<string, TaskProgress> = new Map();
+    protected currentUserId: string | null = null;
+    protected selectedDepartment = '';
+    protected searchTerm = '';
+    protected departments: string[] = [];
+    string = [];
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
-        private fb: FormBuilder,
+        private fb: FormBuilder
     ) {
         this.searchForm = this.createForm();
     }
 
     ngOnInit(): void {
-        this.authService.currentUser$.subscribe(currentUser => {
-            console.log('Current user:', currentUser);
-            
+        this.authService.currentUser$.subscribe((currentUser) => {
             this.currentUserId = currentUser?._id || null;
             this.loadTasks();
+            this.getDepartments();
             this.loadTaskProgress();
         });
     }
 
-    loadTasks(): void {
-        this.backendService.getTasks().subscribe(tasks => {
+    protected onDepartmentChange(): void {
+        this.loadTasks();
+    }
+
+    protected onSearchChange() {
+        console.log('searchTerm', this.searchTerm);
+        this.loadTasks();
+    }
+
+    protected loadTasks(): void {
+        // Show only active tasks
+        this.backendService.getTasks().subscribe((tasks) => {
             this.tasks = tasks.filter((task) => task.isActive);
+            const searchQuery = this.searchTerm.trim().toLocaleLowerCase() || undefined;
+            const departmentFilter = this.selectedDepartment || undefined;
+            if (searchQuery?.length) {
+                this.tasks = this.tasks.filter((task) => {
+                    console.log('Checking  ', task.name, 'for', searchQuery, task.name.toLocaleLowerCase().includes(searchQuery));
+                    
+                    return (task.name.toLocaleLowerCase().includes(searchQuery) ||
+                        task.description?.toLocaleLowerCase().includes(searchQuery)
+                    );
+                });
+            }
+            console.log('Tasks after seratch:', this.tasks);
+            
+            if (departmentFilter?.length && departmentFilter !== 'All Departments') {
+                console.log('Filtering by department:', departmentFilter);
+                
+                this.tasks = this.tasks.filter((task) =>
+                    task.department.toLocaleLowerCase() === departmentFilter.toLocaleLowerCase()
+                );
+            }
         });
     }
 
     loadTaskProgress(): void {
         if (!this.currentUserId) return;
-        this.backendService.getTaskProgressByUserId(this.currentUserId).subscribe((progress) => {
-            this.taskProgress.clear();
-            progress.forEach(p => {
-                this.taskProgress.set(p.taskId, p);
+        this.backendService
+            .getTaskProgressByUserId(this.currentUserId)
+            .subscribe((progress) => {
+                this.taskProgress.clear();
+                progress.forEach((p) => {
+                    this.taskProgress.set(p.taskId, p);
+                });
             });
-        });
     }
 
     getTaskProgress(task: Task): TaskProgress | null {
@@ -99,15 +138,20 @@ export class EmployeeTasksComponent implements OnInit {
     getTaskStatusColor(task: Task): string {
         const status = this.getTaskStatus(task);
         switch (status) {
-            case 'Completed': return 'primary';
-            case 'In Progress': return 'warn';
-            default: return 'basic';
+            case 'Completed':
+                return 'primary';
+            case 'In Progress':
+                return 'warn';
+            default:
+                return 'basic';
         }
     }
 
     isTaskInProgress(task: Task): boolean {
         const progress = this.getTaskProgress(task);
-        return progress ? !progress.isCompleted && progress.actionsCompleted > 0 : false;
+        return progress
+            ? !progress.isCompleted && progress.actionsCompleted > 0
+            : false;
     }
 
     startTask(task: Task): void {
@@ -121,7 +165,7 @@ export class EmployeeTasksComponent implements OnInit {
             isCompleted: false,
         };
 
-        this.backendService.updateTaskProgress(progress).subscribe(() =>{
+        this.backendService.updateTaskProgress(progress).subscribe(() => {
             this.loadTaskProgress();
             this.snackBar.open('Task started!', 'Close', { duration: 3000 });
         });
@@ -131,10 +175,10 @@ export class EmployeeTasksComponent implements OnInit {
         const progress = this.getTaskProgress(task);
         const dialogRef = this.dialog.open(TaskDetailDialogComponent, {
             width: '900px',
-            data: { task, progress, currentUserId: this.currentUserId }
+            data: { task, progress, currentUserId: this.currentUserId },
         });
 
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.afterClosed().subscribe((result) => {
             if (result || result === undefined) {
                 this.loadTaskProgress();
                 this.snackBar.open('Task status updated!', 'Close', { duration: 3000 });
@@ -147,16 +191,18 @@ export class EmployeeTasksComponent implements OnInit {
         let progress = this.getTaskProgress(task);
         progress!.actionsCompleted = 0;
         progress!.isCompleted = false;
-        
+
         const dialogRef = this.dialog.open(TaskDetailDialogComponent, {
             width: '900px',
-            data: { task, progress, currentUserId: this.currentUserId }
+            data: { task, progress, currentUserId: this.currentUserId },
         });
 
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.afterClosed().subscribe((result) => {
             if (result || result === undefined) {
                 this.loadTaskProgress();
-                this.snackBar.open('Task progress updated!', 'Close', { duration: 3000 });
+                this.snackBar.open('Task progress updated!', 'Close', {
+                    duration: 3000,
+                });
             }
         });
     }
@@ -177,19 +223,33 @@ export class EmployeeTasksComponent implements OnInit {
         });
     }
 
+    protected getDepartments(): void {
+        this.backendService.getDepartments().subscribe({
+            next: (departments) => {
+                this.departments = departments;
+            },
+            error: (error) => {
+                this.snackBar.open(
+                    `Error loading departments: ${error.message}`,
+                    'Close',
+                    { duration: 5000 }
+                );
+            },
+        });
+    }
+
     openTaskUrl(url: string): void {
         window.open(url, '_blank');
     }
 
     protected onSearch(): void {
-        const searchTerm = this.searchForm.value.taskName.toString();
-        if (!searchTerm.length) {
-            this.loadTasks();
-        } else {
-            this.tasks = this.tasks.filter((task) => {
-                return task.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
-            });
-        }
+        this.loadTasks();
+    }
+
+    protected clearSearch(): void {
+        this.searchTerm = '';
+        this.selectedDepartment = '';
+        this.loadTasks();
     }
 
     private createForm(): FormGroup {

@@ -46,7 +46,7 @@ export class TaskDialogComponent implements OnInit {
     taskForm: FormGroup;
     isEditMode = false;
     isLoading = false;
-    categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
+    protected departments: string[] = [];
 
     constructor(
         private fb: FormBuilder,
@@ -56,6 +56,9 @@ export class TaskDialogComponent implements OnInit {
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
     ) {
         this.taskForm = this.createForm();
+        this.backendService.getDepartments().subscribe((departments) => {
+            this.departments = departments;
+        });
         this.isEditMode = !!data.task;
     }
 
@@ -171,10 +174,10 @@ export class TaskDialogComponent implements OnInit {
             const taskData: TaskCreateRequest = {
                 name: formValue.name,
                 description: formValue.description,
-                department: formValue.category,
+                department: formValue.department,
                 url: formValue.url,
                 actions: actions,
-                createdBy: this.data.currentUser.id,
+                createdBy: this.data.currentUser._id,
                 isActive: this.data.allowStatusToggle ? formValue.isActive : true,
             };
 

@@ -243,6 +243,9 @@ export class BackendService {
             headers: this.headers,
             params
         }).pipe(
+            map((tasks) => tasks.map((task) => {
+                return { ...task, department: task.department ?? 'All departments'};
+            })),
             catchError(this.handleError)
         );
     }
@@ -258,7 +261,8 @@ export class BackendService {
     createTask(taskData: TaskCreateRequest): Observable<Task> {
         // removing unused URL properties from task and actions
         taskData = this.stripUnusedTaskData(taskData);
-
+        console.log('Trying to create task with', taskData);
+        
         return this.http.post<Task>(`${this.baseUrl}/tasks`, taskData, { headers: this.headers })
             .pipe(
                 map(response => response),

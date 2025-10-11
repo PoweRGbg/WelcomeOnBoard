@@ -160,10 +160,10 @@ export class AdminTaskDialogComponent implements OnInit {
             const taskData: TaskCreateRequest = {
                 name: formValue.name,
                 description: formValue.description,
-                department: formValue.category,
+                department: formValue.department,
                 url: formValue.url.strip().length ? formValue.url : undefined,
                 actions: actions,
-                createdBy: this.data.currentUser.id,
+                createdBy: this.data.currentUser._id,
                 isActive: formValue.isActive,
             };
 

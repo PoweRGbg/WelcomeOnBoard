@@ -1,7 +1,6 @@
 TODO
 -=-=-=-=-=-=-=-=-=-
 - Check for expired token -> Clear and go to login, maybe show popup
-- Employee => Filter task in list by category
 - Employee => Add 'started on' to cards 
 - Admin/Manager => Move add action to the bottom of the card
 - Manager => Create tasks only for his/her's department
@@ -13,3 +12,9 @@ TODO
 - 
 - Make tasks with due dates appear first in taks list
 - BE: Fix creating new progress because of wrong properties ?!?
+
+- changing actions' order
+- task can can be recurring so after completed it can occur again as uncompleted 
+- tasks can have a deadline
+- FIX Category to department when creating a task 
+- make vars protected/private

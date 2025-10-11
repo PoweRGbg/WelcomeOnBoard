@@ -91,7 +91,7 @@ export class BackendMockService {
                 }
             ],
             createdBy: {
-                id: '1',
+                _id: '1',
                 username: 'admin',
                 firstName: 'Admin',
                 lastName: 'User'
@@ -126,7 +126,7 @@ export class BackendMockService {
                 }
             ],
             createdBy: {
-                id: '1',
+                _id: '1',
                 username: 'admin',
                 firstName: 'Admin',
                 lastName: 'User'
@@ -161,7 +161,7 @@ export class BackendMockService {
                 }
             ],
             createdBy: {
-                id: '2',
+                _id: '2',
                 username: 'manager1',
                 firstName: 'John',
                 lastName: 'Manager'
@@ -506,7 +506,7 @@ export class BackendMockService {
                     ...taskData,
                     id: (this.mockTasks.length + 1).toString(),
                     createdBy: {
-                        id: createdBy._id,
+                        _id: createdBy._id,
                         username: createdBy.username,
                         firstName: createdBy.firstName,
                         lastName: createdBy.lastName

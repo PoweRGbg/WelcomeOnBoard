@@ -58,7 +58,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
         return this.fb.group({
             taskName: ['', [Validators.required, Validators.minLength(3)]],
             description: [''],
-            category: ['', Validators.required],
+            department: ['', Validators.required],
             url: [''],
             actions: this.fb.array([])
         });

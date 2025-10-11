@@ -101,7 +101,7 @@ export class ManagerSuggestionsComponent implements OnInit {
 
         // Create the task
         const suggestionUser: UserInfo = {
-            id: suggestion.suggestedBy,
+            _id: suggestion.suggestedBy,
             username: '',
             firstName: '',
             lastName: ''
