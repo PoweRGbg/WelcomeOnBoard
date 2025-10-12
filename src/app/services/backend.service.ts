@@ -259,9 +259,7 @@ export class BackendService {
     }
 
     createTask(taskData: TaskCreateRequest): Observable<Task> {
-        // removing unused URL properties from task and actions
         taskData = this.stripUnusedTaskData(taskData);
-        console.log('Trying to create task with', taskData);
         
         return this.http.post<Task>(`${this.baseUrl}/tasks`, taskData, { headers: this.headers })
             .pipe(
@@ -307,8 +305,6 @@ export class BackendService {
             headers: this.headers,
         }).pipe(
             map(response => {
-                console.log('Got task progress', response);
-                
                 return response
             }),
             catchError(this.handleError)

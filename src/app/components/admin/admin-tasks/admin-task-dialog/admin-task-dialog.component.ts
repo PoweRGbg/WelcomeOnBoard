@@ -128,7 +128,7 @@ export class AdminTaskDialogComponent implements OnInit {
         }
     }
 
-    moveActionDown(index: number): void {
+    moveActionDown(index: number): void { 
         if (index < this.actionsArray.length - 1) {
             const actions = this.actionsArray.controls;
             const action = actions[index];

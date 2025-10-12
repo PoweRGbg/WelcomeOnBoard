@@ -4,16 +4,18 @@ TODO
 - Employee => Add 'started on' to cards 
 - Admin/Manager => Move add action to the bottom of the card
 - Manager => Create tasks only for his/her's department
-- Admin => add input for new department when adding user/manager
+- Admin => fix category choose dropdown height
 - translate to Bulgarian
-- 
+- Move search to a separate component
 - Add recuring tasks
+    - task progress needs to appear for this task for every user of task's department(task due date ?!?)
+    - Search for task completetions during the period and show it as uncompleted and with due date by the
+        by the end of the day, week, month, but not if completed today/week/month
 - Add task due dates
-- 
-- Make tasks with due dates appear first in taks list
-- BE: Fix creating new progress because of wrong properties ?!?
+    - Make tasks with due dates appear first in taks list
+-
 
-- changing actions' order
+- Find a way to focus on a field
 - task can can be recurring so after completed it can occur again as uncompleted 
 - tasks can have a deadline
 - FIX Category to department when creating a task 
