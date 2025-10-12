@@ -74,7 +74,6 @@ export class EmployeeTasksComponent implements OnInit {
     }
 
     protected onSearchChange() {
-        console.log('searchTerm', this.searchTerm);
         this.loadTasks();
     }
 
@@ -135,6 +134,20 @@ export class EmployeeTasksComponent implements OnInit {
         return 'Not Started';
     }
 
+    getTaskStartedDate(task: Task): string | null {
+        const progress: TaskProgress | null = this.getTaskProgress(task);
+        if (!progress) {
+            return 'Not started!';
+        }
+
+        if (progress.isCompleted) {
+            return 'Completed';
+        } else {
+            progress.startedOn = progress.startedOn ?? new Date(); 
+            return `Started on ${new Date(progress.startedOn).toLocaleDateString('en-GB') } ` ;
+        }
+    }
+
     getTaskStatusColor(task: Task): string {
         const status = this.getTaskStatus(task);
         switch (status) {
@@ -163,6 +176,7 @@ export class EmployeeTasksComponent implements OnInit {
             actionsCompleted: 0,
             actionsTotal: task.actions?.length || 0,
             isCompleted: false,
+            startedOn: new Date(),
         };
 
         this.backendService.updateTaskProgress(progress).subscribe(() => {

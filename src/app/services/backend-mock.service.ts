@@ -227,6 +227,7 @@ export class BackendMockService {
             isCompleted: false,
             actionsCompleted: 1,
             actionsTotal: this.mockTasks[0].actions?.length || 0,
+            startedOn: new Date(),
         },
         {
             taskId: '2',
@@ -234,6 +235,7 @@ export class BackendMockService {
             isCompleted: true,
             actionsCompleted: 2,
             actionsTotal: this.mockTasks[1].actions?.length || 0,
+            startedOn: new Date(),
         }
     ];
 
@@ -692,6 +694,7 @@ export class BackendMockService {
                             actionsCompleted: 0,
                             actionsTotal: this.mockTasks.find(task => task.id === taskId)?.actions?.length ?? 0,
                             isCompleted: false,
+                            startedOn: new Date(),
                         }
                         this.mockTaskProgress.push(filteredProgress);
                     }
@@ -743,6 +746,7 @@ export class BackendMockService {
                     isCompleted: false,
                     actionsCompleted: 0,
                     actionsTotal: this.mockTasks.find(task => task.id === taskId)?.actions?.length ?? 0,
+                    startedOn: new Date(),
                 };
 
                 this.mockTaskProgress[taskIndex] = newProgress;

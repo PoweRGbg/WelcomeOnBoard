@@ -60,6 +60,7 @@ export class TaskDetailDialogComponent implements OnInit {
                         actionsCompleted: 0,
                         actionsTotal: this.task.actions?.length ?? 0,
                         isCompleted: false,
+                        startedOn: new Date(),
                     }
                 } else {
                     if (Object.keys(taskProgress ?? {}).includes('_id')) {
@@ -224,6 +225,7 @@ export class TaskDetailDialogComponent implements OnInit {
             actionsTotal: taskProgress.actionsTotal,
             actionsCompleted: taskProgress.actionsCompleted,
             isCompleted: taskProgress.isCompleted,
+            startedOn: taskProgress.startedOn ?? new Date(),
         }
     }
 }

@@ -45,4 +45,5 @@ export interface TaskProgress {
     actionsTotal: number;
     actionsCompleted: number;
     isCompleted: boolean;
+    startedOn: Date;
 }

@@ -51,6 +51,12 @@
                                     {{ getTaskStatus(task) }}
                                 </mat-chip>
                             </div>
+                            <div *ngIf="!getTaskProgress(task)?.isCompleted"
+                                class="task-status">
+                                <mat-chip [color]="getTaskStatusColor(task)" selected>
+                                    {{ getTaskStartedDate(task) }}
+                                </mat-chip>
+                            </div>
                         </div>
                     </mat-card-header>
 
