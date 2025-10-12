@@ -1,139 +1,141 @@
 <div class="task-dialog">
-  <h2 mat-dialog-title>
-    {{ isEditMode ? 'Edit Task' : 'Create New Task' }}
-  </h2>
+    <h2 mat-dialog-title>
+        {{ isEditMode ? 'Edit Task' : 'Create New Task' }}
+    </h2>
 
-  <mat-dialog-content>
-    <form [formGroup]="taskForm" class="task-form">
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Task Name *</mat-label>
-          <input matInput formControlName="name" placeholder="Enter task name">
-          <mat-error *ngIf="taskForm.get('name')?.hasError('required')">
-            Task name is required
-          </mat-error>
-          <mat-error *ngIf="taskForm.get('name')?.hasError('minlength')">
-            Task name must be at least 3 characters
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Description</mat-label>
-          <textarea matInput formControlName="description" rows="3" placeholder="Enter task description"></textarea>
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="category-field">
-          <mat-label>Department *</mat-label>
-          <mat-select formControlName="department">
-            <mat-option *ngFor="let department of departments" [value]="department">
-              {{ department }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="taskForm.get('department')?.hasError('required')">
-            Department is required
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="url-field">
-          <mat-label>Task URL</mat-label>
-          <input matInput formControlName="url" placeholder="https://example.com">
-        </mat-form-field>
-      </div>
-
-      <div class="form-row" *ngIf="data.allowStatusToggle">
-        <div class="checkbox-group">
-          <mat-checkbox formControlName="isActive">
-            Task is Active
-          </mat-checkbox>
-        </div>
-      </div>
-
-      <div class="actions-section">
-        <div class="actions-header">
-          <h3>Actions</h3>
-          <button mat-raised-button color="primary" type="button" (click)="addAction()">
-            <mat-icon>add</mat-icon>
-            Add Action
-          </button>
-        </div>
-
-        <div formArrayName="actions" class="actions-list">
-          <div *ngFor="let action of actionsArray.controls; let i = index" 
-               [formGroupName]="i" 
-               class="action-item">
-            
-            <div class="action-header">
-              <span class="action-number">{{ i + 1 }}</span>
-              <div class="action-controls">
-                <button mat-icon-button type="button" 
-                        (click)="moveActionUp(i)" 
-                        [disabled]="i === 0"
-                        matTooltip="Move Up">
-                  <mat-icon>keyboard_arrow_up</mat-icon>
-                </button>
-                <button mat-icon-button type="button" 
-                        (click)="moveActionDown(i)" 
-                        [disabled]="i === actionsArray.length - 1"
-                        matTooltip="Move Down">
-                  <mat-icon>keyboard_arrow_down</mat-icon>
-                </button>
-                <button mat-icon-button type="button" 
-                        (click)="removeAction(i)"
-                        matTooltip="Remove Action"
-                        color="warn">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
+    <mat-dialog-content>
+        <form [formGroup]="taskForm" class="task-form">
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Task Name *</mat-label>
+                    <input matInput formControlName="name" placeholder="Enter task name">
+                    <mat-error *ngIf="taskForm.get('name')?.hasError('required')">
+                        Task name is required
+                    </mat-error>
+                    <mat-error *ngIf="taskForm.get('name')?.hasError('minlength')">
+                        Task name must be at least 3 characters
+                    </mat-error>
+                </mat-form-field>
             </div>
 
-            <div class="action-fields">
-              <mat-form-field appearance="outline" class="action-name">
-                <mat-label>Action Name *</mat-label>
-                <input matInput formControlName="name" placeholder="Enter action name">
-                <mat-error *ngIf="action.get('name')?.hasError('required')">
-                  Action name is required
-                </mat-error>
-                <mat-error *ngIf="action.get('name')?.hasError('minlength')">
-                  Action name must be at least 3 characters
-                </mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="action-description">
-                <mat-label>Description</mat-label>
-                <input matInput formControlName="description" placeholder="Enter action description">
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="action-image">
-                <mat-label>Image URL</mat-label>
-                <input matInput formControlName="imageUrl" placeholder="https://example.com/image.jpg">
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="action-url">
-                <mat-label>Action URL</mat-label>
-                <input matInput formControlName="url" placeholder="https://example.com">
-              </mat-form-field>
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="description" rows="3"
+                        placeholder="Enter task description"></textarea>
+                </mat-form-field>
             </div>
-          </div>
-        </div>
 
-        <div *ngIf="actionsArray.length === 0" class="no-actions">
-          <mat-icon>assignment</mat-icon>
-          <p>No actions added yet. Click "Add Action" to get started.</p>
-        </div>
-      </div>
-    </form>
-  </mat-dialog-content>
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="category-field">
+                    <mat-label>Department *</mat-label>
+                    <mat-select formControlName="department">
+                        <mat-option *ngFor="let department of departments" [value]="department">
+                            {{ department }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="taskForm.get('department')?.hasError('required')">
+                        Department is required
+                    </mat-error>
+                </mat-form-field>
 
-  <mat-dialog-actions align="end">
-    <button mat-button (click)="onCancel()" [disabled]="isLoading">Cancel</button>
-    <button mat-raised-button color="primary" (click)="onSubmit()" 
+                <mat-form-field appearance="outline" class="url-field">
+                    <mat-label>Task URL</mat-label>
+                    <input matInput formControlName="url" placeholder="https://example.com">
+                </mat-form-field>
+            </div>
+
+            <div class="form-row" *ngIf="data.allowStatusToggle">
+                <div class="checkbox-group">
+                    <mat-checkbox formControlName="isActive">
+                        Task is Active
+                    </mat-checkbox>
+                </div>
+            </div>
+
+            <div class="actions-section">
+                <div class="actions-header">
+                    <h3>Actions</h3>
+                    <button mat-raised-button color="primary" type="button" (click)="addAction()">
+                        <mat-icon>add</mat-icon>
+                        Add Action
+                    </button>
+                </div>
+
+                <div formArrayName="actions" class="actions-list">
+                    <div *ngFor="let action of actionsArray.controls; let i = index" [formGroupName]="i"
+                        class="action-item">
+
+                        <div class="action-header">
+                            <span class="action-number">{{ i + 1 }}</span>
+                            <div class="action-controls">
+                                <button mat-icon-button type="button" (click)="moveActionUp(i)" [disabled]="i === 0"
+                                    matTooltip="Move Up">
+                                    <mat-icon>keyboard_arrow_up</mat-icon>
+                                </button>
+                                <button mat-icon-button type="button" (click)="moveActionDown(i)"
+                                    [disabled]="i === actionsArray.length - 1" matTooltip="Move Down">
+                                    <mat-icon>keyboard_arrow_down</mat-icon>
+                                </button>
+                                <button mat-icon-button type="button" (click)="removeAction(i)"
+                                    matTooltip="Remove Action" color="warn">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="action-fields">
+                            <mat-form-field appearance="outline" class="action-name">
+                                <mat-label>Action Name *</mat-label>
+                                <input matInput formControlName="name" placeholder="Enter action name">
+                                <mat-error *ngIf="action.get('name')?.hasError('required')">
+                                    Action name is required
+                                </mat-error>
+                                <mat-error *ngIf="action.get('name')?.hasError('minlength')">
+                                    Action name must be at least 3 characters
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="action-description">
+                                <mat-label>Description</mat-label>
+                                <input matInput formControlName="description" placeholder="Enter action description">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="action-image">
+                                <mat-label>Image URL</mat-label>
+                                <input matInput formControlName="imageUrl" placeholder="https://example.com/image.jpg">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="action-url">
+                                <mat-label>Action URL</mat-label>
+                                <input matInput formControlName="url" placeholder="https://example.com">
+                            </mat-form-field>
+                            <div *ngIf="i === actionsArray.length - 1">
+                            <div class="actions-header">
+                                <button mat-raised-button color="primary" type="button" (click)="addAction()">
+                                    <mat-icon>add</mat-icon>
+                                    Add another action
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div *ngIf="actionsArray.length === 0" class="no-actions">
+                    <mat-icon>assignment</mat-icon>
+                    <p>No actions added yet. Click "Add Action" to get started.</p>
+                </div>
+            </div>
+        </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button (click)="onCancel()" [disabled]="isLoading">Cancel</button>
+        <button mat-raised-button color="primary" (click)="onSubmit()"
             [disabled]="!taskForm.valid || actionsArray.length === 0 || isLoading">
-      <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
-      {{ isEditMode ? 'Update Task' : 'Create Task' }}
-    </button>
-  </mat-dialog-actions>
+            <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
+            {{ isEditMode ? 'Update Task' : 'Create Task' }}
+        </button>
+    </mat-dialog-actions>
 </div>

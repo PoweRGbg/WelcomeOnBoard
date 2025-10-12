@@ -231,13 +231,10 @@ export class BackendService {
             .set('page', page.toString())
             .set('limit', limit.toString());
 
-        if (category) {
-            params = params.set('category', category);
-        }
-
-        if (search) {
-            params = params.set('search', search);
-        }
+        // As of 0.0.25 search is done locally
+        // if (search) {
+        //     params = params.set('search', search);
+        // }
 
         return this.http.get<Task[]>(`${this.baseUrl}/tasks`, {
             headers: this.headers,
