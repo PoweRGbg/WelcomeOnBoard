@@ -11,7 +11,7 @@ export interface IBackendService {
     // Authentication
     login(credentials: any): Observable<LoginResponse>;
     logout(): void;
-    refreshToken(): any;
+    refreshToken(userId: string): void;
     getCurrentUser(): any;
     
     // User Management

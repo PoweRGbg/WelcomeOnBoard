@@ -108,12 +108,15 @@ export class BackendService {
         this.tokenSubject.next(null); // Check authentication status after logout
     }
 
-    refreshToken(): Observable<LoginResponse> {
-        const refreshToken = localStorage.getItem('refreshToken');
-        return this.http.post<LoginResponse>(`${this.baseUrl}/auth/refresh`, { refreshToken })
+    refreshToken(userId: string): Observable<LoginResponse> {
+        const refreshToken = this.tokenSubject.value;
+        
+        return this.http.post<LoginResponse>(`${this.baseUrl}/auth/extend-session`, { body: { refreshToken, userId } })
             .pipe(
                 map(response => response),
                 tap(response => {
+                    console.log('Get response in reftreshtoken', response);
+                    
                     this.setToken(response.token);
                     if (response.refreshToken) {
                         localStorage.setItem('refreshToken', response.refreshToken);
@@ -149,6 +152,11 @@ export class BackendService {
             createdAt: new Date(payload.iat * 1000),
             updatedAt: new Date(payload.iat * 1000)
         };
+        // if created ad is more than 10 minutes ago try to refresh
+        if (loggedUser.createdAt < new Date(Date.now() - 10 * 60 * 1000)) {
+            console.log("refreshing token");
+            this.refreshToken(loggedUser._id);
+        }
         return loggedUser as User;
     }
 

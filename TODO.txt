@@ -1,8 +1,7 @@
 TODO
 -=-=-=-=-=-=-=-=-=-
+- Too many getTaskProgress in EmployeeTaskComponent
 - Check for expired token -> Clear and go to login, maybe show popup
-- Employee => Add 'started on' to cards 
-- Admin/Manager => Move add action to the bottom of the card
 - Manager => Create tasks only for his/her's department
 - Admin => fix category choose dropdown height
 - translate to Bulgarian

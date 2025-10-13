@@ -39,7 +39,7 @@ export class AuthInterceptor implements HttpInterceptor {
     private handle401Error(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.isRefreshing = true;
 
-        return this.backendService.refreshToken().pipe(
+        return this.backendService.refreshToken(this.backendService.getCurrentUser()?._id ?? '').pipe(
             switchMap((response) => {
                 this.isRefreshing = false;
 
