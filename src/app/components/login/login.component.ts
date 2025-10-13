@@ -38,10 +38,6 @@ export class LoginComponent {
         private authService: AuthService,
         private router: Router
     ) {
-        const currentUser = this.authService.getCurrentUser();
-        // if (currentUser) {
-        //     this.router.navigate(['/dashboard']);
-        // }
         this.loginForm = this.fb.group({
             username: ['', Validators.required],
             password: ['', Validators.required]

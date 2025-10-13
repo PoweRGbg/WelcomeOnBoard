@@ -5,7 +5,8 @@ import { AuthService } from '../services/auth.service';
 export const AuthGuard = () => {
     const authService = inject(AuthService);
     const router = inject(Router);
-
+    console.log('AuthGuard getiing current user');
+    
     if (!!authService.getCurrentUser()) {
         return true;
     } else {

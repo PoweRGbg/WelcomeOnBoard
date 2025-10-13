@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import { User, UserToken } from '../models/user.model';
+import { User } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { environment } from '../../environments/environment';
 import { toUser } from '../common/utils';
@@ -66,10 +66,11 @@ export class BackendService {
         }
 
         if (error.status === 401) {
-            console.log('Unauthorized access navigate to login');
+            console.log('Unauthorized access - logging out in backend');
             
             errorMessage = 'Unauthorized access';
-            this.router.navigate(['/login']);
+            this.logout();
+            // this.router.navigate(['/login']);
         } 
 
         return throwError(errorMessage);
@@ -77,8 +78,6 @@ export class BackendService {
 
     // Authentication Methods
     login(credentials: LoginRequest): Observable<LoginResponse> {
-        console.log('Logging in with credentials:', credentials);
-        
         return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, credentials)
             .pipe(
                 map(response => {
@@ -159,20 +158,17 @@ export class BackendService {
     getCurrentUser(): User | null {
         const token = this.tokenSubject.value;
         if (!token) {
-            new Error('No token found'); 
             return null;
         }
-        // decode token to get user info
+
         const payload = JSON.parse(atob(token.split('.')[1]));
-        
         const loggedUser = this.createUserFromToken(payload);
         
         const lastActionAgo = Math.floor((Date.now() - loggedUser.createdAt!.getTime()) / (1000 * 60));
         console.log('last action was', lastActionAgo, 'minutes ago');
         
         const newLocal = this;
-        // if (lastActionAgo < this.sessionTimeoutInMinutes) {
-        if (lastActionAgo < 1) {
+        if (lastActionAgo < newLocal.sessionTimeoutInMinutes) {
             newLocal.refreshToken(loggedUser._id).subscribe((refreshToken) =>{
                 this.setToken(refreshToken.token);
                 this.tokenSubject.next(refreshToken.token);
@@ -180,6 +176,7 @@ export class BackendService {
         } else {
             this.logout();
         }
+
         return loggedUser;
     }
 

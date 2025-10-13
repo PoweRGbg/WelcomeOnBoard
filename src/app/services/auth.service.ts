@@ -15,10 +15,18 @@ export class AuthService {
         @Inject(BACKEND_SERVICE) private backendService: BackendService,
     ) {
         this.checkAuthStatus();
+        this.backendService.token$.subscribe((token) => {
+            // When switching from logged in user to null token
+            if (!token && this.currentUserSubject.value !== null) {
+                this.logout();
+            }
+        });
     }
 
     private checkAuthStatus(): void {
         if (this.backendService.isAuthenticated()) {
+            
+            console.log('Getting current user in auth service');
             const loggedUser = this.backendService.getCurrentUser();
             if (loggedUser) {
                 try {
