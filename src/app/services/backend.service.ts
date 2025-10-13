@@ -6,6 +6,7 @@ import { User, UserToken } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { environment } from '../../environments/environment';
 import { toUser } from '../common/utils';
+import { Router } from '@angular/router';
 
 export interface LoginRequest {
     username: string;
@@ -30,17 +31,21 @@ export interface PaginatedResponse<T> {
     providedIn: 'root'
 })
 export class BackendService {
+    private lastActionTimestamp = 0;
+    private sessionTimeoutInMinutes = 10;
     private baseUrl = environment.production ? environment.apiUrl : environment.apiUrlLocal;
     private tokenSubject = new BehaviorSubject<string | null>(null);
     public token$ = this.tokenSubject.asObservable();
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private router: Router) {
+        this.handleError = this.handleError.bind(this);
         // Load token from localStorage on service initialization
         const token = localStorage.getItem('authToken');
         if (token) {
             this.tokenSubject.next(token);
         }
     }
+    
 
     private get headers(): HttpHeaders {
         const token = this.tokenSubject.value;
@@ -60,14 +65,24 @@ export class BackendService {
             errorMessage = error.message;
         }
 
-        return throwError(() => new Error(errorMessage));
+        if (error.status === 401) {
+            console.log('Unauthorized access navigate to login');
+            
+            errorMessage = 'Unauthorized access';
+            this.router.navigate(['/login']);
+        } 
+
+        return throwError(errorMessage);
     }
 
     // Authentication Methods
     login(credentials: LoginRequest): Observable<LoginResponse> {
+        console.log('Logging in with credentials:', credentials);
+        
         return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, credentials)
             .pipe(
                 map(response => {
+                    this.lastActionTimestamp = Date.now();
                     return {
                         token: response.token,
                         user: toUser(response.user),
@@ -110,13 +125,17 @@ export class BackendService {
 
     refreshToken(userId: string): Observable<LoginResponse> {
         const refreshToken = this.tokenSubject.value;
-        
-        return this.http.post<LoginResponse>(`${this.baseUrl}/auth/extend-session`, { body: { refreshToken, userId } })
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            ...(refreshToken && { 'Authorization': `Bearer ${refreshToken}` })
+        });
+
+        return this.http.post<LoginResponse>(`${this.baseUrl}/auth/extend-session`, { token: refreshToken, userId }, { headers } )
             .pipe(
-                map(response => response),
-                tap(response => {
-                    console.log('Get response in reftreshtoken', response);
-                    
+                map((response) => {
+                    return response;
+                }),
+                tap((response) => {
                     this.setToken(response.token);
                     if (response.refreshToken) {
                         localStorage.setItem('refreshToken', response.refreshToken);
@@ -145,19 +164,23 @@ export class BackendService {
         }
         // decode token to get user info
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const loggedUser: UserToken = {
-            _id: payload.sub,
-            username: payload.username,
-            role: payload.role,
-            createdAt: new Date(payload.iat * 1000),
-            updatedAt: new Date(payload.iat * 1000)
-        };
-        // if created ad is more than 10 minutes ago try to refresh
-        if (loggedUser.createdAt < new Date(Date.now() - 10 * 60 * 1000)) {
-            console.log("refreshing token");
-            this.refreshToken(loggedUser._id);
+        
+        const loggedUser = this.createUserFromToken(payload);
+        
+        const lastActionAgo = Math.floor((Date.now() - loggedUser.createdAt!.getTime()) / (1000 * 60));
+        console.log('last action was', lastActionAgo, 'minutes ago');
+        
+        const newLocal = this;
+        // if (lastActionAgo < this.sessionTimeoutInMinutes) {
+        if (lastActionAgo < 1) {
+            newLocal.refreshToken(loggedUser._id).subscribe((refreshToken) =>{
+                this.setToken(refreshToken.token);
+                this.tokenSubject.next(refreshToken.token);
+            });
+        } else {
+            this.logout();
         }
-        return loggedUser as User;
+        return loggedUser;
     }
 
     // User Management Methods
@@ -234,7 +257,7 @@ export class BackendService {
     }
 
     // Task Management Methods
-    getTasks(page: number = 1, limit: number = 10, category?: string, search?: string): Observable<Task[]> {
+    getTasks(page: number = 1, limit: number = 10, department?: string, search?: string): Observable<Task[]> {
         let params = new HttpParams()
             .set('page', page.toString())
             .set('limit', limit.toString());
@@ -436,6 +459,20 @@ export class BackendService {
         });
 
         return taskData;
+    }
+
+    private createUserFromToken(payload: any): User {
+        return {
+            _id: payload.sub,
+            username: payload.username,
+            role: payload.role,
+            createdAt: new Date(payload.iat * 1000),
+            updatedAt: new Date(payload.exp * 1000),
+            email: payload.email,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            isActive: payload.isActive
+        }
     }
 }
 
