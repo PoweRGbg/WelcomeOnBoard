@@ -11,7 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Task, TaskCreateRequest } from '../../../models/task.model';
+import { RecurringTaskPeriod, Task, TaskCreateRequest } from '../../../models/task.model';
 import { Action } from '../../../models/action.model';
 import { UserInfo } from '../../../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
@@ -47,6 +47,7 @@ export class TaskDialogComponent implements OnInit {
     isEditMode = false;
     isLoading = false;
     protected departments: string[] = [];
+    protected recurringPeriods: RecurringTaskPeriod[];
 
     constructor(
         private fb: FormBuilder,
@@ -59,56 +60,20 @@ export class TaskDialogComponent implements OnInit {
         this.backendService.getDepartments().subscribe((departments) => {
             this.departments = departments;
         });
+        this.recurringPeriods = [
+            RecurringTaskPeriod.NONE,
+            RecurringTaskPeriod.DAILY,
+            RecurringTaskPeriod.WEEKLY,
+            RecurringTaskPeriod.MONTHLY,
+            RecurringTaskPeriod.YEARLY,
+            RecurringTaskPeriod.CUSTOM
+        ];
         this.isEditMode = !!data.task;
     }
 
-    ngOnInit(): void {
+    public ngOnInit(): void {
         if (this.isEditMode && this.data.task) {
             this.populateForm(this.data.task);
-        }
-    }
-
-    private createForm(): FormGroup {
-        const form = this.fb.group({
-            name: ['', [Validators.required, Validators.minLength(3)]],
-            description: [''],
-            department: ['', Validators.required],
-            url: [''],
-            actions: this.fb.array([])
-        }) as FormGroup;
-
-        // Add status controls only if allowed
-        if (this.data.allowStatusToggle) {
-            form.addControl('isActive', this.fb.control(true));
-        }
-
-        return form;
-    }
-
-    private populateForm(task: Task): void {
-        this.taskForm.patchValue({
-            name: task.name,
-            description: task.description,
-            department: task.department,
-            url: task.url
-        });
-
-        // Add status controls if allowed
-        if (this.data.allowStatusToggle) {
-            this.taskForm.patchValue({
-                isActive: task.isActive,
-            });
-        }
-
-        // Clear existing actions
-        const actionsArray = this.taskForm.get('actions') as FormArray;
-        actionsArray.clear();
-
-        // Add existing actions
-        if (task.actions?.length) {
-            task.actions.forEach(action => {
-                this.addAction(action);
-            });
         }
     }
 
@@ -116,7 +81,7 @@ export class TaskDialogComponent implements OnInit {
         return this.taskForm.get('actions') as FormArray;
     }
 
-    addAction(existingAction?: Action): void {
+    protected addAction(existingAction?: Action): void {
         const actionForm = this.fb.group({
             name: [existingAction?.name || '', [Validators.required, Validators.minLength(3)]],
             description: [existingAction?.description || ''],
@@ -127,12 +92,12 @@ export class TaskDialogComponent implements OnInit {
         this.actionsArray.push(actionForm);
     }
 
-    removeAction(index: number): void {
+    protected removeAction(index: number): void {
         this.actionsArray.removeAt(index);
         this.updateActionOrders();
     }
 
-    moveActionUp(index: number): void {
+    protected moveActionUp(index: number): void {
         if (index > 0) {
             const actions = this.actionsArray.controls;
             const action = actions[index];
@@ -142,7 +107,7 @@ export class TaskDialogComponent implements OnInit {
         }
     }
 
-    moveActionDown(index: number): void {
+    protected moveActionDown(index: number): void {
         if (index < this.actionsArray.length - 1) {
             const actions = this.actionsArray.controls;
             const action = actions[index];
@@ -152,13 +117,7 @@ export class TaskDialogComponent implements OnInit {
         }
     }
 
-    private updateActionOrders(): void {
-        this.actionsArray.controls.forEach((control, index) => {
-            control.patchValue({ order: index + 1 });
-        });
-    }
-
-    onSubmit(): void {
+    protected onSubmit(): void {
         if (this.taskForm.valid) {
             this.isLoading = true;
             const formValue = this.taskForm.value;
@@ -179,6 +138,8 @@ export class TaskDialogComponent implements OnInit {
                 actions: actions,
                 createdBy: this.data.currentUser._id,
                 isActive: this.data.allowStatusToggle ? formValue.isActive : true,
+                recurring: this.isCustomRecurringTask() ? formValue.recurringTaskPeriod : RecurringTaskPeriod.NONE,
+                dueDate: this.isCustomRecurringTask() ? new Date(formValue.dueDate) : undefined,
             };
 
             const operation = this.isEditMode && this.data.task
@@ -209,7 +170,63 @@ export class TaskDialogComponent implements OnInit {
         }
     }
 
-    onCancel(): void {
+    protected onCancel(): void {
         this.dialogRef.close(false);
+    }
+
+    protected isCustomRecurringTask(): boolean {
+        return this.taskForm.get('recurringTaskPeriod')?.value === RecurringTaskPeriod.CUSTOM;
+    }
+
+    private populateForm(task: Task): void {
+        this.taskForm.patchValue({
+            name: task.name,
+            description: task.description,
+            department: task.department,
+            url: task.url,
+            recurringPeriod: task.recurring,
+            dueDate: task.dueDate,
+        });
+
+        // Add status controls if allowed
+        if (this.data.allowStatusToggle) {
+            this.taskForm.patchValue({
+                isActive: task.isActive,
+            });
+        }
+
+        // Clear filled actions
+        const actionsArray = this.taskForm.get('actions') as FormArray;
+        actionsArray.clear();
+
+        // Add existing actions
+        if (task.actions?.length) {
+            task.actions.forEach(action => this.addAction(action));
+        }
+    }
+
+    private updateActionOrders(): void {
+        this.actionsArray.controls.forEach((control, index) => {
+            control.patchValue({ order: index + 1 });
+        });
+    }
+
+    private createForm(): FormGroup {
+        const form = this.fb.group({
+            name: ['', [Validators.required, Validators.minLength(3)]],
+            description: [''],
+            department: ['', Validators.required],
+            url: [''],
+            actions: this.fb.array([]),
+            recurringTaskPeriod: [RecurringTaskPeriod.NONE],
+            dueDate: [''],
+        }) as FormGroup;
+
+        // Add status controls only if allowed
+        if (this.data.allowStatusToggle) {
+            form.addControl('isActive', this.fb.control(true));
+        }
+
+        return form;
     }
 }

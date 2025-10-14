@@ -9,7 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../services/auth.service';
-import { TaskSuggestion } from '../../../models/task.model';
+import { RecurringTaskPeriod, TaskSuggestion } from '../../../models/task.model';
 import { TaskCreateRequest } from '../../../models/task.model';
 import { UserInfo } from '../../../models/user.model';
 import { SuggestionReviewDialogComponent } from './suggestion-review-dialog/suggestion-review-dialog.component';
@@ -97,6 +97,8 @@ export class ManagerSuggestionsComponent implements OnInit {
             actions: suggestion.actions || [],
             createdBy: suggestion.suggestedBy,
             isActive: true,
+            recurring: suggestion.recurring || RecurringTaskPeriod.NONE,
+            dueDate: suggestion.recurring !== RecurringTaskPeriod.NONE ? suggestion.dueDate : undefined
         };
 
         // Create the task

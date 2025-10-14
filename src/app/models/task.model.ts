@@ -2,11 +2,12 @@ import { Action } from './action.model';
 import { UserInfo } from './user.model';
 
 export enum RecurringTaskPeriod {
-    DAILY = 'dayly',
-    WEEKLY = 'weekly',
-    MONTHLY = 'monthly',
-    YEARLY = 'yearly',
-    CUSTOM = 'custom',
+    NONE = 'None',
+    DAILY = 'Daily',
+    WEEKLY = 'Weekly',
+    MONTHLY = 'Monthly',
+    YEARLY = 'Yearly',
+    CUSTOM = 'Custom',
 } 
 export enum UserRole {
     ADMIN = 'ADMIN',
@@ -37,6 +38,8 @@ export interface TaskCreateRequest {
     actions: Action[],    
     createdBy: string,
     isActive: boolean,
+    recurring: RecurringTaskPeriod,
+    dueDate?: Date,
 }
 
 export interface TaskSuggestion {
@@ -51,6 +54,8 @@ export interface TaskSuggestion {
     createdAt: Date;
     reviewedAt?: Date;
     reviewedBy?: string;
+    recurring?: RecurringTaskPeriod;
+    dueDate?: Date;
 }
 
 export interface TaskProgress {

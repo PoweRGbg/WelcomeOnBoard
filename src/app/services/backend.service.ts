@@ -31,7 +31,6 @@ export interface PaginatedResponse<T> {
     providedIn: 'root'
 })
 export class BackendService {
-    private lastActionTimestamp = 0;
     private sessionTimeoutInMinutes = 10;
     private baseUrl = environment.production ? environment.apiUrl : environment.apiUrlLocal;
     private tokenSubject = new BehaviorSubject<string | null>(null);
@@ -81,7 +80,6 @@ export class BackendService {
         return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, credentials)
             .pipe(
                 map(response => {
-                    this.lastActionTimestamp = Date.now();
                     return {
                         token: response.token,
                         user: toUser(response.user),

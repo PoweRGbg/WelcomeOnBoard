@@ -15,7 +15,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
-import { Task, TaskCreateRequest, TaskProgress } from '../../../models/task.model';
+import { RecurringTaskPeriod, Task, TaskCreateRequest, TaskProgress } from '../../../models/task.model';
 import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
 import { Router } from '@angular/router';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
@@ -169,6 +169,8 @@ export class ManagerTasksComponent implements OnInit {
             actions: task.actions || [],
             isActive: task.isActive,
             createdBy: this.currentUserId || '',
+            recurring: task.recurring || RecurringTaskPeriod.NONE,
+            dueDate: task.recurring !== RecurringTaskPeriod.NONE ? task.dueDate : undefined
         };
 
         this.backendService.createTask(newTask);
