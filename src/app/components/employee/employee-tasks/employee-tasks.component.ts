@@ -12,11 +12,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../services/auth.service';
-import { Task, TaskProgress } from '../../../models/task.model';
+import { RecurringTaskPeriod, Task, TaskProgress } from '../../../models/task.model';
 import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dialog.component';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { daysLeft, getTaskDueDate } from '../../../common/utils';
 
 @Component({
     selector: 'app-employee-tasks',
@@ -143,9 +144,17 @@ export class EmployeeTasksComponent implements OnInit {
         if (progress.isCompleted) {
             return 'Completed';
         } else {
-            progress.startedOn = progress.startedOn ?? new Date(); 
+            progress.startedOn = progress.startedOn ?? new Date();
             return `Started on ${new Date(progress.startedOn).toLocaleDateString('en-GB') } ` ;
         }
+    }
+
+    getTaskDueDate(task: Task): string {
+        const dueDate = getTaskDueDate(task);
+
+        if (!dueDate) return 'No due date';
+        
+        return new Date(dueDate).toLocaleDateString('de-DE');
     }
 
     getTaskStatusColor(task: Task): string {
@@ -264,6 +273,29 @@ export class EmployeeTasksComponent implements OnInit {
         this.searchTerm = '';
         this.selectedDepartment = '';
         this.loadTasks();
+    }
+
+    protected taskIsDue(task: Task): boolean {
+        const progress = this.getTaskProgress(task);
+        const dueDate = getTaskDueDate(task);
+        // compare if task is completed more than recurring period
+        if (!dueDate) { 
+            return false; 
+        } 
+        return true;
+    }
+
+    protected taskDaysLeft(task: Task): string {
+        if (!task.dueDate && !task.recurring) {
+            return '';
+        }
+
+        let taskDaysLeft = daysLeft(task);
+        if (taskDaysLeft >= 0) {
+            return taskDaysLeft.toString() + (taskDaysLeft > 1 ? ' days left' : ' day left');
+        } else {
+            return '';
+        }
     }
 
     private createForm(): FormGroup {

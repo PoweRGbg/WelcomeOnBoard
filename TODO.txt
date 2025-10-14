@@ -6,14 +6,13 @@ TODO
 - translate to Bulgarian
 - Move search to a separate component
 - Add recuring tasks
-    - task progress needs to appear for this task for every user of task's department(task due date ?!?)
     - Search for task completetions during the period and show it as uncompleted and with due date by the
         by the end of the day, week, month, but not if completed today/week/month, custom
+    - Start task for user when he gets all tasks
+     - when getting all tasks in EmployeeTaskComponent - filter the uncompleted and start them for the user
+
 - Add task due dates
     - Make tasks with due dates appear first in taks list
 
 - Find a way to focus on a field
-- task can can be recurring so after completed it can occur again as uncompleted 
-- tasks can have a deadline
-- FIX Category to department when creating a task 
 - make vars protected/private

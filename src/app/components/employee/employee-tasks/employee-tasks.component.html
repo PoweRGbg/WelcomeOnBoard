@@ -51,10 +51,16 @@
                                     {{ getTaskStatus(task) }}
                                 </mat-chip>
                             </div>
-                            <div *ngIf="!getTaskProgress(task)?.isCompleted"
+                            <div *ngIf="getTaskProgress(task) && !getTaskProgress(task)?.isCompleted"
                                 class="task-status">
                                 <mat-chip [color]="getTaskStatusColor(task)" selected>
                                     {{ getTaskStartedDate(task) }}
+                                </mat-chip>
+                            </div>
+                            <div *ngIf="taskIsDue(task)"
+                                class="task-status">
+                                <mat-chip [color]="getTaskStatusColor(task)" selected>
+                                    {{ taskDaysLeft(task) }} - Due on {{ getTaskDueDate(task) }} 
                                 </mat-chip>
                             </div>
                         </div>

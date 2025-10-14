@@ -15,6 +15,7 @@ import { RecurringTaskPeriod, Task, TaskCreateRequest } from '../../../models/ta
 import { Action } from '../../../models/action.model';
 import { UserInfo } from '../../../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
+import { convertAuDateToDate } from '../../../common/utils';
 
 export interface TaskDialogData {
     task?: Task;
@@ -129,7 +130,12 @@ export class TaskDialogComponent implements OnInit {
                 url: action.url,
                 order: action.order
             }));
-
+            
+            console.log('Recurring task period:', formValue.recurringTaskPeriod, formValue.dueDate);
+            // Convert DD/MM/YYYY to Date()
+            const dueDate = formValue.dueDate ? convertAuDateToDate(formValue.dueDate) : undefined;
+            console.log('Due date:', dueDate);
+            
             const taskData: TaskCreateRequest = {
                 name: formValue.name,
                 description: formValue.description,
@@ -138,9 +144,12 @@ export class TaskDialogComponent implements OnInit {
                 actions: actions,
                 createdBy: this.data.currentUser._id,
                 isActive: this.data.allowStatusToggle ? formValue.isActive : true,
-                recurring: this.isCustomRecurringTask() ? formValue.recurringTaskPeriod : RecurringTaskPeriod.NONE,
-                dueDate: this.isCustomRecurringTask() ? new Date(formValue.dueDate) : undefined,
+                recurring: formValue.recurringTaskPeriod,
+                dueDate: dueDate ?? undefined,
             };
+
+            console.log('Task data on submit:', taskData);
+            
 
             const operation = this.isEditMode && this.data.task
                 ? this.backendService.updateTask(this.data.task.id, taskData)
