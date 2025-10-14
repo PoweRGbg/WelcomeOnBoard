@@ -3,9 +3,6 @@
     <h2 mat-dialog-title>{{ task.name }}</h2>
     <div class="task-meta">
       <mat-chip>{{ task.department }}</mat-chip>
-      <span class="completion-count" *ngIf="task.completionCount > 0">
-        {{ task.completionCount }} completions
-      </span>
     </div>
   </div>
 

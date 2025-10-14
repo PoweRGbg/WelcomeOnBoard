@@ -177,7 +177,7 @@ export class ManagerTasksComponent implements OnInit {
     }
 
     getTaskStatus(task: Task): string {
-        if (this.getProgressForTask(task.id)?.isCompleted > 0) return 'Completed';
+        if (this.getProgressForTask(task.id)?.isCompleted) return 'Completed';
         return 'Not Started';
     }
 
