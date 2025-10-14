@@ -15,7 +15,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
-import { Task, TaskCreateRequest } from '../../../models/task.model';
+import { Task, TaskCreateRequest, TaskProgress } from '../../../models/task.model';
 import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
 import { Router } from '@angular/router';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
@@ -51,6 +51,7 @@ export class ManagerTasksComponent implements OnInit {
     searchTerm = '';
     selectedCategory = '';
     categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
+    private taskProgress: TaskProgress[] = [];
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -64,6 +65,7 @@ export class ManagerTasksComponent implements OnInit {
         this.authService.currentUser$.subscribe(currentUser => {
             this.currentUserId = currentUser?._id || null;
             this.loadTasks();
+            this.loadTaskProgress();
         });
     }
 
@@ -82,6 +84,23 @@ export class ManagerTasksComponent implements OnInit {
                 this.snackBar.open(`Error loading tasks: ${error.message}`, 'Close', { duration: 5000 });
             }
         });
+    }
+
+    protected loadTaskProgress(): void {
+        this.isLoading = true;
+
+        if (!!this.currentUserId) {
+            this.backendService.getTaskProgressByUserId(this.currentUserId).subscribe({
+                next: (taskProgress) => {
+                    this.isLoading = false;
+                    this.taskProgress = taskProgress;
+                },
+                error: (error) => {
+                    this.isLoading = false;
+                    this.snackBar.open(`Error loading tasks: ${error.message}`, 'Close', { duration: 5000 });
+                }
+            });
+        }
     }
 
     onSearchChange(): void {
@@ -158,12 +177,17 @@ export class ManagerTasksComponent implements OnInit {
     }
 
     getTaskStatus(task: Task): string {
-        if (task.completionCount > 0) return 'Completed';
+        if (this.getProgressForTask(task.id)?.isCompleted > 0) return 'Completed';
         return 'Not Started';
     }
 
     getTaskStatusColor(task: Task): string {
-        if (task.completionCount > 0) return 'primary';
+        if (this.getProgressForTask(task.id)?.isCompleted) return 'primary';
         return 'basic';
+    }
+
+    private getProgressForTask(taskId: string): TaskProgress | null {
+        const progressFound = this.taskProgress?.find((taskProgress:TaskProgress) => taskProgress.taskId === taskId) ?? null;
+        return progressFound;
     }
 }

@@ -1,6 +1,18 @@
 import { Action } from './action.model';
 import { UserInfo } from './user.model';
 
+export enum RecurringTaskPeriod {
+    DAILY = 'dayly',
+    WEEKLY = 'weekly',
+    MONTHLY = 'monthly',
+    YEARLY = 'yearly',
+    CUSTOM = 'custom',
+} 
+export enum UserRole {
+    ADMIN = 'ADMIN',
+    MANAGER = 'MANAGER',
+    EMPLOYEE = 'EMPLOYEE'
+}
 export interface Task {
     id: string;
     name: string;
@@ -11,8 +23,10 @@ export interface Task {
     createdBy: UserInfo;
     createdAt?: Date;
     updatedAt?: Date;
+    recurring?: RecurringTaskPeriod;
+    dueDate?: Date;
+    recurringPeriod?: number; // number of days
     isActive: boolean;
-    completionCount: number;
 }
 
 export interface TaskCreateRequest {

@@ -3,16 +3,14 @@ TODO
 - Too many getTaskProgress in EmployeeTaskComponent
 - Check for expired token -> Clear and go to login, maybe show popup
 - Manager => Create tasks only for his/her's department
-- Admin => fix category choose dropdown height
 - translate to Bulgarian
 - Move search to a separate component
 - Add recuring tasks
     - task progress needs to appear for this task for every user of task's department(task due date ?!?)
     - Search for task completetions during the period and show it as uncompleted and with due date by the
-        by the end of the day, week, month, but not if completed today/week/month
+        by the end of the day, week, month, but not if completed today/week/month, custom
 - Add task due dates
     - Make tasks with due dates appear first in taks list
--
 
 - Find a way to focus on a field
 - task can can be recurring so after completed it can occur again as uncompleted 

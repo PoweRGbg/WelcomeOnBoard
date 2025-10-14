@@ -99,7 +99,6 @@ export class BackendMockService {
             createdAt: new Date('2024-01-01'),
             updatedAt: new Date('2024-01-01'),
             isActive: true,
-            completionCount: 5,
         },
         {
             id: '2',
@@ -134,7 +133,6 @@ export class BackendMockService {
             createdAt: new Date('2024-01-02'),
             updatedAt: new Date('2024-01-02'),
             isActive: true,
-            completionCount: 3,
         },
         {
             id: '3',
@@ -169,7 +167,6 @@ export class BackendMockService {
             createdAt: new Date('2024-01-03'),
             updatedAt: new Date('2024-01-03'),
             isActive: true,
-            completionCount: 2,
         }
     ];
 
@@ -515,7 +512,6 @@ export class BackendMockService {
                     },
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                    completionCount: 0,
                 };
 
                 this.mockTasks.push(newTask);
