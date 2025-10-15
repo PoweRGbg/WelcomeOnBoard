@@ -19,27 +19,29 @@ import { RecurringTaskPeriod, Task, TaskCreateRequest, TaskProgress } from '../.
 import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
 import { Router } from '@angular/router';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
+import { TaskFilterComponent } from "../../shared/task-filter/task-filter.component";
 
 @Component({
     selector: 'app-manager-tasks',
     standalone: true,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatCardModule,
-        MatButtonModule,
-        MatIconModule,
-        MatDialogModule,
-        MatTableModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatChipsModule,
-        MatTooltipModule,
-        MatSnackBarModule,
-        MatProgressSpinnerModule,
-        FormsModule
-    ],
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    FormsModule,
+    TaskFilterComponent
+],
     templateUrl: './manager-tasks.component.html',
     styleUrl: './manager-tasks.component.scss'
 })
@@ -129,7 +131,9 @@ export class ManagerTasksComponent implements OnInit {
         this.loadTasks();
     }
 
-    onDepartmentChange(): void {
+    onDepartmentChange(selectedDepartment: string): void {
+        this.selectedDepartment = selectedDepartment;
+        
         this.loadTasks();
     }
 
