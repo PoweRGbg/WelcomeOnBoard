@@ -38,7 +38,9 @@
                         Department is required
                     </mat-error>
                 </mat-form-field>
+            </div>
 
+            <div class="form-row">
                 <mat-form-field appearance="outline" class="category-field">
                     <mat-label>Recurring *</mat-label>
                     <mat-select formControlName="recurringTaskPeriod">
@@ -47,12 +49,16 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+            </div>
 
-                <mat-form-field *ngIf="isCustomRecurringTask()" appearance="outline" class="url-field">
+            <div class="form-row" *ngIf="isCustomRecurringTask()">
+                <mat-form-field appearance="outline" class="url-field">
                     <mat-label>Due date</mat-label>
                     <input matInput formControlName="dueDate" placeholder="10/10/2023">
                 </mat-form-field>
+            </div>
 
+            <div class="form-row">
                 <mat-form-field appearance="outline" class="url-field">
                     <mat-label>Task URL</mat-label>
                     <input matInput formControlName="url" placeholder="https://example.com">
