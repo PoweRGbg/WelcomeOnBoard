@@ -12,13 +12,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../services/auth.service';
-import { RecurringTaskPeriod, Task, TaskProgress } from '../../../models/task.model';
+import { Task, TaskProgress } from '../../../models/task.model';
 import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dialog.component';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { daysLeft, getTaskDueDate } from '../../../common/utils';
 import { ActivatedRoute } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-employee-tasks',
@@ -51,6 +52,8 @@ export class EmployeeTasksComponent implements OnInit {
     protected searchTerm = '';
     protected departments: string[] = [];
     string = [];
+    private statusFilter: string | null = null;
+    private routeSubscription!: Subscription;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -58,12 +61,16 @@ export class EmployeeTasksComponent implements OnInit {
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
         private fb: FormBuilder,
+        private route: ActivatedRoute,
     ) {
         this.searchForm = this.createForm();
     }
 
     ngOnInit(): void {
         this.authService.currentUser$.subscribe((currentUser) => {
+            this.routeSubscription = this.route.queryParams.subscribe(params => {
+                this.statusFilter = params['completed'] || null;
+            });
             this.currentUserId = currentUser?._id || null;
             this.loadTasks();
             this.getDepartments();
@@ -87,22 +94,14 @@ export class EmployeeTasksComponent implements OnInit {
             const departmentFilter = this.selectedDepartment || undefined;
             if (searchQuery?.length) {
                 this.tasks = this.tasks.filter((task) => {
-                    console.log('Checking  ', task.name, 'for', searchQuery, task.name.toLocaleLowerCase().includes(searchQuery));
-                    
                     return (task.name.toLocaleLowerCase().includes(searchQuery) ||
                         task.description?.toLocaleLowerCase().includes(searchQuery)
                     );
                 });
             }
-            console.log('Tasks after seratch:', this.tasks);
             
-            if (departmentFilter?.length && departmentFilter !== 'All Departments') {
-                console.log('Filtering by department:', departmentFilter);
-                
-                this.tasks = this.tasks.filter((task) =>
-                    task.department.toLocaleLowerCase() === departmentFilter.toLocaleLowerCase()
-                );
-            }
+            this.tasks = this.filterTasksByDepartment(this.tasks, departmentFilter); // Filter by deparment
+            this.tasks = this.filterTasksByStatus(this.tasks, this.statusFilter); // filter by the status parameter
         });
     }
 
@@ -303,5 +302,28 @@ export class EmployeeTasksComponent implements OnInit {
         return this.fb.group({
             taskName: ['', [Validators.required, Validators.minLength(3)]],
         });
+    }
+
+    private filterTasksByDepartment(tasks: Task[], departmentFilter?: string): Task[] {
+        let filteredTasks = tasks;
+        if (departmentFilter?.length && departmentFilter !== 'All Departments') {
+            filteredTasks = tasks.filter((task) =>
+                task.department.toLocaleLowerCase() === departmentFilter.toLocaleLowerCase()
+            );
+        }
+
+        return filteredTasks;
+    }
+
+    private filterTasksByStatus(tasks: Task[], statusFilter?: string | null): Task[] {
+            let filteredTasks = tasks;
+            // filter by status passed as query param
+            if (statusFilter === 'completed') {
+                filteredTasks = tasks.filter((task) => this.getTaskProgress(task)?.isCompleted);
+            } else if (statusFilter === 'pending') {
+                filteredTasks = tasks.filter((task) => !this.getTaskProgress(task)?.isCompleted);
+            }
+        
+        return filteredTasks;
     }
 }

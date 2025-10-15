@@ -163,7 +163,6 @@ export class BackendService {
         const loggedUser = this.createUserFromToken(payload);
         
         const lastActionAgo = Math.floor((Date.now() - loggedUser.createdAt!.getTime()) / (1000 * 60));
-        console.log('last action was', lastActionAgo, 'minutes ago');
         
         const newLocal = this;
         if (lastActionAgo < newLocal.sessionTimeoutInMinutes) {

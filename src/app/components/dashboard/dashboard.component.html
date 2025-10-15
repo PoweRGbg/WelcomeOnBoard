@@ -8,7 +8,7 @@
 
     <div class="stats-grid">
 
-        <mat-card class="stat-card pending">
+        <mat-card class="stat-card pending" (click)="navigateTo('/employee/tasks', 'pending')">
             <mat-card-content>
                 <div class="stat-content">
                     <mat-icon>alarm</mat-icon>
@@ -20,7 +20,7 @@
             </mat-card-content>
         </mat-card>
 
-        <mat-card class="stat-card completed" (click)="navigateTo('/employee/tasks')">
+        <mat-card class="stat-card completed" (click)="navigateTo('/employee/tasks', 'completed')">
             <mat-card-content>
                 <div class="stat-content">
                         <mat-icon>done</mat-icon>
