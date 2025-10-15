@@ -6,6 +6,7 @@ TODO
 - Try to make task actions smaller in order to reduce double scroll
 - translate to Bulgarian
 - Move search to a separate component
+- FIX search of tasks in admin
 - Add recuring tasks
     - Search for task completetions during the period and show it as uncompleted and with due date by the
         by the end of the day, week, month, but not if completed today/week/month, custom
