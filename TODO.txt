@@ -3,6 +3,7 @@ TODO
 - Too many getTaskProgress in EmployeeTaskComponent
 - Check for expired token -> Clear and go to login, maybe show popup
 - Manager => Create tasks only for his/her's department
+- Try to make task actions smaller in order to reduce double scroll
 - translate to Bulgarian
 - Move search to a separate component
 - Add recuring tasks
