@@ -29,15 +29,15 @@
           </div>
 
           <div class="form-row">
-            <mat-form-field appearance="outline" class="category-field">
-              <mat-label>Category *</mat-label>
-              <mat-select formControlName="category">
-                <mat-option *ngFor="let category of categories" [value]="category">
-                  {{ category }}
+            <mat-form-field appearance="outline" class="department-field">
+              <mat-label>Department *</mat-label>
+              <mat-select formControlName="department">
+                <mat-option *ngFor="let department of departments" [value]="department">
+                  {{ department }}
                 </mat-option>
               </mat-select>
-              <mat-error *ngIf="suggestionForm.get('category')?.hasError('required')">
-                Category is required
+              <mat-error *ngIf="suggestionForm.get('department')?.hasError('required')">
+                department is required
               </mat-error>
             </mat-form-field>
 
@@ -142,7 +142,7 @@
               </div>
 
               <div class="suggestion-meta">
-                <div class="suggestion-category">
+                <div class="suggestion-department">
                   <mat-chip>{{ suggestion.department }}</mat-chip>
                 </div>
                 <div class="suggestion-actions-count">

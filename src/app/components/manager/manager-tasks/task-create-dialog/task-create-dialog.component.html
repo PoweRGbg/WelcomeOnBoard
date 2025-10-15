@@ -26,15 +26,15 @@
       </div>
 
       <div class="form-row">
-        <mat-form-field appearance="outline" class="category-field">
-          <mat-label>Category *</mat-label>
-          <mat-select formControlName="category">
-            <mat-option *ngFor="let category of categories" [value]="category">
-              {{ category }}
+        <mat-form-field appearance="outline" class="department-field">
+          <mat-label>department *</mat-label>
+          <mat-select formControlName="department">
+            <mat-option *ngFor="let department of departments" [value]="department">
+              {{ department }}
             </mat-option>
           </mat-select>
-          <mat-error *ngIf="taskForm.get('category')?.hasError('required')">
-            Category is required
+          <mat-error *ngIf="taskForm.get('department')?.hasError('required')">
+            department is required
           </mat-error>
         </mat-form-field>
       </div>

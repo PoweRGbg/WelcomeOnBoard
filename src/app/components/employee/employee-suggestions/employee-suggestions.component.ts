@@ -35,7 +35,7 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
 export class EmployeeSuggestionsComponent implements OnInit {
     suggestionForm: FormGroup;
     mySuggestions: TaskSuggestion[] = [];
-    categories = ['HR', 'IT', 'Finance', 'Operations', 'Training', 'Compliance', 'Other'];
+    departments: string[] = ['All departments'];
     currentUserId: string | null = null;
 
     constructor(
@@ -50,6 +50,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
     ngOnInit(): void {
         this.authService.currentUser$.subscribe(currentUser => {
             this.currentUserId = currentUser?._id || null;
+            if (currentUser?.department) this.departments.push(currentUser.department);
         });
         this.loadMySuggestions();
     }
@@ -70,8 +71,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
 
     addAction(): void {
         const actionForm = this.fb.group({
-            // name: ['', [Validators.required, Validators.minLength(3)]], // when action is needed
-            name: [''],
+            name: ['', [Validators.required, Validators.minLength(3)]],
             description: [''],
             imageUrl: [''],
             url: [''],

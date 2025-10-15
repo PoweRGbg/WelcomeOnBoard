@@ -35,7 +35,7 @@ import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-s
 export class EmployeeSuggestionsComponent implements OnInit {
     suggestionForm: FormGroup;
     mySuggestions: TaskSuggestion[] = [];
-    categories = ['HR', 'IT', 'Finance', 'Operations', 'Training', 'Compliance', 'Other'];
+    departments: string[] = ['All departments'];
     currentUserId: string | null = null;
 
     constructor(
@@ -48,7 +48,9 @@ export class EmployeeSuggestionsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.currentUserId = this.authService.getCurrentUser()?._id || null;
+        const currentuser = this.authService.getCurrentUser();
+        this.currentUserId = currentuser?._id || null;
+        this.departments.push(currentuser?.department || '');
         this.loadMySuggestions();
     }
 

@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { Task, TaskCreateRequest } from '../../../../models/task.model';
+import { RecurringTaskPeriod, Task, TaskCreateRequest } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
 import { UserInfo } from '../../../../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-service.factory';
@@ -35,9 +35,9 @@ import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-s
     styleUrl: './task-create-dialog.component.scss'
 })
 export class TaskCreateDialogComponent implements OnInit {
-    taskForm: FormGroup;
-    isEditMode = false;
-    categories = ['HR', 'IT', 'Finance', 'Operations', 'Training', 'Compliance', 'Other'];
+    protected taskForm: FormGroup;
+    protected isEditMode = false;
+    protected departments = ['All departments'];
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -135,6 +135,8 @@ export class TaskCreateDialogComponent implements OnInit {
     }
 
     onSubmit(): void {
+        console.log('Loaded Manager task create dialog');
+        
         if (this.taskForm.valid) {
             const formValue = this.taskForm.value;
 
@@ -155,6 +157,8 @@ export class TaskCreateDialogComponent implements OnInit {
                 actions: actions,
                 createdBy: this.data.currentUser._id,
                 isActive: true,
+                recurring: RecurringTaskPeriod.NONE,
+                dueDate: undefined,
             };
 
             if (this.isEditMode && this.data.task) {

@@ -109,8 +109,12 @@ export class DashboardComponent implements OnInit {
         this.router.navigate(['/login']);
     }
 
-    navigateTo(route: string): void {
-        this.router.navigate([route]);
+    navigateTo(route: string, filterCategory?: string): void {
+        this.router.navigate([route],
+        { 
+            queryParams: { filter: filterCategory }, 
+            queryParamsHandling: 'merge'
+        });
     }
 
     private taskIsActive(taskId: string): boolean {

@@ -3,9 +3,6 @@
         <h1>Welcome, {{ currentUser?.firstName }} {{ currentUser?.lastName }}!</h1>
         <div class="user-info">
             <span class="role-badge">{{ currentUser?.role | titlecase }}</span>
-            <!-- <button mat-icon-button (click)="logout()" matTooltip="Logout">
-        <mat-icon>logout</mat-icon>
-      </button> -->
         </div>
     </div>
 
@@ -23,7 +20,7 @@
             </mat-card-content>
         </mat-card>
 
-        <mat-card class="stat-card completed">
+        <mat-card class="stat-card completed" (click)="navigateTo('/employee/tasks')">
             <mat-card-content>
                 <div class="stat-content">
                         <mat-icon>done</mat-icon>

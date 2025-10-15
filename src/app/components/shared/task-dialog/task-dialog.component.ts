@@ -21,6 +21,7 @@ export interface TaskDialogData {
     task?: Task;
     currentUser: UserInfo;
     allowStatusToggle?: boolean;
+    department?: string;
 }
 
 @Component({
@@ -58,9 +59,15 @@ export class TaskDialogComponent implements OnInit {
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
     ) {
         this.taskForm = this.createForm();
-        this.backendService.getDepartments().subscribe((departments) => {
-            this.departments = departments;
-        });
+        console.log('userDepartment in taskDialog:', this.data.currentUser.department);
+        if (this.data.currentUser.department) {
+            this.departments = [this.data.currentUser.department, 'All Departments'];
+            this.taskForm.patchValue({
+                department: this.data.currentUser.department
+            });
+        }
+        console.log('Departments in taskDialog:', this.departments);
+            
         this.recurringPeriods = [
             RecurringTaskPeriod.NONE,
             RecurringTaskPeriod.DAILY,
@@ -131,10 +138,8 @@ export class TaskDialogComponent implements OnInit {
                 order: action.order
             }));
             
-            console.log('Recurring task period:', formValue.recurringTaskPeriod, formValue.dueDate);
-            // Convert DD/MM/YYYY to Date()
             const dueDate = formValue.dueDate ? convertAuDateToDate(formValue.dueDate) : undefined;
-            console.log('Due date:', dueDate);
+            console.log('Createing task', this.data.currentUser);
             
             const taskData: TaskCreateRequest = {
                 name: formValue.name,

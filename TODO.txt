@@ -1,11 +1,10 @@
 TODO
 -=-=-=-=-=-=-=-=-=-
+- Manager to be able to edit/delete/deactivate tasks in his department
 - Too many getTaskProgress in EmployeeTaskComponent
-- Check for expired token -> Clear and go to login, maybe show popup
-- Manager => Create tasks only for his/her's department
 - Try to make task actions smaller in order to reduce double scroll
 - translate to Bulgarian
-- Move search to a separate component
+- Move search to a separate component - see implementation in manager-tasks
 - Change ID with department in admin's user list
 - FIX search of tasks in admin
 - Select department in user edit

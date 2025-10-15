@@ -45,13 +45,14 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
 })
 export class ManagerTasksComponent implements OnInit {
     tasks: Task[] = [];
-    displayedColumns: string[] = ['name', 'category', 'actions', 'completionCount', 'status', 'actions'];
+    displayedColumns: string[] = ['name', 'department', 'actions', 'completionCount', 'status', 'actions'];
     currentUserId: string | null = null;
     isLoading = false;
     searchTerm = '';
-    selectedCategory = '';
-    categories = ['Onboarding', 'Training', 'Equipment', 'HR', 'IT', 'Finance', 'Operations', 'Compliance', 'Security', 'Other'];
+    selectedDepartment = '';
+    departments = ['All Departments'];
     private taskProgress: TaskProgress[] = [];
+    private currentUserDepartment = 'All Departments';
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -62,26 +63,47 @@ export class ManagerTasksComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
+        this.backendService.getCurrentUser();
         this.authService.currentUser$.subscribe(currentUser => {
             this.currentUserId = currentUser?._id || null;
             this.loadTasks();
             this.loadTaskProgress();
         });
+        if (this.currentUserId) {
+            this.backendService.getUserById(this.currentUserId).subscribe((user) => {
+                this.currentUserDepartment = user.department || 'All Departments';
+                this.selectedDepartment = this.currentUserDepartment;
+            });
+        }
     }
 
     loadTasks(): void {
         this.isLoading = true;
         const searchQuery = this.searchTerm.trim() || undefined;
-        const categoryFilter = this.selectedCategory || undefined;
+        const categoryFilter = this.selectedDepartment || undefined;
 
         this.backendService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
             next: (tasks) => {
+                if (this.selectedDepartment !== 'All Departments' && this.selectedDepartment.length !== 0) {
+                    tasks = tasks.filter((task) => task.department === this.selectedDepartment);
+                }
+
                 this.tasks = tasks;
                 this.isLoading = false;
             },
             error: (error) => {
                 this.isLoading = false;
                 this.snackBar.open(`Error loading tasks: ${error.message}`, 'Close', { duration: 5000 });
+            }
+        });
+        
+        this.backendService.getDepartments().subscribe({
+            next: (departments) => {
+                this.departments = departments;
+            },
+            error: (error) => {
+                this.isLoading = false;
+                this.snackBar.open(`Error loading departments: ${error.message}`, 'Close', { duration: 5000 });
             }
         });
     }
@@ -107,13 +129,13 @@ export class ManagerTasksComponent implements OnInit {
         this.loadTasks();
     }
 
-    onCategoryChange(): void {
+    onDepartmentChange(): void {
         this.loadTasks();
     }
 
     clearSearch(): void {
         this.searchTerm = '';
-        this.selectedCategory = '';
+        this.selectedDepartment = '';
         this.loadTasks();
     }
 
@@ -121,7 +143,15 @@ export class ManagerTasksComponent implements OnInit {
         const dialogRef = this.dialog.open(TaskDialogComponent, {
             width: '90vw',
             maxWidth: '900px',
-            data: { currentUser: { id: this.currentUserId!, username: '', firstName: '', lastName: '' }, allowStatusToggle: false }
+            data: { 
+                currentUser: { 
+                        _id: this.currentUserId!,
+                        username: '',
+                        firstName: '',
+                        lastName: '',
+                        department: this.currentUserDepartment
+                    },
+                allowStatusToggle: false }
         });
 
         dialogRef.afterClosed().subscribe(result => {
