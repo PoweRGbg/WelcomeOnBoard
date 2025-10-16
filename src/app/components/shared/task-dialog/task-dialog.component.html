@@ -43,7 +43,7 @@
             <div class="form-row">
                 <mat-form-field appearance="outline" class="category-field">
                     <mat-label>Recurring *</mat-label>
-                    <mat-select formControlName="recurringTaskPeriod">
+                    <mat-select formControlName="recurring">
                         <mat-option *ngFor="let period of recurringPeriods" [value]="period">
                             {{ period }}
                         </mat-option>

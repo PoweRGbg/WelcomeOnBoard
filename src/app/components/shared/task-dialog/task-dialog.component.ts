@@ -13,13 +13,13 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RecurringTaskPeriod, Task, TaskCreateRequest } from '../../../models/task.model';
 import { Action } from '../../../models/action.model';
-import { UserInfo } from '../../../models/user.model';
+import { User, UserRole } from '../../../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { convertAuDateToDate } from '../../../common/utils';
 
 export interface TaskDialogData {
     task?: Task;
-    currentUser: UserInfo;
+    currentUser: User;
     allowStatusToggle?: boolean;
     department?: string;
 }
@@ -59,14 +59,20 @@ export class TaskDialogComponent implements OnInit {
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
     ) {
         this.taskForm = this.createForm();
-        console.log('userDepartment in taskDialog:', this.data.currentUser.department);
         if (this.data.currentUser.department) {
             this.departments = [this.data.currentUser.department, 'All Departments'];
             this.taskForm.patchValue({
                 department: this.data.currentUser.department
             });
+        } else if (this.data.currentUser.role === UserRole.ADMIN) {
+            this.backendService.getDepartments().subscribe(departments => {
+                this.departments = ['All Departments', ...departments];
+                this.departments = [...new Set(this.departments)].sort();
+                this.taskForm.patchValue({
+                    department: 'All Departments'
+                });
+            })
         }
-        console.log('Departments in taskDialog:', this.departments);
             
         this.recurringPeriods = [
             RecurringTaskPeriod.NONE,
@@ -138,23 +144,10 @@ export class TaskDialogComponent implements OnInit {
                 order: action.order
             }));
             
-            const dueDate = formValue.dueDate ? convertAuDateToDate(formValue.dueDate) : undefined;
+            const dueDate = formValue.dueDate ? convertAuDateToDate(formValue.dueDate) : null;
             console.log('Createing task', this.data.currentUser);
             
-            const taskData: TaskCreateRequest = {
-                name: formValue.name,
-                description: formValue.description,
-                department: formValue.department,
-                url: formValue.url,
-                actions: actions,
-                createdBy: this.data.currentUser._id,
-                isActive: this.data.allowStatusToggle ? formValue.isActive : true,
-                recurring: formValue.recurringTaskPeriod,
-                dueDate: dueDate ?? undefined,
-            };
-
-            console.log('Task data on submit:', taskData);
-            
+            const taskData = this.createTaskRequest(formValue, actions, dueDate);
 
             const operation = this.isEditMode && this.data.task
                 ? this.backendService.updateTask(this.data.task.id, taskData)
@@ -189,7 +182,7 @@ export class TaskDialogComponent implements OnInit {
     }
 
     protected isCustomRecurringTask(): boolean {
-        return this.taskForm.get('recurringTaskPeriod')?.value === RecurringTaskPeriod.CUSTOM;
+        return this.taskForm.get('recurring')?.value === RecurringTaskPeriod.CUSTOM;
     }
 
     private populateForm(task: Task): void {
@@ -232,7 +225,7 @@ export class TaskDialogComponent implements OnInit {
             department: ['', Validators.required],
             url: [''],
             actions: this.fb.array([]),
-            recurringTaskPeriod: [RecurringTaskPeriod.NONE],
+            recurring: [RecurringTaskPeriod.NONE],
             dueDate: [''],
         }) as FormGroup;
 
@@ -242,5 +235,19 @@ export class TaskDialogComponent implements OnInit {
         }
 
         return form;
+    }
+
+    private createTaskRequest(formValue: Task, actions: Action[], dueDate?: Date | null): TaskCreateRequest {
+        return {
+                name: formValue.name,
+                description: formValue.description ?? '',
+                department: formValue.department,
+                url: formValue.url,
+                actions: actions,
+                createdBy: this.data.currentUser._id,
+                isActive: this.data.allowStatusToggle ? formValue.isActive : true,
+                recurring: formValue.recurring ?? RecurringTaskPeriod.NONE,
+                dueDate: dueDate ?? undefined,
+            };
     }
 }

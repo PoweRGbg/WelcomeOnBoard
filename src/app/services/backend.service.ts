@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap, filter } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { environment } from '../../environments/environment';
@@ -212,7 +212,7 @@ export class BackendService {
             params
         }).pipe(
             map(response => {
-                return response
+                return [...new Set(response)].sort();
             }),
             catchError(this.handleError)
         );
