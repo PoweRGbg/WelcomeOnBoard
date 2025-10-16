@@ -77,6 +77,7 @@ export class ManagerTasksComponent implements OnInit {
                 );
             }),
         ).subscribe(() => {
+            this.selectedDepartment = this.currentUser?.department || '';
             this.loadTaskProgress();
             this.loadTasks();
         });
@@ -141,6 +142,8 @@ export class ManagerTasksComponent implements OnInit {
     }
 
     clearSearch(): void {
+        console.log('clearing search');
+        
         this.searchTerm = '';
         this.selectedDepartment = '';
         this.loadTasks();

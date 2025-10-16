@@ -83,5 +83,7 @@ export class TaskFilterComponent implements OnInit {
     clearSearch(): void {
         this.searchTerm = '';
         this.selectedDepartment = '';
+        this.onSearchChange();
+        this.onDepartmentChange();
     }
 }
