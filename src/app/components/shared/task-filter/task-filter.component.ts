@@ -62,12 +62,9 @@ export class TaskFilterComponent implements OnInit {
         this.authService.currentUser$.subscribe(currentUser => {
             this.currentUserId = currentUser?._id || null;
         });
-        console.log('Search user ID:', this.currentUserId);
         
         if (this.currentUserId) {
             this.backendService.getUserById(this.currentUserId).subscribe((user) => {
-                console.log('Search user department:', user.department);
-                
                 this.currentUserDepartment = user.department || 'All Departments';
                 this.departments.push(this.currentUserDepartment);
                 this.selectedDepartment = this.currentUserDepartment;
@@ -75,9 +72,7 @@ export class TaskFilterComponent implements OnInit {
         }
     }
 
-    onSearchChange(change: Event): void {
-        console.log('Search changed to:', (change.target as HTMLInputElement).value);
-        
+    onSearchChange(): void {
         this.searchTermChange.emit(this.searchTerm);
     }
 

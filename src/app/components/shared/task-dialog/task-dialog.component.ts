@@ -145,7 +145,6 @@ export class TaskDialogComponent implements OnInit {
             }));
             
             const dueDate = formValue.dueDate ? convertAuDateToDate(formValue.dueDate) : null;
-            console.log('Createing task', this.data.currentUser);
             
             const taskData = this.createTaskRequest(formValue, actions, dueDate);
 

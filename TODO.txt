@@ -6,10 +6,8 @@ TODO
     - reroute manager/admin tasks to the moved component
     - remove unused admin/mager task lists
 - Too many getTaskProgress in EmployeeTaskComponent
-- Try to make task actions smaller in order to reduce double scroll
 - translate to Bulgarian
-- Move search to a separate component - see implementation in manager-tasks
-- Change ID with department in admin's user list
+- fix search to use component everywhere
 - FIX search of tasks in admin
 - Select department in user edit
 - Add change password in admin
@@ -17,10 +15,7 @@ TODO
     - Search for task completetions during the period and show it as uncompleted and with due date by the
         by the end of the day, week, month, but not if completed today/week/month, custom
     - Start task for user when he gets all tasks
-     - when getting all tasks in EmployeeTaskComponent - filter the uncompleted and start them for the user
-
-- Add task due dates
-    - Make tasks with due dates appear first in taks list
+    - when getting all tasks in EmployeeTaskComponent - filter the uncompleted and start them for the user
 
 - Find a way to focus on a field
 - make vars protected/private

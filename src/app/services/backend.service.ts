@@ -65,14 +65,12 @@ export class BackendService {
         }
 
         if (error.status === 401) {
-            console.log('Unauthorized access - logging out in backend');
-            
             errorMessage = 'Unauthorized access';
             this.logout();
             // this.router.navigate(['/login']);
         } 
 
-        return throwError(errorMessage);
+        return throwError(() => new Error(errorMessage));
     }
 
     // Authentication Methods

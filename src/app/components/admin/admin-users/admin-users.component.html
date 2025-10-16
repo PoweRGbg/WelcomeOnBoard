@@ -33,8 +33,12 @@
           </ng-container>
 
           <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef>Email</th>
-            <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+            <th mat-header-cell *matHeaderCellDef>Department</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip *ngIf="!!user.department" [color]="getRoleColor(user.role)" selected>
+                {{ user.department }}
+              </mat-chip>
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="role">

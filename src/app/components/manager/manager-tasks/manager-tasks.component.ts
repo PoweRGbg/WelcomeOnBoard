@@ -20,6 +20,8 @@ import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.compon
 import { Router } from '@angular/router';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { TaskFilterComponent } from "../../shared/task-filter/task-filter.component";
+import { UserInfo } from '../../../models/user.model';
+import { catchError, map, Subscription, switchMap, tap, throwError } from 'rxjs';
 
 @Component({
     selector: 'app-manager-tasks',
@@ -46,15 +48,15 @@ import { TaskFilterComponent } from "../../shared/task-filter/task-filter.compon
     styleUrl: './manager-tasks.component.scss'
 })
 export class ManagerTasksComponent implements OnInit {
-    tasks: Task[] = [];
-    displayedColumns: string[] = ['name', 'department', 'actions', 'completionCount', 'status', 'actions'];
-    currentUserId: string | null = null;
-    isLoading = false;
-    searchTerm = '';
-    selectedDepartment = '';
-    departments = ['All Departments'];
+    protected tasks: Task[] = [];
+    protected displayedColumns: string[] = ['name', 'department', 'actions', 'actions-edit'];
+    protected isLoading = false;
+    protected searchTerm = '';
+    protected selectedDepartment = '';
+    protected departments = ['All Departments'];
+    protected currentUser: UserInfo | null = null;
     private taskProgress: TaskProgress[] = [];
-    private currentUserDepartment = 'All Departments';
+    private mainSubscription: Subscription | null = null;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -65,18 +67,19 @@ export class ManagerTasksComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.backendService.getCurrentUser();
-        this.authService.currentUser$.subscribe(currentUser => {
-            this.currentUserId = currentUser?._id || null;
-            this.loadTasks();
+        this.mainSubscription = this.authService.currentUser$.pipe(
+            switchMap((currentUser) => {
+                return this.backendService.getUserById(currentUser?._id || '').pipe(
+                    map((user) => {
+                        this.currentUser = user;
+                        return user;
+                    })
+                );
+            }),
+        ).subscribe(() => {
             this.loadTaskProgress();
+            this.loadTasks();
         });
-        if (this.currentUserId) {
-            this.backendService.getUserById(this.currentUserId).subscribe((user) => {
-                this.currentUserDepartment = user.department || 'All Departments';
-                this.selectedDepartment = this.currentUserDepartment;
-            });
-        }
     }
 
     loadTasks(): void {
@@ -113,8 +116,8 @@ export class ManagerTasksComponent implements OnInit {
     protected loadTaskProgress(): void {
         this.isLoading = true;
 
-        if (!!this.currentUserId) {
-            this.backendService.getTaskProgressByUserId(this.currentUserId).subscribe({
+        if (!!this.currentUser?._id) {
+            this.backendService.getTaskProgressByUserId(this.currentUser._id).subscribe({
                 next: (taskProgress) => {
                     this.isLoading = false;
                     this.taskProgress = taskProgress;
@@ -149,11 +152,11 @@ export class ManagerTasksComponent implements OnInit {
             maxWidth: '900px',
             data: { 
                 currentUser: { 
-                        _id: this.currentUserId!,
+                        _id: this.currentUser?._id!,
                         username: '',
                         firstName: '',
                         lastName: '',
-                        department: this.currentUserDepartment
+                        department: this.currentUser?.department
                     },
                 allowStatusToggle: false }
         });
@@ -175,7 +178,7 @@ export class ManagerTasksComponent implements OnInit {
         const dialogRef = this.dialog.open(TaskDialogComponent, {
             width: '90vw',
             maxWidth: '900px',
-            data: { task: task, currentUser: { id: this.currentUserId!, username: '', firstName: '', lastName: '' }, allowStatusToggle: false }
+            data: { task: task, currentUser: { id: this.currentUser?._id, username: '', firstName: '', lastName: '' }, allowStatusToggle: false }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -188,9 +191,14 @@ export class ManagerTasksComponent implements OnInit {
 
     deleteTask(task: Task): void {
         if (confirm(`Are you sure you want to delete task "${task.name}"?`)) {
-            this.backendService.deleteTask(task.id);
-            this.loadTasks();
-            this.snackBar.open('Task deleted successfully!', 'Close', { duration: 3000 });
+            this.backendService.deleteTask(task.id).pipe((isDeleted) => isDeleted).subscribe(
+                (isDeleted) => {
+                    this.loadTasks();
+                    if (isDeleted) {
+                        this.snackBar.open('Task deleted successfully!', 'Close', { duration: 3000 });
+                    }
+                }
+            );
         }
     }
 
@@ -202,14 +210,22 @@ export class ManagerTasksComponent implements OnInit {
             url: task.url || '',
             actions: task.actions || [],
             isActive: task.isActive,
-            createdBy: this.currentUserId || '',
+            createdBy: this.currentUser?._id || '',
             recurring: task.recurring || RecurringTaskPeriod.NONE,
             dueDate: task.recurring !== RecurringTaskPeriod.NONE ? task.dueDate : undefined
         };
 
-        this.backendService.createTask(newTask);
-        this.loadTasks();
-        this.snackBar.open('Task duplicated successfully!', 'Close', { duration: 3000 });
+        this.backendService.createTask(newTask).pipe(
+            tap((taskCopy) => {
+                this.snackBar.open('Task duplicated successfully!', 'Close', { duration: 3000 });
+            }),
+            catchError((error) => {
+                this.snackBar.open(`Error duplicating task: ${error.message}`, 'Close', { duration: 5000 });
+                return throwError(() => error);
+            })
+        ).subscribe(() => {
+            this.loadTasks();
+        });
     }
 
     getTaskStatus(task: Task): string {
@@ -225,5 +241,11 @@ export class ManagerTasksComponent implements OnInit {
     private getProgressForTask(taskId: string): TaskProgress | null {
         const progressFound = this.taskProgress?.find((taskProgress:TaskProgress) => taskProgress.taskId === taskId) ?? null;
         return progressFound;
+    }
+    
+    ngOnDestroy(): void {
+        if (this.mainSubscription) {
+            this.mainSubscription.unsubscribe();
+        }
     }
 }
