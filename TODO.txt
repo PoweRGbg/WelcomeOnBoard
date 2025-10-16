@@ -1,6 +1,10 @@
 TODO
 -=-=-=-=-=-=-=-=-=-
 - Manager to be able to edit/delete/deactivate tasks in his department
+    - modify the admin-task list to acceppt role and department
+    - move admin tasks-list to shared
+    - reroute manager/admin tasks to the moved component
+    - remove unused admin/mager task lists
 - Too many getTaskProgress in EmployeeTaskComponent
 - Try to make task actions smaller in order to reduce double scroll
 - translate to Bulgarian
