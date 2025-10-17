@@ -2,14 +2,13 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AdminUsersComponent } from './components/admin/admin-users/admin-users.component';
-import { AdminTasksComponent } from './components/admin/admin-tasks/admin-tasks.component';
-import { ManagerTasksComponent } from './components/manager/manager-tasks/manager-tasks.component';
 import { ManagerSuggestionsComponent } from './components/manager/manager-suggestions/manager-suggestions.component';
 import { EmployeeTasksComponent } from './components/employee/employee-tasks/employee-tasks.component';
 import { EmployeeSuggestionsComponent } from './components/employee/employee-suggestions/employee-suggestions.component';
 import { TaskDetailComponent } from './components/shared/task-detail/task-detail.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
+import { ManageTasksComponent } from './components/shared/manage-tasks/manager-tasks.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -26,14 +25,8 @@ export const routes: Routes = [
         data: { roles: ['ADMIN'] }
     },
     {
-        path: 'admin/tasks',
-        component: AdminTasksComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { roles: ['ADMIN'] }
-    },
-    {
-        path: 'manager/tasks',
-        component: ManagerTasksComponent,
+        path: 'manage/tasks',
+        component: ManageTasksComponent,
         canActivate: [AuthGuard, RoleGuard],
         data: { roles: ['MANAGER', 'ADMIN'] }
     },

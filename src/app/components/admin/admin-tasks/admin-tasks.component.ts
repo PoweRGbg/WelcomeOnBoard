@@ -16,6 +16,8 @@ import { Task } from '../../../models/task.model';
 import { UserInfo } from '../../../models/user.model';
 import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
+import { map, Subscription, switchMap } from 'rxjs';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
     selector: 'app-admin-tasks',
@@ -45,9 +47,11 @@ export class AdminTasksComponent implements OnInit {
     protected searchTerm = '';
     protected selectedDepartment = '';
     protected departments = ['All departments'];
+    private mainSubscription: Subscription | null = null;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
+        private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
     ) { }
@@ -55,6 +59,20 @@ export class AdminTasksComponent implements OnInit {
     ngOnInit(): void {
         this.currentUser = this.backendService.getCurrentUser();
         this.loadTasks();
+        this.mainSubscription = this.authService.currentUser$.pipe(
+            switchMap((currentUser) => {
+                return this.backendService.getUserById(currentUser?._id || '').pipe(
+                    map((user) => {
+                        this.currentUser = user;
+                        return user;
+                    })
+                );
+            }),
+        ).subscribe(() => {
+            this.selectedDepartment = this.currentUser?.department || '';
+            this.loadTasks();
+        });
+        
     }
 
     loadTasks(): void {

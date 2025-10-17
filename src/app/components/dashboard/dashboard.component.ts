@@ -82,12 +82,12 @@ export class DashboardComponent implements OnInit {
             case UserRole.ADMIN:
                 actions.push(
                     { title: 'Manage Users', icon: 'people', route: '/admin/users', color: 'primary' },
-                    { title: 'Manage Tasks', icon: 'assignment', route: '/admin/tasks', color: 'primary' }
+                    { title: 'Manage Tasks', icon: 'assignment', route: '/manage/tasks', color: 'primary' }
                 );
                 break;
             case UserRole.MANAGER:
                 actions.push(
-                    { title: 'My Tasks', icon: 'assignment', route: '/manager/tasks', color: 'primary' },
+                    { title: 'My Tasks', icon: 'assignment', route: '/manage/tasks', color: 'primary' },
                     { title: 'Task Suggestions', icon: 'lightbulb', route: '/manager/suggestions', color: 'accent' }
                 );
                 break;

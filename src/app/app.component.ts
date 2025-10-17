@@ -58,7 +58,7 @@ export class AppComponent {
             case UserRole.ADMIN:
                 items.push(
                     { label: 'Users', icon: 'people', route: '/admin/users' },
-                    { label: 'Tasks', icon: 'assignment', route: '/admin/tasks' }
+                    { label: 'Tasks', icon: 'assignment', route: '/manage/tasks' }
                 );
                 break;
             case UserRole.MANAGER:

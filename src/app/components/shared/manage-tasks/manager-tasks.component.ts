@@ -19,8 +19,8 @@ import { RecurringTaskPeriod, Task, TaskCreateRequest, TaskProgress } from '../.
 import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
 import { Router } from '@angular/router';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
-import { TaskFilterComponent } from "../../shared/task-filter/task-filter.component";
-import { UserInfo } from '../../../models/user.model';
+import { TaskFilterComponent } from "../task-filter/task-filter.component";
+import { User, UserRole } from '../../../models/user.model';
 import { catchError, map, Subscription, switchMap, tap, throwError } from 'rxjs';
 
 @Component({
@@ -44,19 +44,21 @@ import { catchError, map, Subscription, switchMap, tap, throwError } from 'rxjs'
     FormsModule,
     TaskFilterComponent
 ],
-    templateUrl: './manager-tasks.component.html',
-    styleUrl: './manager-tasks.component.scss'
+    templateUrl: './manage-tasks.component.html',
+    styleUrl: './manage-tasks.component.scss'
 })
-export class ManagerTasksComponent implements OnInit {
+export class ManageTasksComponent implements OnInit {
     protected tasks: Task[] = [];
     protected displayedColumns: string[] = ['name', 'department', 'actions', 'actions-edit'];
     protected isLoading = false;
     protected searchTerm = '';
     protected selectedDepartment = '';
     protected departments = ['All Departments'];
-    protected currentUser: UserInfo | null = null;
+    protected currentUser: User | null = null;
     private taskProgress: TaskProgress[] = [];
     private mainSubscription: Subscription | null = null;
+    private lastTasksRequest: Date = new Date(); 
+    private taskReloadNeeded = false;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -85,33 +87,40 @@ export class ManagerTasksComponent implements OnInit {
 
     loadTasks(): void {
         this.isLoading = true;
+        this.taskReloadNeeded = this.taskReloadNeeded || !this.tasks.length || this.getTaskRequestExpired();
         const searchQuery = this.searchTerm.trim() || undefined;
         const categoryFilter = this.selectedDepartment || undefined;
 
-        this.backendService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
-            next: (tasks) => {
-                if (this.selectedDepartment !== 'All Departments' && this.selectedDepartment.length !== 0) {
-                    tasks = tasks.filter((task) => task.department === this.selectedDepartment);
+        if (this.taskReloadNeeded) {
+            this.backendService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
+                next: (tasks) => {
+                    this.tasks = this.filterTasks(tasks);
+                    this.isLoading = false;
+                    this.lastTasksRequest = new Date();
+                    this.taskReloadNeeded = false;
+                },
+                error: (error) => {
+                    this.isLoading = false;
+                    this.snackBar.open(`Error loading tasks: ${error.message}`, 'Close', { duration: 5000 });
                 }
-
-                this.tasks = tasks;
-                this.isLoading = false;
-            },
-            error: (error) => {
-                this.isLoading = false;
-                this.snackBar.open(`Error loading tasks: ${error.message}`, 'Close', { duration: 5000 });
-            }
-        });
+            });
+        } else {
+            console.log('Filtering available tasks');
+            this.isLoading = false;
+            this.tasks = this.filterTasks(this.tasks);
+        }
         
-        this.backendService.getDepartments().subscribe({
-            next: (departments) => {
-                this.departments = departments;
-            },
-            error: (error) => {
-                this.isLoading = false;
-                this.snackBar.open(`Error loading departments: ${error.message}`, 'Close', { duration: 5000 });
-            }
-        });
+        if (this.departments.length === 1) {
+            this.backendService.getDepartments().subscribe({
+                next: (departments) => {
+                    this.departments = departments;
+                },
+                error: (error) => {
+                    this.isLoading = false;
+                    this.snackBar.open(`Error loading departments: ${error.message}`, 'Close', { duration: 5000 });
+                }
+            });
+        }
     }
 
     protected loadTaskProgress(): void {
@@ -131,22 +140,24 @@ export class ManagerTasksComponent implements OnInit {
         }
     }
 
-    onSearchChange(): void {
-        this.loadTasks();
+    onSearchChange(searchTerm: string): void {
+        this.searchTerm = searchTerm;
+        // We already called loadTasks, so don't call it again
+        if (!this.tasks.length && !searchTerm.length) {
+            this.loadTasks();
+            return;
+        }
+        this.tasks = this.filterTasks(this.tasks);
     }
 
     onDepartmentChange(selectedDepartment: string): void {
-        this.selectedDepartment = selectedDepartment;
-        
-        this.loadTasks();
-    }
-
-    clearSearch(): void {
-        console.log('clearing search');
-        
-        this.searchTerm = '';
-        this.selectedDepartment = '';
-        this.loadTasks();
+        if (this.selectedDepartment === selectedDepartment) {
+            return;
+        } else {
+            this.taskReloadNeeded = true;
+            this.selectedDepartment = selectedDepartment;
+            this.loadTasks();
+        }
     }
 
     createTask(): void {
@@ -244,6 +255,26 @@ export class ManagerTasksComponent implements OnInit {
     private getProgressForTask(taskId: string): TaskProgress | null {
         const progressFound = this.taskProgress?.find((taskProgress:TaskProgress) => taskProgress.taskId === taskId) ?? null;
         return progressFound;
+    }
+
+    private filterTasks(tasks: Task[]): Task[] {
+        if (this.selectedDepartment !== 'All Departments' && this.selectedDepartment.length !== 0) {
+            tasks = tasks.filter((task) => task.department === this.selectedDepartment);
+        }
+
+        if (this.searchTerm.length !== 0) {
+            tasks = tasks.filter((task) => task.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
+        }
+
+        return tasks;
+    }
+
+    private getTaskRequestExpired(): boolean {
+        return new Date().getTime() - this.lastTasksRequest.getTime() > 60 * 1000;
+    }
+
+    showActionButtons(task: Task): boolean {
+        return task.department === (this.currentUser?.department) || this.currentUser?.role === UserRole.ADMIN;
     }
     
     ngOnDestroy(): void {
