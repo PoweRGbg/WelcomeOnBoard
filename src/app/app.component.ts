@@ -63,7 +63,7 @@ export class AppComponent {
                 break;
             case UserRole.MANAGER:
                 items.push(
-                    { label: 'My Tasks', icon: 'assignment', route: '/manager/tasks' },
+                    { label: 'My Tasks', icon: 'assignment', route: '/manage/tasks' },
                     { label: 'Suggestions', icon: 'lightbulb', route: '/manager/suggestions' }
                 );
                 break;
