@@ -75,6 +75,15 @@ export function getNextSunday(referenceDate: Date = new Date()): Date {
     return nextSunday;
 }
 
+export function hoursLeft(task: Task): number {
+    if (!task.dueDate && !task.recurring) {
+        return -1;
+    }
+    const today = new Date();
+    const hoursLeft = (task.dueDate?.getTime() ?? 0 - today.getTime()) / (1000 * 60 * 60);
+    return hoursLeft;
+}
+
 export function daysLeft(task: Task): number {
     if (!task.dueDate && !task.recurring) {
         return -1;
@@ -105,4 +114,16 @@ export function daysLeft(task: Task): number {
         daysLeft = (new Date(task.dueDate).getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
     }
     return Math.floor(daysLeft);
+}
+
+export function filterTasks(tasks: Task[], searchTerm: string, selectedDepartment: string): Task[] {
+    if (selectedDepartment !== 'All Departments' && selectedDepartment.length !== 0) {
+        tasks = tasks.filter((task) => task.department === selectedDepartment);
+    }
+
+    if (searchTerm.length !== 0) {
+        tasks = tasks.filter((task) => task.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+
+    return tasks;
 }

@@ -22,6 +22,7 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
 import { TaskFilterComponent } from "../task-filter/task-filter.component";
 import { User, UserRole } from '../../../models/user.model';
 import { catchError, map, Subscription, switchMap, tap, throwError } from 'rxjs';
+import { filterTasks } from '../../../common/utils';
 
 @Component({
     selector: 'app-manager-tasks',
@@ -94,7 +95,6 @@ export class ManageTasksComponent implements OnInit {
         if (this.taskReloadNeeded) {
             this.backendService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
                 next: (tasks) => {
-                    this.tasks = this.filterTasks(tasks);
                     this.isLoading = false;
                     this.lastTasksRequest = new Date();
                     this.taskReloadNeeded = false;
@@ -107,8 +107,9 @@ export class ManageTasksComponent implements OnInit {
         } else {
             console.log('Filtering available tasks');
             this.isLoading = false;
-            this.tasks = this.filterTasks(this.tasks);
         }
+
+        this.tasks = filterTasks(this.tasks, this.searchTerm, this.selectedDepartment);
         
         if (this.departments.length === 1) {
             this.backendService.getDepartments().subscribe({
@@ -147,7 +148,7 @@ export class ManageTasksComponent implements OnInit {
             this.loadTasks();
             return;
         }
-        this.tasks = this.filterTasks(this.tasks);
+        this.tasks = filterTasks(this.tasks, this.searchTerm, this.selectedDepartment);
     }
 
     onDepartmentChange(selectedDepartment: string): void {
@@ -255,18 +256,6 @@ export class ManageTasksComponent implements OnInit {
     private getProgressForTask(taskId: string): TaskProgress | null {
         const progressFound = this.taskProgress?.find((taskProgress:TaskProgress) => taskProgress.taskId === taskId) ?? null;
         return progressFound;
-    }
-
-    private filterTasks(tasks: Task[]): Task[] {
-        if (this.selectedDepartment !== 'All Departments' && this.selectedDepartment.length !== 0) {
-            tasks = tasks.filter((task) => task.department === this.selectedDepartment);
-        }
-
-        if (this.searchTerm.length !== 0) {
-            tasks = tasks.filter((task) => task.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
-        }
-
-        return tasks;
     }
 
     private getTaskRequestExpired(): boolean {

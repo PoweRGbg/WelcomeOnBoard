@@ -17,9 +17,10 @@ import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dial
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { daysLeft, getTaskDueDate } from '../../../common/utils';
+import { daysLeft, filterTasks, getTaskDueDate } from '../../../common/utils';
 import { ActivatedRoute } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { TaskFilterComponent } from '../../shared/task-filter/task-filter.component';
 
 @Component({
     selector: 'app-employee-tasks',
@@ -38,7 +39,8 @@ import { filter, Subscription } from 'rxjs';
         MatFormFieldModule,
         ReactiveFormsModule,
         MatSelectModule,
-        FormsModule
+        FormsModule,
+        TaskFilterComponent
     ],
     templateUrl: './employee-tasks.component.html',
     styleUrl: './employee-tasks.component.scss',
@@ -53,7 +55,8 @@ export class EmployeeTasksComponent implements OnInit {
     protected departments: string[] = [];
     string = [];
     private statusFilter: string | null = null;
-    private routeSubscription!: Subscription;
+    private taskReloadNeeded = true;
+    private routeSubscription: Subscription | null = null;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -78,31 +81,40 @@ export class EmployeeTasksComponent implements OnInit {
         });
     }
 
-    protected onDepartmentChange(): void {
-        this.loadTasks();
+    onSearchChange(searchTerm: string): void {
+        this.searchTerm = searchTerm;
+        // We already called loadTasks, so don't call it again
+        if (!this.tasks.length && !searchTerm.length) {
+            this.taskReloadNeeded = true;
+            this.loadTasks();
+            return;
+        }
+        this.tasks = filterTasks(this.tasks, this.searchTerm, this.selectedDepartment);
     }
 
-    protected onSearchChange() {
-        this.loadTasks();
+    onDepartmentChange(selectedDepartment: string): void {
+        if (this.selectedDepartment === selectedDepartment && this.searchTerm.length) {
+            return;
+        } else {
+            this.taskReloadNeeded = true;
+            this.selectedDepartment = selectedDepartment;
+            this.loadTasks();
+        }
     }
 
     protected loadTasks(): void {
-        // Show only active tasks
-        this.backendService.getTasks().subscribe((tasks) => {
-            this.tasks = tasks.filter((task) => task.isActive);
-            const searchQuery = this.searchTerm.trim().toLocaleLowerCase() || undefined;
-            const departmentFilter = this.selectedDepartment || undefined;
-            if (searchQuery?.length) {
-                this.tasks = this.tasks.filter((task) => {
-                    return (task.name.toLocaleLowerCase().includes(searchQuery) ||
-                        task.description?.toLocaleLowerCase().includes(searchQuery)
-                    );
-                });
-            }
-            
-            this.tasks = this.filterTasksByDepartment(this.tasks, departmentFilter); // Filter by deparment
-            this.tasks = this.filterTasksByStatus(this.tasks, this.statusFilter); // filter by the status parameter
-        });
+        if (this.taskReloadNeeded) {
+            this.taskReloadNeeded = false;
+            this.backendService.getTasks().subscribe((tasks) => {
+                this.tasks = tasks.filter((task) => task.isActive);
+                const searchQuery = this.searchTerm.trim().toLocaleLowerCase() || undefined;
+                if (searchQuery?.length) {
+                    this.tasks = filterTasks(this.tasks, this.searchTerm, this.selectedDepartment);
+                }
+            });
+        }
+        this.tasks = this.filterTasksByStatus(this.tasks, this.statusFilter); // filter by the status parameter
+        this.tasks = filterTasks(this.tasks, this.searchTerm, this.selectedDepartment || ''); // Filter by deparment
     }
 
     loadTaskProgress(): void {
@@ -302,17 +314,6 @@ export class EmployeeTasksComponent implements OnInit {
         return this.fb.group({
             taskName: ['', [Validators.required, Validators.minLength(3)]],
         });
-    }
-
-    private filterTasksByDepartment(tasks: Task[], departmentFilter?: string): Task[] {
-        let filteredTasks = tasks;
-        if (departmentFilter?.length && departmentFilter !== 'All Departments') {
-            filteredTasks = tasks.filter((task) =>
-                task.department.toLocaleLowerCase() === departmentFilter.toLocaleLowerCase()
-            );
-        }
-
-        return filteredTasks;
     }
 
     private filterTasksByStatus(tasks: Task[], statusFilter?: string | null): Task[] {

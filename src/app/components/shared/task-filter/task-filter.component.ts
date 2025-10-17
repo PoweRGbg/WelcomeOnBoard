@@ -68,11 +68,13 @@ export class TaskFilterComponent implements OnInit {
             this.backendService.getDepartments().subscribe(departments => {
                 this.departments = ['All Departments', ...departments];
                 this.departments = [...new Set(this.departments)].sort();
+                
             });
         } else if (this.currentUser?._id) {
             this.backendService.getUserById(this.currentUser._id).subscribe((user) => {
                 this.currentUserDepartment = user.department || 'All Departments';
                 this.departments.push(this.currentUserDepartment);
+                this.departments = this.departments.filter((value, index) => this.departments.indexOf(value) === index);
                 this.selectedDepartment = this.currentUserDepartment;
             });
         }

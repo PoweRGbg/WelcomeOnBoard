@@ -11,7 +11,7 @@ export const RoleGuard = (route: any) => {
     authService.currentUser$.subscribe(
         (user) => {
             if (!user || !requiredRoles.includes(user.role)) {
-                console.log('Access denied for user', user, 'needed roles:', requiredRoles);
+                console.log('Access denied for user', user?.username, 'needed roles:', requiredRoles);
                 router.navigate(['/login']);
             }
 
