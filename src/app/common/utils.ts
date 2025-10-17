@@ -1,5 +1,5 @@
 import { User } from "../models/user.model";
-import { RecurringTaskPeriod, Task } from "../models/task.model";
+import { RecurringTaskPeriod, Task, TaskProgress } from "../models/task.model";
 
 export function toUser(userData: any): User {
     if (!userData || (!userData._id && !userData.id)) {
@@ -126,4 +126,34 @@ export function filterTasks(tasks: Task[], searchTerm: string, selectedDepartmen
     }
 
     return tasks;
+}
+
+export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boolean {
+    if ((!task.dueDate && !task.recurring) || !taskProgress || !taskProgress.isCompleted) {
+        return false;
+    }
+    let daysLeft = 0;
+    const today = new Date();
+    if (task.recurring === RecurringTaskPeriod.MONTHLY) {
+        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        task.dueDate = lastDayOfMonth;
+        daysLeft = (lastDayOfMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+    } else if (task.recurring === RecurringTaskPeriod.YEARLY) {
+        const lastDayOfYear = new Date(today.getFullYear() + 1, 0, 0);
+        task.dueDate = lastDayOfYear;
+        daysLeft = (lastDayOfYear.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+    } else if (task.recurring === RecurringTaskPeriod.WEEKLY) {
+        const lastDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7 - today.getDay());
+        task.dueDate = lastDayOfWeek;
+        daysLeft = (lastDayOfWeek.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+    } else if (task.recurring === RecurringTaskPeriod.DAILY) {          
+        today.setHours(23, 59, 59, 999);
+        task.dueDate = today;
+        daysLeft = (today.getTime() - today.getTime()) / (1000 * 60 * 60);
+    } else if (task.recurring === RecurringTaskPeriod.CUSTOM) {
+        if (!task.dueDate) {
+            return -1;
+        }
+        daysLeft = (new Date(task.dueDate).getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+    }
 }
