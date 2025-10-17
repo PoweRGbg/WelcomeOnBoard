@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -50,6 +50,12 @@ export class TaskDialogComponent implements OnInit {
     isLoading = false;
     protected departments: string[] = [];
     protected recurringPeriods: RecurringTaskPeriod[];
+    protected actionProperties: [] = [];
+    protected shownUrlDialogs: number[] = [];
+    protected shownImageDialogs: number[] = [];
+    protected shownDescriptionDialogs: number[] = [];
+    protected showTaskUrl: boolean = false;
+    protected showTaskRecurrence: boolean = false;
 
     constructor(
         private fb: FormBuilder,
@@ -128,6 +134,30 @@ export class TaskDialogComponent implements OnInit {
             actions.splice(index, 1);
             actions.splice(index + 1, 0, action);
             this.updateActionOrders();
+        }
+    }
+
+    protected showActionField(type: string, i: number): void {
+        switch (type) {
+            case 'description':
+                this.shownDescriptionDialogs.push(i);
+                break;
+            case 'image':
+                this.shownImageDialogs.push(i);
+                break;
+            case 'url':
+                this.shownUrlDialogs.push(i);
+                break;
+            default:
+                break;
+        }
+    }
+
+    protected onShowField(fieldName: string): void {
+        if (fieldName === 'url') {
+            this.showTaskUrl = !this.showTaskUrl;
+        } else if (fieldName === 'recurrence') {
+            this.showTaskRecurrence = !this.showTaskRecurrence;
         }
     }
 

@@ -144,6 +144,15 @@ mat-checkbox {
   margin-right: 16px;
 }
 
+div .action-extras {
+  display: flex!important;
+  justify-content: center;
+  gap: 8px;
+  width: 40rem;
+  margin-bottom: 24px;
+  grid-column: 1 / -1;
+}
+
 // Loading state
 button[disabled] {
   opacity: 0.6;

@@ -40,7 +40,7 @@
                 </mat-form-field>
             </div>
 
-            <div class="form-row">
+            <div *ngIf="showTaskRecurrence" class="form-row">
                 <mat-form-field appearance="outline" class="category-field">
                     <mat-label>Recurring *</mat-label>
                     <mat-select formControlName="recurring">
@@ -58,11 +58,33 @@
                 </mat-form-field>
             </div>
 
-            <div class="form-row">
+            <div *ngIf="showTaskUrl" class="form-row">
                 <mat-form-field appearance="outline" class="url-field">
                     <mat-label>Task URL</mat-label>
                     <input matInput formControlName="url" placeholder="https://example.com">
                 </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <button 
+                    *ngIf="!showTaskUrl"
+                    mat-raised-button 
+                    color="primary" 
+                    type="button" 
+                    (click)="onShowField('url')"
+                >
+                    <mat-icon>add</mat-icon>
+                    Add URL to task
+                </button>
+                <button 
+                    *ngIf="!showTaskRecurrence" 
+                    mat-raised-button color="primary" 
+                    type="button" 
+                    (click)="onShowField('recurrence')"
+                >
+                    <mat-icon>add</mat-icon>
+                    Add task recurrence
+                </button>
             </div>
 
             <div class="form-row" *ngIf="data.allowStatusToggle">
@@ -104,7 +126,7 @@
                             </div>
                         </div>
 
-                        <div class="action-buttons">
+                        <div class="action-fields">
                             <mat-form-field appearance="outline" class="action-name">
                                 <mat-label>Action Name *</mat-label>
                                 <input matInput formControlName="name" placeholder="Enter action name">
@@ -116,45 +138,46 @@
                                 </mat-error>
                             </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="action-description">
+                            <mat-form-field *ngIf="shownDescriptionDialogs.includes(i)" appearance="outline" class="action-description">
                                 <mat-label>Description</mat-label>
                                 <input matInput formControlName="description" placeholder="Enter action description">
                             </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="action-image">
+                            <mat-form-field *ngIf="shownImageDialogs.includes(i)" appearance="outline" class="action-image">
                                 <mat-label>Image URL</mat-label>
                                 <input matInput formControlName="imageUrl" placeholder="https://example.com/image.jpg">
                             </mat-form-field>
-                            <div class="action-properties">
-                                <button mat-raised-button color="primary" type="button" (click)="addAction()">
+                            
+                            <mat-form-field *ngIf="shownUrlDialogs.includes(i)" appearance="outline" class="action-url">
+                                <mat-label>Action URL</mat-label>
+                                <input matInput formControlName="url" placeholder="https://example.com">
+                            </mat-form-field>
+                            <div class="action-extras">
+                                <button mat-raised-button color="primary" type="button" (click)="showActionField('description', i)">
                                     <mat-icon>add</mat-icon>
                                     Add more info
                                 </button>
                                 
-                                <button mat-raised-button color="primary" type="button" (click)="addAction()">
+                                <button mat-raised-button color="primary" type="button" (click)="showActionField('image', i)">
                                     <mat-icon>add</mat-icon>
                                     Add image to action
                                 </button>
                                 
-                                <button mat-raised-button color="primary" type="button" (click)="addAction()">
+                                <button mat-raised-button color="primary" type="button" (click)="showActionField('url', i)">
                                     <mat-icon>add</mat-icon>
                                     Add URL to action
                                 </button>
                             </div>
 
-                            <mat-form-field appearance="outline" class="action-url">
-                                <mat-label>Action URL</mat-label>
-                                <input matInput formControlName="url" placeholder="https://example.com">
-                            </mat-form-field>
-                            <div *ngIf="i === actionsArray.length - 1">
-                            <div class="actions-header">
-                                <button mat-raised-button color="primary" type="button" (click)="addAction()">
-                                    <mat-icon>add</mat-icon>
-                                    Add another action
-                                </button>
+                            <div *ngIf="i === actionsArray.length - 1" class="action-extras">
+                                <div class="actions-header">
+                                    <button mat-raised-button color="primary" type="button" (click)="addAction()">
+                                        <mat-icon>add</mat-icon>
+                                        Add another action
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
 
