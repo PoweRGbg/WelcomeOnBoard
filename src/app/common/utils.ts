@@ -76,11 +76,13 @@ export function getNextSunday(referenceDate: Date = new Date()): Date {
 }
 
 export function hoursLeft(task: Task): number {
-    if (!task.dueDate && !task.recurring) {
+    if (!task.dueDate && task.recurring !== RecurringTaskPeriod.DAILY) {
         return -1;
     }
+    
     const today = new Date();
-    const hoursLeft = (task.dueDate?.getTime() ?? 0 - today.getTime()) / (1000 * 60 * 60);
+    today.setHours(23, 59, 59, 999);
+    const hoursLeft = Math.floor((today.getTime() - new Date().getTime()) / (1000 * 60 * 60));
     return hoursLeft;
 }
 
@@ -116,6 +118,48 @@ export function daysLeft(task: Task): number {
     return Math.floor(daysLeft);
 }
 
+export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boolean {
+    if ((!task.dueDate && !task.recurring) || !taskProgress || !taskProgress.isCompleted || !taskProgress.completedOn) {
+        return false;
+    }
+
+    const today = new Date();
+
+    switch (task.recurring) {
+        case RecurringTaskPeriod.NONE:
+           return false;
+        case RecurringTaskPeriod.DAILY:
+            task.dueDate = today;
+            const hoursLeft = 24 / today.getHours();
+
+            return hoursLeft < 24;
+        default:
+            return daysLeft(task) > 0;
+    }
+}
+
+export function taskIsExpiringSoon(task: Task): boolean {
+    const taskDaysLeft = daysLeft(task);
+    let tolerance = 0;
+    switch (task.recurring) {
+        case RecurringTaskPeriod.YEARLY:
+            tolerance = 31; // One month should be enough
+            break;
+        case RecurringTaskPeriod.MONTHLY || RecurringTaskPeriod.CUSTOM:
+            tolerance = 7; // One week
+            break;
+        case RecurringTaskPeriod.WEEKLY:
+            tolerance = 4; // 2 days + weekend
+            break;
+        default:
+            tolerance = 0; 
+            break;
+    }
+    
+    return taskDaysLeft > tolerance;
+}
+    
+
 export function filterTasks(tasks: Task[], searchTerm: string, selectedDepartment: string): Task[] {
     if (selectedDepartment !== 'All Departments' && selectedDepartment.length !== 0) {
         tasks = tasks.filter((task) => task.department === selectedDepartment);
@@ -126,34 +170,4 @@ export function filterTasks(tasks: Task[], searchTerm: string, selectedDepartmen
     }
 
     return tasks;
-}
-
-export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boolean {
-    if ((!task.dueDate && !task.recurring) || !taskProgress || !taskProgress.isCompleted) {
-        return false;
-    }
-    let daysLeft = 0;
-    const today = new Date();
-    if (task.recurring === RecurringTaskPeriod.MONTHLY) {
-        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        task.dueDate = lastDayOfMonth;
-        daysLeft = (lastDayOfMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-    } else if (task.recurring === RecurringTaskPeriod.YEARLY) {
-        const lastDayOfYear = new Date(today.getFullYear() + 1, 0, 0);
-        task.dueDate = lastDayOfYear;
-        daysLeft = (lastDayOfYear.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-    } else if (task.recurring === RecurringTaskPeriod.WEEKLY) {
-        const lastDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7 - today.getDay());
-        task.dueDate = lastDayOfWeek;
-        daysLeft = (lastDayOfWeek.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-    } else if (task.recurring === RecurringTaskPeriod.DAILY) {          
-        today.setHours(23, 59, 59, 999);
-        task.dueDate = today;
-        daysLeft = (today.getTime() - today.getTime()) / (1000 * 60 * 60);
-    } else if (task.recurring === RecurringTaskPeriod.CUSTOM) {
-        if (!task.dueDate) {
-            return -1;
-        }
-        daysLeft = (new Date(task.dueDate).getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-    }
 }

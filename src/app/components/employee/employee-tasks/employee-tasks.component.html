@@ -40,7 +40,7 @@
                                     {{ getTaskStartedDate(task) }}
                                 </mat-chip>
                             </div>
-                            <div *ngIf="taskIsDue(task)"
+                            <div *ngIf="!isFinishedOnTime(task)"
                                 class="task-status">
                                 <mat-chip [color]="getTaskStatusColor(task)" selected>
                                     {{ taskDaysLeft(task) }} - Due on {{ getTaskDueDate(task) }} 

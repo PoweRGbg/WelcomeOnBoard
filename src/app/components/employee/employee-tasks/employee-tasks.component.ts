@@ -12,12 +12,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../services/auth.service';
-import { Task, TaskProgress } from '../../../models/task.model';
+import { RecurringTaskPeriod, Task, TaskProgress } from '../../../models/task.model';
 import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dialog.component';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { daysLeft, filterTasks, getTaskDueDate } from '../../../common/utils';
+import { daysLeft, filterTasks, getTaskDueDate, hoursLeft, isFinishedOnTime } from '../../../common/utils';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TaskFilterComponent } from '../../shared/task-filter/task-filter.component';
@@ -40,7 +40,7 @@ import { TaskFilterComponent } from '../../shared/task-filter/task-filter.compon
         ReactiveFormsModule,
         MatSelectModule,
         FormsModule,
-        TaskFilterComponent
+        TaskFilterComponent,
     ],
     templateUrl: './employee-tasks.component.html',
     styleUrl: './employee-tasks.component.scss',
@@ -106,6 +106,13 @@ export class EmployeeTasksComponent implements OnInit {
         if (this.taskReloadNeeded) {
             this.taskReloadNeeded = false;
             this.backendService.getTasks().subscribe((tasks) => {
+                tasks = tasks.map((task) => {
+                    if (!task.recurring) {
+                        task.recurring = RecurringTaskPeriod.NONE;
+                    }
+
+                    return task;
+                });
                 this.tasks = tasks.filter((task) => task.isActive);
                 const searchQuery = this.searchTerm.trim().toLocaleLowerCase() || undefined;
                 if (searchQuery?.length) {
@@ -287,27 +294,30 @@ export class EmployeeTasksComponent implements OnInit {
         this.loadTasks();
     }
 
-    protected taskIsDue(task: Task): boolean {
-        const progress = this.getTaskProgress(task);
-        const dueDate = getTaskDueDate(task);
-        // compare if task is completed more than recurring period
-        if (!dueDate) { 
-            return false; 
-        } 
-        return true;
-    }
-
     protected taskDaysLeft(task: Task): string {
         if (!task.dueDate && !task.recurring) {
             return '';
         }
-
-        let taskDaysLeft = daysLeft(task);
+        let taskDaysLeft = 0;
+        let taskHoursLeft = 0;
+        if (task.recurring === RecurringTaskPeriod.DAILY) {
+            taskHoursLeft = hoursLeft(task);
+            return taskHoursLeft.toString() + (taskHoursLeft === 1 ? ' hour left' : ' hours left');
+        } else {
+            taskDaysLeft = daysLeft(task);
+        }
         if (taskDaysLeft >= 0) {
             return taskDaysLeft.toString() + (taskDaysLeft > 1 ? ' days left' : ' day left');
         } else {
             return '';
         }
+    }
+
+    protected isFinishedOnTime(task: Task): boolean {
+        if (task.recurring !== RecurringTaskPeriod.NONE) {
+            return isFinishedOnTime(task);
+        }
+        return true;
     }
 
     private createForm(): FormGroup {
