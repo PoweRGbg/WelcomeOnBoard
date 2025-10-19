@@ -21,7 +21,8 @@
             <div class="tasks-grid">
                 <mat-card *ngFor="let task of getSortedTasks()" class="task-card"
                     [class.in-progress]="isTaskInProgress(task)"
-                    [class.completed]="getTaskStatus(task) === 'Completed'">
+                    [class.completed]="getTaskStatus(task) === 'Completed'"
+                    [class.expiring-soon-card]="isTaskExpiring(task)">
 
                     <mat-card-header>
                         <div class="task-header">
@@ -40,9 +41,12 @@
                                     {{ getTaskStartedDate(task) }}
                                 </mat-chip>
                             </div>
-                            <div *ngIf="!isFinishedOnTime(task)"
-                                class="task-status">
-                                <mat-chip [color]="getTaskStatusColor(task)" selected>
+                            <div *ngIf="!isFinishedOnTime(task)" 
+                                    class="task-status"
+                                    >
+                                <mat-chip 
+                                    [color]="getTaskStatusColor(task)" selected 
+                                    [class.expiring-soon]="isTaskExpiring(task)">
                                     {{ taskDaysLeft(task) }} - Due on {{ getTaskDueDate(task) }} 
                                 </mat-chip>
                             </div>

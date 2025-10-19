@@ -1,3 +1,8 @@
+@keyframes blink-red {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(255, 0, 0, 0.2); }
+}
+
 .employee-tasks-container {
   padding: 24px;
   max-width: 1200px;
@@ -168,3 +173,16 @@ mat-card-actions {
     border-radius: 8px;
     border: 1px solid #e9ecef;
 }
+
+.expiring-soon {
+  border-left: 5px solid red; 
+  font-weight: bold;
+  animation: blink-red 2s infinite alternate ease-in-out; 
+}
+.expiring-soon-card {
+  border-left: 5px solid red; 
+  font-weight: bold;
+//   animation: blink-red 2s infinite alternate ease-in-out; 
+}
+
+
