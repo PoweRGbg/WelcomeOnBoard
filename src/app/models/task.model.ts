@@ -66,4 +66,5 @@ export interface TaskProgress {
     isCompleted: boolean;
     startedOn: Date;
     completedOn?: Date;
+    updatedAt?: Date;
 }

@@ -8,7 +8,7 @@ import { EmployeeSuggestionsComponent } from './components/employee/employee-sug
 import { TaskDetailComponent } from './components/shared/task-detail/task-detail.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
-import { ManageTasksComponent } from './components/shared/manage-tasks/manager-tasks.component';
+import { ManageTasksComponent } from './components/shared/manage-tasks/manage-tasks.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },

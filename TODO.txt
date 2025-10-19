@@ -7,15 +7,7 @@ TODO
     - remove unused admin/mager task lists
 - Too many getTaskProgress in EmployeeTaskComponent
 - translate to Bulgarian
-- fix search to use component everywhere
-- FIX search of tasks in admin
-- Select department in user edit
 - Add change password in admin
-- Add recuring tasks
-    - Search for task completetions during the period and show it as uncompleted and with due date by the
-        by the end of the day, week, month, but not if completed today/week/month, custom
-    - Start task for user when he gets all tasks
-    - when getting all tasks in EmployeeTaskComponent - filter the uncompleted and start them for the user
-
+- Fix sorting of tasks in EmployeeTaskComponent
 - Find a way to focus on a field
 - make vars protected/private

@@ -251,10 +251,26 @@ export class EmployeeTasksComponent implements OnInit {
 
     getSortedTasks(): Task[] {
         return this.tasks.sort((a, b) => {
+            
             const aInProgress = this.isTaskInProgress(a);
             const bInProgress = this.isTaskInProgress(b);
+            const aIsCompleted = this.getTaskCompletionPercentage(a);
+            const bIsCompleted = this.getTaskCompletionPercentage(b);
+            const aNeedsRestart = this.taskNeedsRestart(a);
+            const bNeedsRestart = this.taskNeedsRestart(b);
 
-            // In progress tasks first
+            // tasks with shorter due days first
+            if (taskIsExpiringSoon(a) && !taskIsExpiringSoon(b) && !aIsCompleted) return -1
+            if (!taskIsExpiringSoon(a) && taskIsExpiringSoon(b) && !bIsCompleted) return 1
+            
+            if (a.recurring && !b.recurring) return -1
+            if (b.recurring && !b.recurring) return 1
+
+            // then if task needs restart
+            if (aNeedsRestart && !bNeedsRestart) return 1
+            if (!aNeedsRestart && bNeedsRestart) return -1;
+
+            // then by in progress tasks first
             if (aInProgress && !bInProgress) return -1;
             if (!aInProgress && bInProgress) return 1;
 
@@ -340,5 +356,14 @@ export class EmployeeTasksComponent implements OnInit {
             }
         
         return filteredTasks;
+    }
+
+    protected taskNeedsRestart(task: Task): boolean {
+        const taskProgess = this.getTaskProgress(task) ?? undefined;
+        
+        if (!taskProgess)
+            return true;
+
+        return isFinishedOnTime(task, taskProgess);
     }
 }

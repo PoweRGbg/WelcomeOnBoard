@@ -1,5 +1,6 @@
 import { User } from "../models/user.model";
 import { RecurringTaskPeriod, Task, TaskProgress } from "../models/task.model";
+import { last } from "rxjs";
 
 export function toUser(userData: any): User {
     if (!userData || (!userData._id && !userData.id)) {
@@ -93,7 +94,6 @@ export function daysLeft(task: Task): number {
     let daysLeft = 0;
     const today = new Date();
     if (task.recurring === RecurringTaskPeriod.MONTHLY) {
-        const today = new Date();
         const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         task.dueDate = lastDayOfMonth;
         daysLeft = (lastDayOfMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
@@ -102,7 +102,7 @@ export function daysLeft(task: Task): number {
         task.dueDate = lastDayOfYear;
         daysLeft = (lastDayOfYear.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
     } else if (task.recurring === RecurringTaskPeriod.WEEKLY) {
-        const lastDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7 - today.getDay());
+        const lastDayOfWeek = getLastDayOfTheWeek(today);
         task.dueDate = lastDayOfWeek;
         daysLeft = (lastDayOfWeek.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
     } else if (task.recurring === RecurringTaskPeriod.DAILY) {          
@@ -119,20 +119,30 @@ export function daysLeft(task: Task): number {
 }
 
 export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boolean {
-    if ((!task.dueDate && !task.recurring) || !taskProgress || !taskProgress.isCompleted || !taskProgress.completedOn) {
+    if ((!task.dueDate && !task.recurring) ||
+        !taskProgress ||
+        !taskProgress.isCompleted ||
+        !taskProgress.updatedAt ||
+        task.recurring === RecurringTaskPeriod.NONE) {
+        
         return false;
     }
-
+    
     const today = new Date();
+    const lastCompleted = Math.floor((taskProgress.updatedAt.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
     switch (task.recurring) {
-        case RecurringTaskPeriod.NONE:
-           return false;
         case RecurringTaskPeriod.DAILY:
             task.dueDate = today;
             const hoursLeft = 24 / today.getHours();
+            return hoursLeft  < 24;
+        case RecurringTaskPeriod.WEEKLY:
+            return daysLeft(task) + (lastCompleted - 7) < 7;
+        case RecurringTaskPeriod.MONTHLY:
+            return daysLeft(task) + (lastCompleted - 30) < 30;
+        case RecurringTaskPeriod.YEARLY:
+            return daysLeft(task) + (lastCompleted - 365) > 365;
 
-            return hoursLeft < 24;
         default:
             return daysLeft(task) > 0;
     }
@@ -155,19 +165,27 @@ export function taskIsExpiringSoon(task: Task): boolean {
             tolerance = 0; 
             break;
     }
-    
-    return taskDaysLeft > tolerance;
+
+    return taskDaysLeft < tolerance;
 }
     
-
 export function filterTasks(tasks: Task[], searchTerm: string, selectedDepartment: string): Task[] {
     if (selectedDepartment !== 'All Departments' && selectedDepartment.length !== 0) {
+        
         tasks = tasks.filter((task) => task.department === selectedDepartment);
     }
-
+    
     if (searchTerm.length !== 0) {
         tasks = tasks.filter((task) => task.name.toLowerCase().includes(searchTerm.toLowerCase()));
     }
-
+    
     return tasks;
+}
+
+function getLastDayOfTheWeek(date: Date = new Date()): Date {
+    const lastDay = new Date(date);
+    lastDay.setDate(date.getDate());
+    lastDay.setHours(23, 59, 59, 999);
+
+    return lastDay;
 }

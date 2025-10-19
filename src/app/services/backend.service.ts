@@ -325,6 +325,7 @@ export class BackendService {
             headers: this.headers,
         }).pipe(
             map(response => {
+                response.forEach(task =>  task.updatedAt ? task.updatedAt = new Date(task.updatedAt) : undefined)
                 return response
             }),
             catchError(this.handleError)

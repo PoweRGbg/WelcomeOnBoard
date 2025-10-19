@@ -98,6 +98,7 @@ export class ManageTasksComponent implements OnInit {
                     this.isLoading = false;
                     this.lastTasksRequest = new Date();
                     this.taskReloadNeeded = false;
+                    this.tasks = tasks;
                 },
                 error: (error) => {
                     this.isLoading = false;
@@ -105,10 +106,9 @@ export class ManageTasksComponent implements OnInit {
                 }
             });
         } else {
-            console.log('Filtering available tasks');
             this.isLoading = false;
         }
-
+        
         this.tasks = filterTasks(this.tasks, this.searchTerm, this.selectedDepartment);
         
         if (this.departments.length === 1) {
