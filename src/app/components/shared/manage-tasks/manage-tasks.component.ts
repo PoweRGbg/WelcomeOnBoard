@@ -16,7 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { RecurringTaskPeriod, Task, TaskCreateRequest, TaskProgress } from '../../../models/task.model';
-import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.component';
+import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
 import { Router } from '@angular/router';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { TaskFilterComponent } from "../task-filter/task-filter.component";
@@ -95,6 +95,7 @@ export class ManageTasksComponent implements OnInit {
         if (this.taskReloadNeeded) {
             this.backendService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
                 next: (tasks) => {
+                    this.tasks = tasks;
                     this.isLoading = false;
                     this.lastTasksRequest = new Date();
                     this.taskReloadNeeded = false;
@@ -114,6 +115,8 @@ export class ManageTasksComponent implements OnInit {
         if (this.departments.length === 1) {
             this.backendService.getDepartments().subscribe({
                 next: (departments) => {
+                    console.log('departments', departments);
+                    
                     this.departments = departments;
                 },
                 error: (error) => {
@@ -171,6 +174,7 @@ export class ManageTasksComponent implements OnInit {
                         username: '',
                         firstName: '',
                         lastName: '',
+                        role: this.currentUser?.role,
                         department: this.currentUser?.department
                     },
                 allowStatusToggle: false }
@@ -193,11 +197,23 @@ export class ManageTasksComponent implements OnInit {
         const dialogRef = this.dialog.open(TaskDialogComponent, {
             width: '90vw',
             maxWidth: '900px',
-            data: { task: task, currentUser: { id: this.currentUser?._id, username: '', firstName: '', lastName: '' }, allowStatusToggle: false }
+            data: { 
+                task: task,
+                currentUser: { 
+                    id: this.currentUser?._id,
+                    username: '',
+                    firstName: '',
+                    lastName: '',
+                    role: this.currentUser?.role,
+                    department: this.currentUser?.department
+                },
+                allowStatusToggle: false 
+            }
         });
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
+                this.taskReloadNeeded = true;
                 this.loadTasks();
                 this.snackBar.open('Task updated successfully!', 'Close', { duration: 3000 });
             }

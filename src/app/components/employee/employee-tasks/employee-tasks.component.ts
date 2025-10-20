@@ -17,7 +17,7 @@ import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dial
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { daysLeft, filterTasks, getTaskDueDate, hoursLeft, isFinishedOnTime, taskIsExpiringSoon } from '../../../common/utils';
+import { daysLeft, filterTasks, getTaskDueDate, hoursLeft, isFinishedOnTime, isTaskExpiring, taskCompletedDaysBefore } from '../../../common/utils';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TaskFilterComponent } from '../../shared/task-filter/task-filter.component';
@@ -149,9 +149,9 @@ export class EmployeeTasksComponent implements OnInit {
     getTaskStatus(task: Task): string {
         const progress = this.getTaskProgress(task);
         if (!progress) return 'Not Started';
-        if (progress.isCompleted) return 'Completed';
+        if (progress.isCompleted && isFinishedOnTime(task, progress)) return `Completed`;
         if (progress.actionsCompleted < progress.actionsTotal) return 'In Progress';
-        return 'Not Started';
+        return `Not Started`;
     }
 
     getTaskStartedDate(task: Task): string | null {
@@ -178,6 +178,9 @@ export class EmployeeTasksComponent implements OnInit {
 
     getTaskStatusColor(task: Task): string {
         const status = this.getTaskStatus(task);
+        if(status.startsWith('Completed')) {
+            return 'primary';
+        }
         switch (status) {
             case 'Completed':
                 return 'primary';
@@ -260,8 +263,8 @@ export class EmployeeTasksComponent implements OnInit {
             const bNeedsRestart = this.taskNeedsRestart(b);
 
             // tasks with shorter due days first
-            if (taskIsExpiringSoon(a) && !taskIsExpiringSoon(b) && !aIsCompleted) return -1
-            if (!taskIsExpiringSoon(a) && taskIsExpiringSoon(b) && !bIsCompleted) return 1
+            if (isTaskExpiring(a) && !isTaskExpiring(b) && !aIsCompleted) return -1
+            if (!isTaskExpiring(a) && isTaskExpiring(b) && !bIsCompleted) return 1
             
             if (a.recurring && !b.recurring) return -1
             if (b.recurring && !b.recurring) return 1
@@ -314,6 +317,7 @@ export class EmployeeTasksComponent implements OnInit {
         if (!task.dueDate && !task.recurring) {
             return '';
         }
+
         let taskDaysLeft = 0;
         let taskHoursLeft = 0;
         if (task.recurring === RecurringTaskPeriod.DAILY) {
@@ -325,19 +329,21 @@ export class EmployeeTasksComponent implements OnInit {
         if (taskDaysLeft >= 0) {
             return taskDaysLeft.toString() + (taskDaysLeft > 1 ? ' days left' : ' day left');
         } else {
-            return '';
+            return 'completed';
         }
     }
 
     protected isFinishedOnTime(task: Task): boolean {
         if (task.recurring !== RecurringTaskPeriod.NONE) {
-            return isFinishedOnTime(task);
+            const taskProgress = this.getTaskProgress(task) ?? undefined;
+            return isFinishedOnTime(task, taskProgress);
         }
         return true;
     }
 
     protected isTaskExpiring(task: Task): boolean {
-        return taskIsExpiringSoon(task);
+        const taskProgress = this.getTaskProgress(task) ?? undefined;
+        return isTaskExpiring(task, taskProgress);
     }
 
     private createForm(): FormGroup {

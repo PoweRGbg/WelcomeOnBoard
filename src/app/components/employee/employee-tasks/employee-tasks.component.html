@@ -21,7 +21,7 @@
             <div class="tasks-grid">
                 <mat-card *ngFor="let task of getSortedTasks()" class="task-card"
                     [class.in-progress]="isTaskInProgress(task)"
-                    [class.completed]="getTaskStatus(task) === 'Completed'"
+                    [class.completed]="getTaskStatus(task).startsWith('Completed')"
                     [class.expiring-soon-card]="isTaskExpiring(task)">
 
                     <mat-card-header>
@@ -44,7 +44,7 @@
                             <div *ngIf="!isFinishedOnTime(task)" 
                                     class="task-status"
                                     >
-                                <mat-chip 
+                                <mat-chip
                                     [color]="getTaskStatusColor(task)" selected 
                                     [class.expiring-soon]="isTaskExpiring(task)">
                                     {{ taskDaysLeft(task) }} - Due on {{ getTaskDueDate(task) }} 
@@ -83,11 +83,11 @@
 
                     <mat-card-actions>
                         <button mat-raised-button color="primary" (click)="openTaskDetail(task)"
-                            [disabled]="getTaskStatus(task) === 'Completed'">
+                            [disabled]="getTaskStatus(task).startsWith('Completed')">
                             <mat-icon>visibility</mat-icon>
                             {{ getTaskStatus(task) === 'Not Started' ? 'Start Task' : 'Continue Task' }}
                         </button>
-                        @if (getTaskStatus(task) === 'Completed') {
+                        @if (getTaskStatus(task).startsWith('Completed')) {
                         <button mat-raised-button color="primary" (click)="restartTask(task)">
                             <mat-icon>visibility</mat-icon>
                             Restart Task

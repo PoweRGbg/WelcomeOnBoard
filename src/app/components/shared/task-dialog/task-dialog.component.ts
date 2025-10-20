@@ -65,13 +65,19 @@ export class TaskDialogComponent implements OnInit {
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
     ) {
         this.taskForm = this.createForm();
+        console.log('Current user', this.data.currentUser);
+        
         if (this.data.currentUser.department) {
             this.departments = [this.data.currentUser.department, 'All Departments'];
             this.taskForm.patchValue({
                 department: this.data.currentUser.department
             });
         } else if (this.data.currentUser.role === UserRole.ADMIN) {
+            console.log('User is admin');
+            
             this.backendService.getDepartments().subscribe(departments => {
+                console.log('Got departments', departments);
+                
                 this.departments = ['All Departments', ...departments];
                 this.departments = [...new Set(this.departments)].sort();
                 this.taskForm.patchValue({
