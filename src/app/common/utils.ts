@@ -170,16 +170,12 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
     let daysLeft = 0;
     const today = new Date();
     let taskLastCompleted = taskCompletedDaysBefore(taskProgress);
-    if (task.name === 'месечна') {
-        console.log('task', task.name, 'completed before', taskLastCompleted, 'days');
-
-    }
+    // taskProgress.updatedAt = new Date('2024-06-15T10:00:00'); // For testing
     if (task.recurring === RecurringTaskPeriod.MONTHLY) {
         const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         task.dueDate = lastDayOfMonth;
         if (taskLastCompleted >= 0 && taskProgress.updatedAt) {
             const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            console.log('last completed', taskProgress.updatedAt.toLocaleDateString(), 'first day of month', firstDayOfMonth.toLocaleDateString());
             return taskProgress.updatedAt > firstDayOfMonth;
         } else {
             daysLeft = (lastDayOfMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
@@ -188,20 +184,23 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
         const lastDayOfYear = new Date(today.getFullYear() + 1, 0, 0);
         task.dueDate = lastDayOfYear;
         if (taskLastCompleted) {
-            return taskLastCompleted > 365;
+            const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+            return taskProgress.updatedAt! > firstDayOfYear;
         }
         daysLeft = (lastDayOfYear.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
     } else if (task.recurring === RecurringTaskPeriod.WEEKLY) {
         const lastDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7 - today.getDay());
         task.dueDate = lastDayOfWeek;
         if (taskLastCompleted) {
-            return taskLastCompleted > 7;
+            const firstDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+            return taskProgress.updatedAt! > firstDayOfWeek;
         }
         daysLeft = (lastDayOfWeek.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
     } else if (task.recurring === RecurringTaskPeriod.DAILY) {          
         today.setHours(23, 59, 59, 999);
         if (taskLastCompleted) {
-            return taskLastCompleted > 1;
+            const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            return taskProgress.updatedAt! > todayStart;
         }
         task.dueDate = today;
         daysLeft = (today.getTime() - today.getTime()) / (1000 * 60 * 60);

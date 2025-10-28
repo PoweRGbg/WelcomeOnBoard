@@ -142,7 +142,8 @@ export class EmployeeTasksComponent implements OnInit {
 
     getTaskCompletionPercentage(task: Task): number {
         const progress = this.getTaskProgress(task);
-        if (!progress) return 0;
+        const taskNeedsRestart = this.taskNeedsRestart(task);
+        if (!progress || taskNeedsRestart) return 0;
         return (progress.actionsCompleted / progress.actionsTotal || 0) * 100;
     }
 
@@ -365,11 +366,17 @@ export class EmployeeTasksComponent implements OnInit {
     }
 
     protected taskNeedsRestart(task: Task): boolean {
-        const taskProgess = this.getTaskProgress(task) ?? undefined;
+        const taskProgess = this.getTaskProgress(task);
+        if (!task.recurring || task.recurring === RecurringTaskPeriod.NONE) {
+            return false;
+        }
         
         if (!taskProgess)
             return true;
-
+        if (task.name === 'месечна') {
+            console.log(task.name, isFinishedOnTime(task) ? 'yes' : 'no');
+            
+        }
         return isFinishedOnTime(task, taskProgess);
     }
 }
