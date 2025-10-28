@@ -170,12 +170,17 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
     let daysLeft = 0;
     const today = new Date();
     let taskLastCompleted = taskCompletedDaysBefore(taskProgress);
-    
+    if (task.name === 'месечна') {
+        console.log('task', task.name, 'completed before', taskLastCompleted, 'days');
+
+    }
     if (task.recurring === RecurringTaskPeriod.MONTHLY) {
         const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         task.dueDate = lastDayOfMonth;
-        if (taskLastCompleted) {
-            return taskLastCompleted > 30;
+        if (taskLastCompleted >= 0 && taskProgress.updatedAt) {
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            console.log('last completed', taskProgress.updatedAt.toLocaleDateString(), 'first day of month', firstDayOfMonth.toLocaleDateString());
+            return taskProgress.updatedAt > firstDayOfMonth;
         } else {
             daysLeft = (lastDayOfMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
         }
