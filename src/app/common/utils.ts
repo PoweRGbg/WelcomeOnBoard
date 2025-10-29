@@ -176,7 +176,7 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
         task.dueDate = lastDayOfMonth;
         if (taskLastCompleted >= 0 && taskProgress.updatedAt) {
             const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            return taskProgress.updatedAt > firstDayOfMonth;
+            return taskProgress.updatedAt! > firstDayOfMonth;
         } else {
             daysLeft = (lastDayOfMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
         }
@@ -191,19 +191,20 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
     } else if (task.recurring === RecurringTaskPeriod.WEEKLY) {
         const lastDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7 - today.getDay());
         task.dueDate = lastDayOfWeek;
-        if (taskLastCompleted) {
-            const firstDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
-            return taskProgress.updatedAt! > firstDayOfWeek;
+        if (taskLastCompleted >= 0 && taskProgress.updatedAt) {
+            const firstDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1);
+            
+            return taskProgress.updatedAt > firstDayOfWeek;
         }
         daysLeft = (lastDayOfWeek.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
     } else if (task.recurring === RecurringTaskPeriod.DAILY) {          
         today.setHours(23, 59, 59, 999);
-        if (taskLastCompleted) {
+        if (taskLastCompleted > 0 && taskProgress.updatedAt) {
             const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
             return taskProgress.updatedAt! > todayStart;
         }
         task.dueDate = today;
-        daysLeft = (today.getTime() - today.getTime()) / (1000 * 60 * 60);
+        daysLeft = (today.getTime() - new Date().getTime()) / (1000 * 60 * 60);
     } else if (task.recurring === RecurringTaskPeriod.CUSTOM) {
         if (!task.dueDate) {
             return true;

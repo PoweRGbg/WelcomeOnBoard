@@ -267,9 +267,6 @@ export class EmployeeTasksComponent implements OnInit {
             if (isTaskExpiring(a) && !isTaskExpiring(b) && !aIsCompleted) return -1
             if (!isTaskExpiring(a) && isTaskExpiring(b) && !bIsCompleted) return 1
             
-            if (a.recurring && !b.recurring) return -1
-            if (b.recurring && !b.recurring) return 1
-
             // then if task needs restart
             if (aNeedsRestart && !bNeedsRestart) return 1
             if (!aNeedsRestart && bNeedsRestart) return -1;
@@ -278,9 +275,14 @@ export class EmployeeTasksComponent implements OnInit {
             if (aInProgress && !bInProgress) return -1;
             if (!aInProgress && bInProgress) return 1;
 
+            // then by recurring tasks first
+            if (a.recurring && !b.recurring) return -1
+            if (b.recurring && !b.recurring) return 1
+
             // Then by completion percentage (ascending)
             const aProgress = this.getTaskCompletionPercentage(a);
             const bProgress = this.getTaskCompletionPercentage(b);
+            
             return aProgress - bProgress;
         });
     }
@@ -373,10 +375,6 @@ export class EmployeeTasksComponent implements OnInit {
         
         if (!taskProgess)
             return true;
-        if (task.name === 'месечна') {
-            console.log(task.name, isFinishedOnTime(task) ? 'yes' : 'no');
-            
-        }
-        return isFinishedOnTime(task, taskProgess);
+        return !isFinishedOnTime(task, taskProgess);
     }
 }
