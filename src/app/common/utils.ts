@@ -201,7 +201,11 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
         today.setHours(23, 59, 59, 999);
         if (taskLastCompleted > 0 && taskProgress.updatedAt) {
             const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            return taskProgress.updatedAt! > todayStart;
+            if (task.name === 'Направи си кафе') {
+                console.log('Today start:', todayStart.toDateString());
+                console.log('Task updated at:', taskProgress.updatedAt.toDateString());
+            }
+            return taskProgress.updatedAt > todayStart;
         }
         task.dueDate = today;
         daysLeft = (today.getTime() - new Date().getTime()) / (1000 * 60 * 60);
