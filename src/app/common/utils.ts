@@ -203,19 +203,11 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
         daysLeft = (lastDayOfWeek.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
     } else if (task.recurring === RecurringTaskPeriod.DAILY) {          
         today.setHours(23, 59, 59, 999);
-        console.log('Today :', today.toDateString());
-        console.log('Task updated at:', taskProgress.updatedAt?.toDateString());
         if (taskLastCompleted > 0 && taskProgress.updatedAt && !taskProgress.isCompleted) {
             const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            console.log('Daily completed before', taskLastCompleted, taskLastCompleted > 0);
-            
-            console.log(taskLastCompleted ? taskProgress.updatedAt > todayStart: 'No last completed date');
-            
-            return taskProgress.updatedAt > todayStart;
+            return taskProgress.updatedAt.getDay() > todayStart.getDay(); // completed today
         }
         task.dueDate = today;
-        console.log('days left for daily task', Math.ceil((today.getTime() - new Date().getTime()) / (1000 * 60 * 60)));
-        
         daysLeft = Math.floor((today.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 ));
     } else if (task.recurring === RecurringTaskPeriod.CUSTOM) {
         if (!task.dueDate) {
