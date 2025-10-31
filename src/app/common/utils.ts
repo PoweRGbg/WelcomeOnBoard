@@ -119,7 +119,7 @@ export function daysLeft(task: Task): number {
 }
 
 export function isTaskExpiring(task: Task, taskProgress?: TaskProgress): boolean {
-    if (isFinishedOnTime(task, taskProgress)) {
+    if (isFinishedOnTime(task, taskProgress) && task.recurring !== RecurringTaskPeriod.DAILY) {
         return false;
     }
     
