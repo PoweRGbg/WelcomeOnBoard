@@ -174,7 +174,7 @@ export class BackendMockService {
         {
             id: '1',
             suggestedBy: '3',
-            taskName: 'Team Building Workshop',
+            name: 'Team Building Workshop',
             description: 'Organize team building activities for new employees',
             department: 'Team Building',
             url: 'https://company.com/team-building',
@@ -196,7 +196,7 @@ export class BackendMockService {
         {
             id: '2',
             suggestedBy: '4',
-            taskName: 'Mentorship Program',
+            name: 'Mentorship Program',
             description: 'Pair new employees with experienced mentors',
             department: 'Development',
             url: 'https://company.com/mentorship',
@@ -779,7 +779,7 @@ export class BackendMockService {
     }
 
     // Task Suggestions Methods
-    getTaskSuggestions(page: number = 1, limit: number = 10, status?: string): Observable<PaginatedResponse<TaskSuggestion>> {
+    getTaskSuggestions(page: number = 1, limit: number = 10, status?: string): Observable<TaskSuggestion[]> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
                 let filteredSuggestions = [...this.mockTaskSuggestions];
@@ -794,13 +794,15 @@ export class BackendMockService {
                 const endIndex = startIndex + limit;
                 const paginatedSuggestions = filteredSuggestions.slice(startIndex, endIndex);
 
-                return {
-                    data: paginatedSuggestions,
-                    total: filteredSuggestions.length,
-                    page: page,
-                    limit: limit,
-                    totalPages: Math.ceil(filteredSuggestions.length / limit)
-                };
+            //     return {
+            //         data: paginatedSuggestions,
+            //         total: filteredSuggestions.length,
+            //         page: page,
+            //         limit: limit,
+            //         totalPages: Math.ceil(filteredSuggestions.length / limit)
+            //     };
+            // })
+                return paginatedSuggestions;
             })
         );
     }

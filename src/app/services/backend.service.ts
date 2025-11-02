@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { map, catchError, tap, filter } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
 import { environment } from '../../environments/environment';
@@ -373,7 +373,7 @@ export class BackendService {
     }
 
     // Task Suggestions Methods
-    getTaskSuggestions(page: number = 1, limit: number = 10, status?: string): Observable<PaginatedResponse<TaskSuggestion>> {
+    getTaskSuggestions(page: number = 1, limit: number = 10, status?: string): Observable<TaskSuggestion[]> {
         let params = new HttpParams()
             .set('page', page.toString())
             .set('limit', limit.toString());
@@ -382,7 +382,7 @@ export class BackendService {
             params = params.set('status', status);
         }
 
-        return this.http.get<PaginatedResponse<TaskSuggestion>>(`${this.baseUrl}/task-suggestions`, {
+        return this.http.get<TaskSuggestion[]>(`${this.baseUrl}/task-suggestions`, {
             headers: this.headers,
             params
         }).pipe(
@@ -392,6 +392,8 @@ export class BackendService {
     }
 
     createTaskSuggestion(suggestion: Omit<TaskSuggestion, 'id' | 'createdAt'>): Observable<TaskSuggestion> {
+        console.log('sending suggestion', suggestion);
+        
         return this.http.post<TaskSuggestion>(`${this.baseUrl}/task-suggestions`, suggestion, { headers: this.headers })
             .pipe(
                 map(response => response),

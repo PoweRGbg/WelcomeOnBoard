@@ -45,12 +45,12 @@ export interface TaskCreateRequest {
 export interface TaskSuggestion {
     id: string;
     suggestedBy: string;
-    taskName: string;
+    name: string;
     description?: string;
     department: string;
     url?: string;
     actions?: Action[];
-    status: 'pending' | 'approved' | 'rejected';
+    status?: 'pending' | 'approved' | 'rejected';
     createdAt: Date;
     reviewedAt?: Date;
     reviewedBy?: string;

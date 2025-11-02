@@ -53,7 +53,7 @@ export class ManagerSuggestionsComponent implements OnInit {
 
     loadSuggestions(): void {
         this.backendService.getTaskSuggestions().subscribe(suggestions => {
-            suggestions.data ? this.suggestions = suggestions.data : console.log("no suggestions.data");
+            suggestions ? this.suggestions = suggestions : console.log("no suggestions.data");
         });
     }
 
@@ -90,7 +90,7 @@ export class ManagerSuggestionsComponent implements OnInit {
     approveSuggestion(suggestion: TaskSuggestion): void {
         // Convert suggestion to task
         const taskData: TaskCreateRequest = {
-            name: suggestion.taskName,
+            name: suggestion.name,
             description: suggestion.description || '',
             department: suggestion.department,
             url: suggestion.url || '',

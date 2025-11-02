@@ -99,26 +99,26 @@ export class EmployeeSuggestionsComponent implements OnInit {
             const actions: Action[] = formValue.actions.map((action: any) => ({
                 name: action.name,
                 description: action.description,
-                imageUrl: action.imageUrl,
                 url: action.url,
-                order: action.order
             }));
 
             const suggestion: Omit<TaskSuggestion, 'id' | 'createdAt'> = {
                 suggestedBy: this.currentUserId!,
-                taskName: formValue.taskName,
+                name: formValue.taskName,
                 description: formValue.description,
                 department: formValue.department,
                 url: formValue.url,
                 actions: actions,
-                status: 'pending'
+                status: undefined,
             };
 
-            this.backendService.createTaskSuggestion(suggestion);
+            this.backendService.createTaskSuggestion(suggestion).subscribe(createdSuggestion => {
+                console.log('Created suggestion', createdSuggestion);
+            });
             this.snackBar.open('Task suggestion submitted successfully!', 'Close', { duration: 3000 });
-            this.suggestionForm.reset();
-            this.actionsArray.clear();
-            this.loadMySuggestions();
+            // this.suggestionForm.reset();
+            // this.actionsArray.clear();
+            // this.loadMySuggestions();
         } else {
             this.snackBar.open('Please fill in all required fields and add at least one action', 'Close', { duration: 3000 });
         }
@@ -128,12 +128,14 @@ export class EmployeeSuggestionsComponent implements OnInit {
         if (!this.currentUserId) return;
 
         this.backendService.getTaskSuggestions().subscribe(suggestions => {
+            console.log('Got suggestions', suggestions);
+
             const allSuggestions = suggestions;
-            this.mySuggestions = allSuggestions.data.filter(s => s.suggestedBy === this.currentUserId);
+            this.mySuggestions = allSuggestions.filter(s => s.suggestedBy === this.currentUserId);
         })
     };
 
-    getStatusColor(status: string): string {
+    getStatusColor(status?: string): string {
         switch (status) {
             case 'approved': return 'primary';
             case 'rejected': return 'warn';
@@ -141,7 +143,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
         }
     }
 
-    getStatusText(status: string): string {
+    getStatusText(status?: string): string {
         switch (status) {
             case 'approved': return 'Approved';
             case 'rejected': return 'Rejected';

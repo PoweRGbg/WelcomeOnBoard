@@ -37,7 +37,8 @@ export interface IBackendService {
     completeTask(taskId: string): Observable<TaskProgress>;
 
     // Task Suggestions
-    getTaskSuggestions(page?: number, limit?: number, status?: string): Observable<PaginatedResponse<TaskSuggestion>>;
+    // getTaskSuggestions(page?: number, limit?: number, status?: string): Observable<PaginatedResponse<TaskSuggestion>>;
+    getTaskSuggestions(page?: number, limit?: number, status?: string): Observable<TaskSuggestion[]>;
     createTaskSuggestion(suggestion: any): Observable<TaskSuggestion>;
     updateTaskSuggestion(id: string, suggestionData: any): Observable<TaskSuggestion>;
     deleteTaskSuggestion(id: string): Observable<boolean>;
