@@ -113,12 +113,12 @@ export class EmployeeSuggestionsComponent implements OnInit {
             };
 
             this.backendService.createTaskSuggestion(suggestion).subscribe(createdSuggestion => {
-                console.log('Created suggestion', createdSuggestion);
+                console.log('Created suggestion');
+                this.snackBar.open('Task suggestion submitted successfully!', 'Close', { duration: 3000 });
+                this.suggestionForm.reset();
+                this.actionsArray.clear();
+                this.loadMySuggestions();
             });
-            this.snackBar.open('Task suggestion submitted successfully!', 'Close', { duration: 3000 });
-            // this.suggestionForm.reset();
-            // this.actionsArray.clear();
-            // this.loadMySuggestions();
         } else {
             this.snackBar.open('Please fill in all required fields and add at least one action', 'Close', { duration: 3000 });
         }
@@ -128,12 +128,17 @@ export class EmployeeSuggestionsComponent implements OnInit {
         if (!this.currentUserId) return;
 
         this.backendService.getTaskSuggestions().subscribe(suggestions => {
-            console.log('Got suggestions', suggestions);
-
             const allSuggestions = suggestions;
             this.mySuggestions = allSuggestions.filter(s => s.suggestedBy === this.currentUserId);
         })
     };
+
+    protected deleteSugestion(suggestion: TaskSuggestion): void {
+        this.backendService.deleteTaskSuggestion(suggestion.id!).subscribe(() => {
+            this.snackBar.open('Suggestion deleted successfully!', 'Close', { duration: 3000 });
+            this.loadMySuggestions();
+        });
+    }
 
     getStatusColor(status?: string): string {
         switch (status) {
