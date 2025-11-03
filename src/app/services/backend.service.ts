@@ -392,8 +392,6 @@ export class BackendService {
     }
 
     createTaskSuggestion(suggestion: Omit<TaskSuggestion, 'id' | 'createdAt'>): Observable<TaskSuggestion> {
-        console.log('sending suggestion', suggestion);
-        
         return this.http.post<TaskSuggestion>(`${this.baseUrl}/task-suggestions`, suggestion, { headers: this.headers })
             .pipe(
                 map(response => response),
@@ -402,7 +400,7 @@ export class BackendService {
     }
 
     updateTaskSuggestion(id: string, suggestionData: Partial<TaskSuggestion>): Observable<TaskSuggestion> {
-        return this.http.put<TaskSuggestion>(`${this.baseUrl}/task-suggestions/${id}`, suggestionData, { headers: this.headers })
+        return this.http.patch<TaskSuggestion>(`${this.baseUrl}/task-suggestions/${id}`, suggestionData, { headers: this.headers })
             .pipe(
                 map(response => response),
                 catchError(this.handleError)

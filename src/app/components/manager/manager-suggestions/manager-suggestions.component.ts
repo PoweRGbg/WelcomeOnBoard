@@ -108,17 +108,18 @@ export class ManagerSuggestionsComponent implements OnInit {
             firstName: '',
             lastName: ''
         }
-        this.backendService.createTask(taskData);
-
-        // Update suggestion status
-        this.backendService.updateTaskSuggestion(suggestion.id, {
-            status: 'approved',
-            reviewedAt: new Date(),
-            reviewedBy: this.currentUserId!
+        this.backendService.createTask(taskData).subscribe(createdTask => {
+            this.backendService.updateTaskSuggestion(suggestion.id, {
+                status: 'approved',
+                reviewedAt: new Date(),
+                reviewedBy: this.currentUserId!
+            }).subscribe(() => {
+                this.loadSuggestions();
+                this.snackBar.open('Suggestion approved and task created!', 'Close', { duration: 3000 });
+            });
+            this.loadSuggestions();
+            this.snackBar.open('Suggestion approved and task created!', 'Close', { duration: 3000 });
         });
-
-        this.loadSuggestions();
-        this.snackBar.open('Suggestion approved and task created!', 'Close', { duration: 3000 });
     }
 
     rejectSuggestion(suggestion: TaskSuggestion): void {
@@ -126,10 +127,10 @@ export class ManagerSuggestionsComponent implements OnInit {
             status: 'rejected',
             reviewedAt: new Date(),
             reviewedBy: this.currentUserId!
+        }).subscribe(() => {
+            this.loadSuggestions();
+            this.snackBar.open('Suggestion rejected', 'Close', { duration: 3000 });
         });
-
-        this.loadSuggestions();
-        this.snackBar.open('Suggestion rejected', 'Close', { duration: 3000 });
     }
 
     getSuggestionsByStatus(status: string): TaskSuggestion[] {
