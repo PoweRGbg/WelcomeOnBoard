@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../services/auth.service';
-import { TaskSuggestion } from '../../../models/task.model';
+import { Task, TaskSuggestion } from '../../../models/task.model';
 import { Action } from '../../../models/action.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 
@@ -33,10 +33,11 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
     styleUrl: './employee-suggestions.component.scss'
 })
 export class EmployeeSuggestionsComponent implements OnInit {
-    suggestionForm: FormGroup;
-    mySuggestions: TaskSuggestion[] = [];
-    departments: string[] = ['All departments'];
-    currentUserId: string | null = null;
+    protected suggestionForm: FormGroup;
+    protected mySuggestions: TaskSuggestion[] = [];
+    protected departments: string[] = ['All departments'];
+    protected currentUserId: string | null = null;
+    protected editedTaskSuggestionId: string | undefined;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
@@ -51,6 +52,9 @@ export class EmployeeSuggestionsComponent implements OnInit {
         this.authService.currentUser$.subscribe(currentUser => {
             this.currentUserId = currentUser?._id || null;
             if (currentUser?.department) this.departments.push(currentUser.department);
+        });
+        this.backendService.getDepartments().subscribe(departments => {
+            this.departments = departments;
         });
         this.loadMySuggestions();
     }
@@ -69,12 +73,12 @@ export class EmployeeSuggestionsComponent implements OnInit {
         return this.suggestionForm.get('actions') as FormArray;
     }
 
-    addAction(): void {
+    addAction(action?: Action): void {
         const actionForm = this.fb.group({
-            name: ['', [Validators.required, Validators.minLength(3)]],
-            description: [''],
-            imageUrl: [''],
-            url: [''],
+            name: [action?.name || '', [Validators.required, Validators.minLength(3)]],
+            description: [action?.description || ''],
+            imageUrl: [action?.imageUrl || ''],
+            url: [action?.url || ''],
             order: [this.actionsArray.length + 1]
         });
 
@@ -102,23 +106,31 @@ export class EmployeeSuggestionsComponent implements OnInit {
                 url: action.url,
             }));
 
-            const suggestion: Omit<TaskSuggestion, 'id' | 'createdAt'> = {
-                suggestedBy: this.currentUserId!,
+            const suggestion = {
                 name: formValue.taskName,
                 description: formValue.description,
                 department: formValue.department,
                 url: formValue.url,
                 actions: actions,
                 status: undefined,
+                suggestedBy: this.currentUserId
             };
 
-            this.backendService.createTaskSuggestion(suggestion).subscribe(createdSuggestion => {
-                console.log('Created suggestion');
-                this.snackBar.open('Task suggestion submitted successfully!', 'Close', { duration: 3000 });
-                this.suggestionForm.reset();
-                this.actionsArray.clear();
-                this.loadMySuggestions();
-            });
+            if (this.editedTaskSuggestionId) {
+                this.backendService.updateTaskSuggestion(this.editedTaskSuggestionId, suggestion).subscribe(() => {
+                    this.snackBar.open('Task suggestion edit submitted successfully!', 'Close', { duration: 3000 });
+                    this.suggestionForm.reset();
+                    this.actionsArray.clear();
+                    this.loadMySuggestions();
+                });
+            } else {
+                this.backendService.createTaskSuggestion(suggestion).subscribe(() => {
+                    this.snackBar.open('Task suggestion submitted successfully!', 'Close', { duration: 3000 });
+                    this.suggestionForm.reset();
+                    this.actionsArray.clear();
+                    this.loadMySuggestions();
+                });
+            }
         } else {
             this.snackBar.open('Please fill in all required fields and add at least one action', 'Close', { duration: 3000 });
         }
@@ -138,6 +150,27 @@ export class EmployeeSuggestionsComponent implements OnInit {
             this.snackBar.open('Suggestion deleted successfully!', 'Close', { duration: 3000 });
             this.loadMySuggestions();
         });
+    }
+
+    protected loadSuggestionDataInForm(suggestion: TaskSuggestion) {
+        console.log('Loading suggestion data in form', suggestion);
+        this.editedTaskSuggestionId = suggestion.id;
+        
+        this.suggestionForm.patchValue({
+            taskName: suggestion.name,
+            description: suggestion.description,
+            department: suggestion.department,
+            url: suggestion.url,
+        });
+
+        // Clear filled actions
+        const actionsArray = this.suggestionForm.get('actions') as FormArray;
+        actionsArray.clear();
+
+        // Add existing actions
+        if (suggestion.actions?.length) {
+            suggestion.actions.forEach(action => this.addAction(action));
+        }
     }
 
     getStatusColor(status?: string): string {

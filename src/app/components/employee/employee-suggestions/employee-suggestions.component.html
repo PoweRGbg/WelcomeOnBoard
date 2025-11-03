@@ -153,6 +153,12 @@
                                     <span>{{ suggestion.createdAt | date:'short' }}</span>
                                 </div>
                                 <div>
+                                    <button mat-icon-button (click)="loadSuggestionDataInForm(suggestion)" 
+                                        matTooltip="Edit suggestion" color="warn">
+                                        <mat-icon>edit</mat-icon>
+                                    </button>
+                                </div>
+                                <div>
                                     <button mat-icon-button (click)="deleteSugestion(suggestion)" 
                                         matTooltip="Delete suggestion" color="warn">
                                         <mat-icon>close</mat-icon>
