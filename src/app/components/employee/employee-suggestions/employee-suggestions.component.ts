@@ -105,7 +105,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
                 description: action.description,
                 url: action.url,
             }));
-
+            
             const suggestion = {
                 name: formValue.taskName,
                 description: formValue.description,

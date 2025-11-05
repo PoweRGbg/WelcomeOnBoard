@@ -254,11 +254,6 @@ export class BackendService {
             .set('page', page.toString())
             .set('limit', limit.toString());
 
-        // As of 0.0.25 search is done locally
-        // if (search) {
-        //     params = params.set('search', search);
-        // }
-
         return this.http.get<Task[]>(`${this.baseUrl}/tasks`, {
             headers: this.headers,
             params
@@ -272,6 +267,14 @@ export class BackendService {
 
     getTaskById(id: string): Observable<Task> {
         return this.http.get<Task>(`${this.baseUrl}/tasks?id=${id}`, { headers: this.headers })
+            .pipe(
+                map(response => response),
+                catchError(this.handleError)
+            );
+    }
+
+    getTaskbyName(name: string): Observable<Task> {
+        return this.http.get<Task>(`${this.baseUrl}/tasks?name=${name}`, { headers: this.headers })
             .pipe(
                 map(response => response),
                 catchError(this.handleError)
