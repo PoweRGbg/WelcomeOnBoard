@@ -190,8 +190,6 @@ export class BackendMockService {
             ],
             status: 'pending',
             createdAt: new Date('2024-01-05'),
-            reviewedAt: undefined,
-            reviewedBy: undefined
         },
         {
             id: '2',
@@ -212,8 +210,6 @@ export class BackendMockService {
             ],
             status: 'approved',
             createdAt: new Date('2024-01-06'),
-            reviewedAt: new Date('2024-01-07'),
-            reviewedBy: '1'
         }
     ];
 

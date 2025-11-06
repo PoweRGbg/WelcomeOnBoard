@@ -52,8 +52,7 @@ export interface TaskSuggestion {
     actions?: Action[];
     status?: 'pending' | 'approved' | 'rejected';
     createdAt: Date;
-    reviewedAt?: Date;
-    reviewedBy?: string;
+    // reviewedBy?: string;
     recurring?: RecurringTaskPeriod;
     dueDate?: Date;
 }

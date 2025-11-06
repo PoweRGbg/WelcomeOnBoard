@@ -182,6 +182,8 @@ export class EmployeeSuggestionsComponent implements OnInit {
     }
 
     getStatusText(status?: string): string {
+        console.log('status', status);
+        
         switch (status) {
             case 'approved': return 'Approved';
             case 'rejected': return 'Rejected';
