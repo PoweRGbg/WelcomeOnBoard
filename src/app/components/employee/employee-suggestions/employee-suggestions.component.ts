@@ -106,14 +106,14 @@ export class EmployeeSuggestionsComponent implements OnInit {
                 url: action.url,
             }));
             
-            const suggestion = {
+            let suggestion = {
                 name: formValue.taskName,
                 description: formValue.description,
                 department: formValue.department,
                 url: formValue.url,
                 actions: actions,
-                status: undefined,
-                suggestedBy: this.currentUserId
+                status: 'pending', // always pending when creating or updating
+                suggestedBy: this.currentUserId ?? 'no one',
             };
 
             if (this.editedTaskSuggestionId) {

@@ -108,11 +108,11 @@ export class ManagerSuggestionsComponent implements OnInit {
             firstName: '',
             lastName: ''
         }
-        this.backendService.createTask(taskData).subscribe(createdTask => {
+        this.backendService.createTask(taskData).subscribe((createdTask) => {
             this.backendService.updateTaskSuggestion(suggestion.id, {
                 status: 'approved',
-                // reviewedAt: new Date(),
-                // reviewedBy: this.currentUserId!
+                reviewedAt: new Date(),
+                reviewedBy: this.currentUserId!
             }).subscribe(() => {
                 this.loadSuggestions();
                 this.snackBar.open('Suggestion approved and task created!', 'Close', { duration: 3000 });
@@ -125,8 +125,8 @@ export class ManagerSuggestionsComponent implements OnInit {
     rejectSuggestion(suggestion: TaskSuggestion): void {
         this.backendService.updateTaskSuggestion(suggestion.id, {
             status: 'rejected',
-            // reviewedAt: new Date(),
-            // reviewedBy: this.currentUserId!
+            reviewedAt: new Date(),
+            reviewedBy: this.currentUserId!
         }).subscribe(() => {
             this.loadSuggestions();
             this.snackBar.open('Suggestion rejected', 'Close', { duration: 3000 });
