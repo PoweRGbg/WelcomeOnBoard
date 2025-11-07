@@ -34,7 +34,7 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
 })
 export class ManagerSuggestionsComponent implements OnInit {
     suggestions: TaskSuggestion[] = [];
-    displayedColumns: string[] = ['taskName', 'suggestedBy', 'category', 'status', 'createdAt', 'actions'];
+    displayedColumns: string[] = ['taskName', 'suggestedBy', 'category', 'actions-count', 'status', 'createdAt', 'actions'];
     currentUserId: string | null = null;
 
     constructor(
@@ -101,24 +101,20 @@ export class ManagerSuggestionsComponent implements OnInit {
             dueDate: suggestion.recurring !== RecurringTaskPeriod.NONE ? suggestion.dueDate : undefined
         };
 
-        // Create the task
-        const suggestionUser: UserInfo = {
-            _id: suggestion.suggestedBy,
-            username: '',
-            firstName: '',
-            lastName: ''
-        }
-        this.backendService.createTask(taskData).subscribe((createdTask) => {
+        this.backendService.createTask(taskData).subscribe(createdTask => {
+            console.log('Created task', createdTask.name);
+            
             this.backendService.updateTaskSuggestion(suggestion.id, {
                 status: 'approved',
                 reviewedAt: new Date(),
                 reviewedBy: this.currentUserId!
-            }).subscribe(() => {
+            }).subscribe((suggestion) => {
+                console.log('Suggestion approved', suggestion);
+                
                 this.loadSuggestions();
                 this.snackBar.open('Suggestion approved and task created!', 'Close', { duration: 3000 });
             });
-            this.loadSuggestions();
-            this.snackBar.open('Suggestion approved and task created!', 'Close', { duration: 3000 });
+
         });
     }
 

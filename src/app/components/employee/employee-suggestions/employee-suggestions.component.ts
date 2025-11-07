@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -10,9 +10,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../services/auth.service';
-import { Task, TaskSuggestion } from '../../../models/task.model';
+import { SuggestionStatus, TaskSuggestion } from '../../../models/task.model';
 import { Action } from '../../../models/action.model';
-import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
+import { BackendService } from '../../../services/backend.service';
 
 @Component({
     selector: 'app-employee-suggestions',
@@ -33,14 +33,17 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
     styleUrl: './employee-suggestions.component.scss'
 })
 export class EmployeeSuggestionsComponent implements OnInit {
+    protected showSuggestionForm = false;
     protected suggestionForm: FormGroup;
     protected mySuggestions: TaskSuggestion[] = [];
     protected departments: string[] = ['All departments'];
     protected currentUserId: string | null = null;
     protected editedTaskSuggestionId: string | undefined;
-
+    protected taskNames: string[] = [];
+    protected suggestionApprover: string = '';
+    protected reviewers: Map<string, string> = new Map();
     constructor(
-        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
+        private backendService: BackendService,
         private fb: FormBuilder,
         private authService: AuthService,
         private snackBar: MatSnackBar
@@ -55,6 +58,10 @@ export class EmployeeSuggestionsComponent implements OnInit {
         });
         this.backendService.getDepartments().subscribe(departments => {
             this.departments = departments;
+        });
+
+        this.backendService.getTasks().subscribe(tasks => {
+            this.taskNames = tasks.map(task => task.name);
         });
         this.loadMySuggestions();
     }
@@ -100,6 +107,11 @@ export class EmployeeSuggestionsComponent implements OnInit {
         if (this.suggestionForm.valid && this.actionsArray.length > 0) {
             const formValue = this.suggestionForm.value;
 
+            if (this.taskNames.includes(formValue.taskName)) {
+                this.snackBar.open('Task name already exists', 'Close', { duration: 3000 });
+                return;
+            };
+
             const actions: Action[] = formValue.actions.map((action: any) => ({
                 name: action.name,
                 description: action.description,
@@ -112,7 +124,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
                 department: formValue.department,
                 url: formValue.url,
                 actions: actions,
-                status: 'pending', // always pending when creating or updating
+                status: SuggestionStatus.PENDING, // always pending when creating or updating
                 suggestedBy: this.currentUserId ?? 'no one',
             };
 
@@ -142,6 +154,15 @@ export class EmployeeSuggestionsComponent implements OnInit {
         this.backendService.getTaskSuggestions().subscribe(suggestions => {
             const allSuggestions = suggestions;
             this.mySuggestions = allSuggestions.filter(s => s.suggestedBy === this.currentUserId);
+            const reviewerIds = allSuggestions.map(suggestion => suggestion.reviewedBy) as string[];
+            reviewerIds.forEach((reviewerId) => {
+                if (reviewerId) {
+                    this.backendService.getUserById(reviewerId).subscribe(user => {
+                        if (this.reviewers.get(reviewerId)) return;
+                        this.reviewers.set(reviewerId, user.firstName + ' ' + user.lastName);
+                    });
+                }
+            });
         })
     };
 
@@ -186,5 +207,18 @@ export class EmployeeSuggestionsComponent implements OnInit {
             case 'rejected': return 'Rejected';
             default: return 'Pending Review';
         }
+    }
+
+    protected getSuggestionApprover(suggestion: TaskSuggestion): string {
+        if (suggestion.status !== SuggestionStatus.PENDING && suggestion.reviewedBy) {
+            this.backendService.getUserById(suggestion.reviewedBy).subscribe((reviewer) => {
+                return ` by ${reviewer.firstName} ${reviewer.lastName} on ${suggestion.reviewedBy}`;
+            });
+        }
+        return '';
+    }
+
+    protected toggleSuggestionForm(): void {
+        this.showSuggestionForm = !this.showSuggestionForm;
     }
 }

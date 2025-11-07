@@ -1,5 +1,9 @@
 <div class="employee-suggestions-container">
-    <div class="suggestion-form-section">
+    <button mat-raised-button color="primary" (click)="toggleSuggestionForm()">
+        <mat-icon>plus</mat-icon>
+        Add task suggestion
+    </button>
+    <div *ngIf='showSuggestionForm' class="suggestion-form-section">
         <mat-card>
             <mat-card-header>
                 <mat-card-title>Suggest New Task</mat-card-title>
@@ -135,7 +139,7 @@
                                 </div>
                                 <div class="suggestion-status">
                                     <mat-chip [color]="getStatusColor(suggestion.status)" selected>
-                                        {{ getStatusText(suggestion.status) }}
+                                        {{ getStatusText(suggestion.status) }} {{ suggestion.reviewedBy ? 'by ' + reviewers.get(suggestion.reviewedBy) : '' }}
                                     </mat-chip>
                                 </div>
                             </div>

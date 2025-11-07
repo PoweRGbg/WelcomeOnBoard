@@ -14,6 +14,12 @@ export enum UserRole {
     MANAGER = 'MANAGER',
     EMPLOYEE = 'EMPLOYEE'
 }
+
+export enum SuggestionStatus {
+    PENDING = 'pending',
+    APPROVED = 'approved',
+    REJECTED = 'rejected',
+}
 export interface Task {
     id: string;
     name: string;
@@ -50,7 +56,7 @@ export interface TaskSuggestion {
     department: string;
     url?: string;
     actions?: Action[];
-    status?: 'pending' | 'approved' | 'rejected';
+    status?: SuggestionStatus;
     createdAt: Date;
     reviewedBy?: string;
     reviewedAt?: Date;

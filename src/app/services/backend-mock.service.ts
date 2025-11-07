@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, of, delay } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { User, UserRole } from '../models/user.model';
-import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress } from '../models/task.model';
+import { Task, TaskCreateRequest, TaskSuggestion, TaskProgress, SuggestionStatus } from '../models/task.model';
 import { Action } from '../models/action.model';
 import { LoginRequest, LoginResponse, PaginatedResponse } from './backend.service';
 
@@ -188,7 +188,7 @@ export class BackendMockService {
                     isCompleted: false
                 }
             ],
-            status: 'pending',
+            status: SuggestionStatus.PENDING,
             createdAt: new Date('2024-01-05'),
         },
         {
@@ -208,7 +208,7 @@ export class BackendMockService {
                     isCompleted: false
                 }
             ],
-            status: 'approved',
+            status: SuggestionStatus.APPROVED,
             createdAt: new Date('2024-01-06'),
         }
     ];
