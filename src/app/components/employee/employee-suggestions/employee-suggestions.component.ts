@@ -153,7 +153,6 @@ export class EmployeeSuggestionsComponent implements OnInit {
     }
 
     protected loadSuggestionDataInForm(suggestion: TaskSuggestion) {
-        console.log('Loading suggestion data in form', suggestion);
         this.editedTaskSuggestionId = suggestion.id;
         
         this.suggestionForm.patchValue({
@@ -182,8 +181,6 @@ export class EmployeeSuggestionsComponent implements OnInit {
     }
 
     getStatusText(status?: string): string {
-        console.log('status', status);
-        
         switch (status) {
             case 'approved': return 'Approved';
             case 'rejected': return 'Rejected';

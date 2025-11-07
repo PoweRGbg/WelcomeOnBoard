@@ -34,7 +34,7 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
 })
 export class ManagerSuggestionsComponent implements OnInit {
     suggestions: TaskSuggestion[] = [];
-    displayedColumns: string[] = ['taskName', 'suggestedBy', 'category', 'actions', 'status', 'createdAt', 'actions'];
+    displayedColumns: string[] = ['taskName', 'suggestedBy', 'category', 'status', 'createdAt', 'actions'];
     currentUserId: string | null = null;
 
     constructor(
