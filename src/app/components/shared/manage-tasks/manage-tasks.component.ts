@@ -66,7 +66,6 @@ export class ManageTasksComponent implements OnInit {
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
-        private router: Router,
     ) { }
 
     ngOnInit(): void {
@@ -115,8 +114,6 @@ export class ManageTasksComponent implements OnInit {
         if (this.departments.length === 1) {
             this.backendService.getDepartments().subscribe({
                 next: (departments) => {
-                    console.log('departments', departments);
-                    
                     this.departments = departments;
                 },
                 error: (error) => {
@@ -186,11 +183,6 @@ export class ManageTasksComponent implements OnInit {
                 this.snackBar.open('Task created successfully!', 'Close', { duration: 3000 });
             }
         });
-    }
-
-    navigateToCreateTask(): void {
-        // Navigate to the task creation page
-        this.router.navigate(['/employee/suggestions']);
     }
 
     editTask(task: Task): void {

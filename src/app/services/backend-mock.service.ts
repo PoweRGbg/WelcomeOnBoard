@@ -479,6 +479,14 @@ export class BackendMockService {
         );
     }
 
+    getTaskNames(): Observable<string[]> {
+        return this.simulateNetworkDelay().pipe(
+            map(() => {
+                return this.mockTasks.map(task => task.name);
+            })
+        );
+    }
+
     getTaskById(id: string): Observable<Task> {
         return this.simulateNetworkDelay().pipe(
             map(() => {

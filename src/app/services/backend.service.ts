@@ -265,6 +265,14 @@ export class BackendService {
         );
     }
 
+    public getTaskNames(): Observable<string[]> {
+        return this.http.get<string[]>(`${this.baseUrl}/tasks/names`, { headers: this.headers })
+            .pipe(
+                map(response => response),
+                catchError(this.handleError)
+            );
+    }
+
     getTaskById(id: string): Observable<Task> {
         return this.http.get<Task>(`${this.baseUrl}/tasks?id=${id}`, { headers: this.headers })
             .pipe(

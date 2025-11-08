@@ -60,8 +60,8 @@ export class EmployeeSuggestionsComponent implements OnInit {
             this.departments = departments;
         });
 
-        this.backendService.getTasks().subscribe(tasks => {
-            this.taskNames = tasks.map(task => task.name);
+        this.backendService.getTaskNames().subscribe((taskNames) => {
+            this.taskNames = taskNames;
         });
         this.loadMySuggestions();
     }

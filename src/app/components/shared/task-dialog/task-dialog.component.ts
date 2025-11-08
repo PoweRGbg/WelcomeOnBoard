@@ -56,6 +56,7 @@ export class TaskDialogComponent implements OnInit {
     protected shownDescriptionDialogs: number[] = [];
     protected showTaskUrl: boolean = false;
     protected showTaskRecurrence: boolean = false;
+    private taskNames: string[] = [];
 
     constructor(
         private fb: FormBuilder,
@@ -73,8 +74,6 @@ export class TaskDialogComponent implements OnInit {
             });
         } else if (this.data.currentUser.role === UserRole.ADMIN) {
             this.backendService.getDepartments().subscribe(departments => {
-                console.log('Got departments', departments);
-                
                 this.departments = ['All Departments', ...departments];
                 this.departments = [...new Set(this.departments)].sort();
                 this.taskForm.patchValue({
@@ -98,6 +97,10 @@ export class TaskDialogComponent implements OnInit {
         if (this.isEditMode && this.data.task) {
             this.populateForm(this.data.task);
         }
+
+        this.backendService.getTaskNames().subscribe(names => {
+            this.taskNames = names;
+        });
     }
 
     get actionsArray(): FormArray {
@@ -168,6 +171,17 @@ export class TaskDialogComponent implements OnInit {
         if (this.taskForm.valid) {
             this.isLoading = true;
             const formValue = this.taskForm.value;
+
+            if (this.taskNames.includes(formValue.name) &&
+                (!this.isEditMode || (this.isEditMode && this.data.task?.name !== formValue.name))) {
+                this.isLoading = false;
+                this.snackBar.open(
+                    `A task with the name "${formValue.name}" already exists. Please choose a different name.`,
+                    'Close',
+                    { duration: 5000 }
+                );
+                return;
+            }
 
             const actions: Action[] = formValue.actions.map((action: any) => ({
                 name: action.name,
