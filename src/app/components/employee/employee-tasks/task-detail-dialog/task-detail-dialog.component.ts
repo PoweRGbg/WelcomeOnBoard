@@ -165,9 +165,9 @@ export class TaskDetailDialogComponent implements OnInit {
         
         // Check if task is completed
         if (this.progress?.isCompleted) {
-            this.snackBar.open('Congratulations! Task completed!', 'Close', { duration: 5000 });
+            this.snackBar.open('Поздравления! Задачата е завършена!', 'Изход', { duration: 5000 });
         } else {
-            this.snackBar.open('Action completed!', 'Close', { duration: 2000 });
+            this.snackBar.open('Действието е завършено!', 'Изход', { duration: 2000 });
         }
     }
 
@@ -177,7 +177,7 @@ export class TaskDetailDialogComponent implements OnInit {
         this.backendService.updateTaskProgress(this.progress, true);
         // this.updateProgress();
         this.updateCurrentActionIndex();
-        this.snackBar.open('Action uncompleted', 'Close', { duration: 2000 });
+        this.snackBar.open('Действието е отменено!', 'Изход', { duration: 2000 });
     }
 
     private updateProgress(): void {
@@ -203,10 +203,10 @@ export class TaskDetailDialogComponent implements OnInit {
 
     getActionStatusText(action: Action): string {
         const actionIndex = this.task.actions?.indexOf(action) ?? 0;
-        if (this.isActionCompleted(actionIndex)) return 'Completed';
-        if (this.isActionCurrent(action)) return 'Current Action';
-        if (this.isActionAvailable(actionIndex)) return 'Available';
-        return 'Locked';
+        if (this.isActionCompleted(actionIndex)) return 'Завършено';
+        if (this.isActionCurrent(action)) return 'Действие';
+        if (this.isActionAvailable(actionIndex)) return 'Налична';
+        return 'Заключена';
     }
 
     getActionStatusColor(action: Action): string {

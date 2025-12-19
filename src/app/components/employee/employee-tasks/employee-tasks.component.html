@@ -1,8 +1,8 @@
 <div class="employee-tasks-container">
     <mat-card>
         <mat-card-header>
-            <mat-card-title>My Tasks</mat-card-title>
-            <mat-card-subtitle>Complete your assigned tasks</mat-card-subtitle>
+            <mat-card-title>Моите задачи</mat-card-title>
+            <mat-card-subtitle>Завършете възложените си задачи</mat-card-subtitle>
         </mat-card-header>
 
         <mat-card-content>
@@ -47,7 +47,7 @@
                                 <mat-chip
                                     [color]="getTaskStatusColor(task)" selected 
                                     [class.expiring-soon]="isTaskExpiring(task)">
-                                    {{ taskDaysLeft(task) }} - Due on {{ getTaskDueDate(task) }} 
+                                    {{ taskDaysLeft(task) }} - до {{ getTaskDueDate(task) }} 
                                 </mat-chip>
                             </div>
                         </div>
@@ -61,8 +61,8 @@
                         <div class="task-progress">
                             <div class="progress-info">
                                 <span class="progress-text">
-                                    {{ (getTaskProgress(task)?.actionsCompleted || 0) }} of {{ task.actions?.length || 0
-                                    }} actions completed
+                                    {{ (getTaskProgress(task)?.actionsCompleted || 0) }} от {{ task.actions?.length || 0
+                                    }} завършени действия
                                 </span>
                                 <span class="progress-percentage">
                                     {{ getTaskCompletionPercentage(task) | number:'1.0-0' }}%
@@ -76,7 +76,7 @@
                         <div class="task-meta">
                             <div class="task-actions-count">
                                 <mat-icon>assignment</mat-icon>
-                                <span>{{ task.actions?.length }} actions</span>
+                                <span>{{ task.actions?.length }} действия</span>
                             </div>
                         </div>
                     </mat-card-content>
@@ -96,7 +96,7 @@
 
                         <button mat-button *ngIf="task.url" (click)="openTaskUrl(task.url!)" matTooltip="Open Task URL">
                             <mat-icon>open_in_new</mat-icon>
-                            Open URL
+                            Отвори URL
                         </button>
                     </mat-card-actions>
                 </mat-card>
@@ -104,8 +104,8 @@
 
             <div *ngIf="tasks.length === 0" class="no-tasks">
                 <mat-icon>assignment</mat-icon>
-                <h3>No tasks available</h3>
-                <p>Check back later for new tasks to complete</p>
+                <h3>Няма налични задачи</h3>
+                <p>Проверете по-късно за нови задачи за изпълнение</p>
             </div>
         </mat-card-content>
     </mat-card>
