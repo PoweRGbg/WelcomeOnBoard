@@ -149,30 +149,30 @@ export class EmployeeTasksComponent implements OnInit {
 
     getTaskStatus(task: Task): string {
         const progress = this.getTaskProgress(task);
-        if (!progress) return 'Not Started';
-        if (progress.isCompleted && isFinishedOnTime(task, progress)) return `Completed`;
-        if (progress.actionsCompleted < progress.actionsTotal) return 'In Progress';
-        return `Not Started`;
+        if (!progress) return 'Незапочната';
+        if (progress.isCompleted && isFinishedOnTime(task, progress)) return `Завършена`;
+        if (progress.actionsCompleted < progress.actionsTotal) return 'В процес на изпълнение';
+        return `Незапочната`;
     }
 
     getTaskStartedDate(task: Task): string | null {
         const progress: TaskProgress | null = this.getTaskProgress(task);
         if (!progress) {
-            return 'Not started!';
+            return 'Незапочната!';
         }
 
         if (progress.isCompleted) {
-            return 'Completed';
+            return 'Завършена';
         } else {
             progress.startedOn = progress.startedOn ?? new Date();
-            return `Started on ${new Date(progress.startedOn).toLocaleDateString('en-GB') } ` ;
+            return `Започната на ${new Date(progress.startedOn).toLocaleDateString('en-GB') } ` ;
         }
     }
 
     getTaskDueDate(task: Task): string {
         const dueDate = getTaskDueDate(task);
 
-        if (!dueDate) return 'No due date';
+        if (!dueDate) return 'Няма крайна дата';
         
         return new Date(dueDate).toLocaleDateString('de-DE');
     }
@@ -213,7 +213,7 @@ export class EmployeeTasksComponent implements OnInit {
 
         this.backendService.updateTaskProgress(progress).subscribe(() => {
             this.loadTaskProgress();
-            this.snackBar.open('Task started!', 'Close', { duration: 3000 });
+            this.snackBar.open('Започната задача!', 'Затвори', { duration: 3000 });
         });
     }
 
@@ -227,7 +227,7 @@ export class EmployeeTasksComponent implements OnInit {
         dialogRef.afterClosed().subscribe((result) => {
             if (result || result === undefined) {
                 this.loadTaskProgress();
-                this.snackBar.open('Task status updated!', 'Close', { duration: 3000 });
+                this.snackBar.open('Статусът на задачата е актуализиран!', 'Затвори', { duration: 3000 });
             }
         });
     }
@@ -246,7 +246,7 @@ export class EmployeeTasksComponent implements OnInit {
         dialogRef.afterClosed().subscribe((result) => {
             if (result || result === undefined) {
                 this.loadTaskProgress();
-                this.snackBar.open('Task progress updated!', 'Close', {
+                this.snackBar.open('Напредъкът на задачата е актуализиран!', 'Затвори', {
                     duration: 3000,
                 });
             }
@@ -294,8 +294,8 @@ export class EmployeeTasksComponent implements OnInit {
             },
             error: (error) => {
                 this.snackBar.open(
-                    `Error loading departments: ${error.message}`,
-                    'Close',
+                    `Грешка при зареждане на отделите: ${error.message}`,
+                    'Затвори',
                     { duration: 5000 }
                 );
             },

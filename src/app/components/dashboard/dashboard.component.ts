@@ -81,20 +81,20 @@ export class DashboardComponent implements OnInit {
         switch (this.currentUser.role.toLocaleUpperCase()) {
             case UserRole.ADMIN:
                 actions.push(
-                    { title: 'Manage Users', icon: 'people', route: '/admin/users', color: 'primary' },
-                    { title: 'Manage Tasks', icon: 'assignment', route: '/manage/tasks', color: 'primary' }
+                    { title: 'Управление Потребители', icon: 'people', route: '/admin/users', color: 'primary' },
+                    { title: 'Управление Задачи', icon: 'assignment', route: '/manage/tasks', color: 'primary' }
                 );
                 break;
             case UserRole.MANAGER:
                 actions.push(
-                    { title: 'My Tasks', icon: 'assignment', route: '/manage/tasks', color: 'primary' },
-                    { title: 'Task Suggestions', icon: 'lightbulb', route: '/manager/suggestions', color: 'accent' }
+                    { title: 'Моите Задачи', icon: 'assignment', route: '/manage/tasks', color: 'primary' },
+                    { title: 'Предложения за Задачи', icon: 'lightbulb', route: '/manager/suggestions', color: 'accent' }
                 );
                 break;
             case UserRole.EMPLOYEE:
                 actions.push(
-                    { title: 'My Tasks', icon: 'assignment', route: '/employee/tasks', color: 'primary' },
-                    { title: 'Suggest Tasks', icon: 'add', route: '/employee/suggestions', color: 'accent' }
+                    { title: 'Моите Задачи', icon: 'assignment', route: '/employee/tasks', color: 'primary' },
+                    { title: 'Предложения за Задачи', icon: 'add', route: '/employee/suggestions', color: 'accent' }
                 );
                 break;
             default:

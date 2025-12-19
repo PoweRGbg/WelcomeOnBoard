@@ -252,8 +252,8 @@ export class ManageTasksComponent implements OnInit {
     }
 
     getTaskStatus(task: Task): string {
-        if (this.getProgressForTask(task.id)?.isCompleted) return 'Completed';
-        return 'Not Started';
+        if (this.getProgressForTask(task.id)?.isCompleted) return 'Завършена';
+        return 'Незапочната';
     }
 
     getTaskStatusColor(task: Task): string {
