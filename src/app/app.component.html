@@ -17,17 +17,17 @@
             <mat-menu #userMenu="matMenu">
                 <button mat-menu-item (click)="logout()">
                     <mat-icon>logout</mat-icon>
-                    <span>Logout</span>
+                    <span>Изход</span>
                 </button>
             </mat-menu>
         </mat-toolbar>
             <mat-sidenav-container class="sidenav-container">
-                <h1>Dashboard Menu</h1>
+                <h1>Меню</h1>
                 <mat-sidenav #sidenav mode="side" opened>
                     <mat-nav-list>
                         <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
                             <mat-icon matListItemIcon>dashboard</mat-icon>
-                            <span matListItemTitle>Dashboard</span>
+                            <span matListItemTitle>Табло</span>
                         </a>
                         <a mat-list-item *ngFor="let item of dashboardMenuItems" [routerLink]="item.route"
                             routerLinkActive="active">

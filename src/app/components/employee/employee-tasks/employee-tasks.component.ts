@@ -325,14 +325,14 @@ export class EmployeeTasksComponent implements OnInit {
         let taskHoursLeft = 0;
         if (task.recurring === RecurringTaskPeriod.DAILY) {
             taskHoursLeft = hoursLeft(task);
-            return taskHoursLeft.toString() + (taskHoursLeft === 1 ? ' hour left' : ' hours left');
+            return taskHoursLeft.toString() + (taskHoursLeft === 1 ? ' час още' : ' часа остават');
         } else {
             taskDaysLeft = daysLeft(task);
         }
         if (taskDaysLeft >= 0) {
-            return taskDaysLeft.toString() + (taskDaysLeft > 1 ? ' days left' : ' day left');
+            return taskDaysLeft.toString() + (taskDaysLeft > 1 ? ' дни остават' : ' ден остава');
         } else {
-            return 'completed';
+            return 'завършена';
         }
     }
 

@@ -57,20 +57,20 @@ export class AppComponent {
         switch (this.currentUser.role) {
             case UserRole.ADMIN:
                 items.push(
-                    { label: 'Users', icon: 'people', route: '/admin/users' },
-                    { label: 'Tasks', icon: 'assignment', route: '/manage/tasks' }
+                    { label: 'Потребители', icon: 'people', route: '/admin/users' },
+                    { label: 'Задачи', icon: 'assignment', route: '/manage/tasks' }
                 );
                 break;
             case UserRole.MANAGER:
                 items.push(
-                    { label: 'My Tasks', icon: 'assignment', route: '/manage/tasks' },
-                    { label: 'Suggestions', icon: 'lightbulb', route: '/manager/suggestions' }
+                    { label: 'Моите задачи', icon: 'assignment', route: '/manage/tasks' },
+                    { label: 'Предложения', icon: 'lightbulb', route: '/manager/suggestions' }
                 );
                 break;
             case UserRole.EMPLOYEE:
                 items.push(
-                    { label: 'My Tasks', icon: 'assignment', route: '/employee/tasks' },
-                    { label: 'Suggest Tasks', icon: 'add', route: '/employee/suggestions' }
+                    { label: 'Моите задачи', icon: 'assignment', route: '/employee/tasks' },
+                    { label: 'Предложения', icon: 'add', route: '/employee/suggestions' }
                 );
                 break;
         }

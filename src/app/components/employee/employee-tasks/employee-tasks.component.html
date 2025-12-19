@@ -85,12 +85,12 @@
                         <button mat-raised-button color="primary" (click)="openTaskDetail(task)"
                             [disabled]="getTaskStatus(task).startsWith('Completed')">
                             <mat-icon>visibility</mat-icon>
-                            {{ getTaskStatus(task) === 'Not Started' ? 'Start Task' : 'Continue Task' }}
+                            {{ getTaskStatus(task) === 'Не започната' ? 'Започни задачата' : 'Продължи задачата' }}
                         </button>
                         @if (getTaskStatus(task).startsWith('Completed')) {
                         <button mat-raised-button color="primary" (click)="restartTask(task)">
                             <mat-icon>visibility</mat-icon>
-                            Restart Task
+                            Рестартирай задачата
                         </button>
                         }
 

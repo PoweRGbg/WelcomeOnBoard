@@ -1,8 +1,8 @@
 <div class="manager-tasks-container">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>My Tasks</mat-card-title>
-      <mat-card-subtitle>Manage tasks you created</mat-card-subtitle>
+      <mat-card-title>Моите задачи</mat-card-title>
+      <mat-card-subtitle>Управлявайте задачите, които сте създали</mat-card-subtitle>
     </mat-card-header>
     <task-filter
         [searchTerm]="searchTerm"
@@ -14,14 +14,14 @@
       <div class="actions-bar">
         <button mat-raised-button color="primary" (click)="createTask()" [disabled]="isLoading">
           <mat-icon>add</mat-icon>
-          Create Task
+            Създаване на задача
         </button>
       </div>
 
       <!-- Loading spinner -->
       <div *ngIf="isLoading" class="loading-container">
         <mat-spinner diameter="40"></mat-spinner>
-        <p>Loading tasks...</p>
+        <p>Зареждане на задачите ...</p>
       </div>
 
       <!-- Tasks table -->
@@ -40,21 +40,21 @@
           </ng-container>
 
           <ng-container matColumnDef="department">
-            <th mat-header-cell *matHeaderCellDef>Department</th>
+            <th mat-header-cell *matHeaderCellDef>Отдел</th>
             <td mat-cell *matCellDef="let task">
               <mat-chip>{{ task.department }}</mat-chip>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions Count</th>
+            <th mat-header-cell *matHeaderCellDef>Брой действия</th>
             <td mat-cell *matCellDef="let task">
-              <span class="actions-count">{{ task.actions.length }} actions</span>
+              <span class="actions-count">{{ task.actions.length }} действия</span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="actions-edit">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <th mat-header-cell *matHeaderCellDef>Действия</th>
             <td mat-cell *matCellDef="let task">
               <div *ngIf="showActionButtons(task)" class="action-buttons">
                 <button mat-icon-button (click)="editTask(task)" matTooltip="Edit Task" [disabled]="isLoading">
