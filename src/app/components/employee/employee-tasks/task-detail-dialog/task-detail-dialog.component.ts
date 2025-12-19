@@ -50,7 +50,9 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (this.task && !this.progress) {
+        if (!this.task) return;
+        if (!this.progress) {
+            // Creating new progress
             this.backendService.getTaskProgressByTaskId(this.currentUserId ?? undefined, this.task.id).subscribe((taskProgress) => {
                 
                 if ((!taskProgress || Array.isArray(taskProgress)) && this.currentUserId) {
@@ -62,6 +64,8 @@ export class TaskDetailDialogComponent implements OnInit {
                         isCompleted: false,
                         startedOn: new Date(),
                     }
+                    console.log('Created progress', this.progress);
+                    
                 } else {
                     if (Object.keys(taskProgress ?? {}).includes('_id')) {
                         // Strange where these properties come from
@@ -73,7 +77,10 @@ export class TaskDetailDialogComponent implements OnInit {
                 this.updateCurrentActionIndex();
             });
         } else {
-            this.progress = this.toTaskProgress(this.progress);
+            // Progress already exists but we should update the total actions count
+            this.progress.actionsTotal = this.task.actions?.length ?? 0;
+            // This conversion is needed because this.progress includes createdAt and updatedAt properties
+            this.progress = this.toTaskProgress(this.progress); 
             if ( this.progress.actionsCompleted === 0 && !this.progress.isCompleted ){
                 this.updateProgress();
             }
@@ -215,7 +222,7 @@ export class TaskDetailDialogComponent implements OnInit {
         if (!this.progress) {
             return;
         }
-        this.currentActionIndex = this.progress.actionsCompleted <= 1 ? 0 : this.progress.actionsCompleted - 1 
+        this.currentActionIndex = this.progress.actionsCompleted < 1 ? 0 : this.progress.actionsCompleted - 1 
     }
 
     private toTaskProgress(taskProgress: any): TaskProgress {

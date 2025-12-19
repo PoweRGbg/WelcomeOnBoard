@@ -2,30 +2,30 @@
   <mat-card class="login-card">
     <mat-card-header>
       <mat-card-title>Welcome On Board</mat-card-title>
-      <mat-card-subtitle>Please select your role and username to continue</mat-card-subtitle>
+      <mat-card-subtitle>Моля въведете вашия потребителско име и парола</mat-card-subtitle>
     </mat-card-header>
     
     <mat-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Username</mat-label>
-          <input matInput formControlName="username" placeholder="Enter your username">
+          <mat-label>Потребителско име</mat-label>
+          <input matInput formControlName="username" placeholder="Въведи потребителско име">
           <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
-            Username is required
+            Потребителското име е задължително
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Password</mat-label>
-          <input matInput formControlName="password" placeholder="Password" type="password">
+          <mat-label>Парола</mat-label>
+          <input matInput formControlName="password" placeholder="Въведи парола" type="password">
           <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-            Enter password
+            Въведи парола
           </mat-error>
         </mat-form-field>
 
         <button mat-raised-button color="primary" type="submit" class="full-width" 
                 [disabled]="!loginForm.valid">
-          Login
+          Вход
         </button>
       </form>
     </mat-card-content>

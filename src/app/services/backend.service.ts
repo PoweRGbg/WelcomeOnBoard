@@ -308,6 +308,10 @@ export class BackendService {
                     action.url = undefined;
             });
         }
+
+        taskData = {
+            ...taskData
+        }
         return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`,
             taskData, { headers: this.headers })
             .pipe(

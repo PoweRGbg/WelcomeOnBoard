@@ -1,63 +1,63 @@
 <div class="employee-suggestions-container">
     <button mat-raised-button color="primary" (click)="toggleSuggestionForm()">
         <mat-icon>plus</mat-icon>
-        Add task suggestion
+        Дай ново предложение
     </button>
     <div *ngIf='showSuggestionForm' class="suggestion-form-section">
         <mat-card>
             <mat-card-header>
-                <mat-card-title>Suggest New Task</mat-card-title>
-                <mat-card-subtitle>Create a task suggestion for managers to review</mat-card-subtitle>
+                <mat-card-title>Предложи нова задача</mat-card-title>
+                <mat-card-subtitle>Създай предложение за задача, което мениджърите да прегледат</mat-card-subtitle>
             </mat-card-header>
 
             <mat-card-content>
                 <form [formGroup]="suggestionForm" (ngSubmit)="onSubmit()" class="suggestion-form">
                     <div class="form-row">
                         <mat-form-field appearance="outline" class="full-width">
-                            <mat-label>Task Name *</mat-label>
-                            <input matInput formControlName="taskName" placeholder="Enter suggested task name">
+                            <mat-label>Име на задачата *</mat-label>
+                            <input matInput formControlName="taskName" placeholder="Въведи име на предложената задача">
                             <mat-error *ngIf="suggestionForm.get('taskName')?.hasError('required')">
-                                Task name is required
+                                Името на задачата е задължително
                             </mat-error>
                             <mat-error *ngIf="suggestionForm.get('taskName')?.hasError('minlength')">
-                                Task name must be at least 3 characters
+                                Името на задачата трябва да е поне 3 символа
                             </mat-error>
                         </mat-form-field>
                     </div>
 
                     <div class="form-row">
                         <mat-form-field appearance="outline" class="full-width">
-                            <mat-label>Description</mat-label>
+                            <mat-label>Описание</mat-label>
                             <textarea matInput formControlName="description" rows="3"
-                                placeholder="Describe the task and its purpose"></textarea>
+                                placeholder="Опиши задачата и нейното предназначение"></textarea>
                         </mat-form-field>
                     </div>
 
                     <div class="form-row">
                         <mat-form-field appearance="outline" class="department-field">
-                            <mat-label>Department *</mat-label>
+                            <mat-label>Отдел *</mat-label>
                             <mat-select formControlName="department">
                                 <mat-option *ngFor="let department of departments" [value]="department">
                                     {{ department }}
                                 </mat-option>
                             </mat-select>
                             <mat-error *ngIf="suggestionForm.get('department')?.hasError('required')">
-                                department is required
+                                Отделът е задължителен
                             </mat-error>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline" class="url-field">
-                            <mat-label>Task URL</mat-label>
+                            <mat-label>URL на задачата</mat-label>
                             <input matInput formControlName="url" placeholder="https://example.com">
                         </mat-form-field>
                     </div>
 
                     <div class="actions-section">
                         <div class="actions-header">
-                            <h3>Actions</h3>
+                            <h3>Действия</h3>
                             <button mat-raised-button color="primary" type="button" (click)="addAction()">
                                 <mat-icon>add</mat-icon>
-                                Add Action
+                                Добави действие
                             </button>
                         </div>
 
@@ -77,27 +77,27 @@
 
                                 <div class="action-fields">
                                     <mat-form-field appearance="outline" class="action-name">
-                                        <mat-label>Action Name *</mat-label>
-                                        <input matInput formControlName="name" placeholder="Enter action name">
+                                        <mat-label>Име на действието *</mat-label>
+                                        <input matInput formControlName="name" placeholder="Въведи име на действието">
                                         <mat-error *ngIf="action.get('name')?.hasError('required')">
-                                            Action name is required
+                                            Името на действието е задължително
                                         </mat-error>
                                     </mat-form-field>
 
                                     <mat-form-field appearance="outline" class="action-description">
-                                        <mat-label>Description</mat-label>
+                                        <mat-label>Описание</mat-label>
                                         <input matInput formControlName="description"
-                                            placeholder="Enter action description">
+                                            placeholder="Въведи описание на действието">
                                     </mat-form-field>
 
                                     <mat-form-field appearance="outline" class="action-image">
-                                        <mat-label>Image URL</mat-label>
+                                        <mat-label>URL на изображението</mat-label>
                                         <input matInput formControlName="imageUrl"
                                             placeholder="https://example.com/image.jpg">
                                     </mat-form-field>
 
                                     <mat-form-field appearance="outline" class="action-url">
-                                        <mat-label>Action URL</mat-label>
+                                        <mat-label>URL на действието</mat-label>
                                         <input matInput formControlName="url" placeholder="https://example.com">
                                     </mat-form-field>
                                 </div>
@@ -106,14 +106,14 @@
 
                         <div *ngIf="actionsArray.length === 0" class="no-actions">
                             <mat-icon>assignment</mat-icon>
-                            <p>No actions added yet. Click "Add Action" to get started.</p>
+                            <p>Няма добавени действия. Добави действие!</p>
                         </div>
                     </div>
 
                     <div class="form-actions">
                         <button mat-raised-button color="primary" type="submit" [disabled]="!suggestionForm.valid">
                             <mat-icon>send</mat-icon>
-                            Submit Suggestion
+                            Изпрати предложение
                         </button>
                     </div>
                 </form>
@@ -124,8 +124,8 @@
     <div class="my-suggestions-section" *ngIf="mySuggestions.length > 0">
         <mat-card>
             <mat-card-header>
-                <mat-card-title>My Suggestions</mat-card-title>
-                <mat-card-subtitle>Track the status of your submitted suggestions</mat-card-subtitle>
+                <mat-card-title>Моите предложения</mat-card-title>
+                <mat-card-subtitle>Проследи статуса на твоите изпратени предложения</mat-card-subtitle>
             </mat-card-header>
 
             <mat-card-content>
@@ -158,13 +158,13 @@
                                 </div>
                                 <div>
                                     <button mat-icon-button (click)="loadSuggestionDataInForm(suggestion)" 
-                                        matTooltip="Edit suggestion" color="warn">
+                                        matTooltip="Редактирай предложението" color="warn">
                                         <mat-icon>edit</mat-icon>
                                     </button>
                                 </div>
                                 <div>
                                     <button mat-icon-button (click)="deleteSugestion(suggestion)" 
-                                        matTooltip="Delete suggestion" color="warn">
+                                        matTooltip="Изтрий предложението" color="warn">
                                         <mat-icon>close</mat-icon>
                                     </button>
                                 </div>
