@@ -12,7 +12,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { Task, TaskProgress } from '../../../../models/task.model';
 import { Action } from '../../../../models/action.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../../services/backend-service.factory';
-import { Observable } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-task-detail-dialog',
@@ -27,7 +27,8 @@ import { Observable } from 'rxjs';
         MatChipsModule,
         MatProgressBarModule,
         MatTooltipModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        TranslateModule
     ],
     templateUrl: './task-detail-dialog.component.html',
     styleUrl: './task-detail-dialog.component.scss'
@@ -42,11 +43,15 @@ export class TaskDetailDialogComponent implements OnInit {
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<TaskDetailDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { task: Task; currentUserId: string | null; progress: TaskProgress }
+        @Inject(MAT_DIALOG_DATA) public data: { task: Task; currentUserId: string | null; progress: TaskProgress },
+        private translate: TranslateService
     ) {
         this.task = data.task;
         this.currentUserId = data.currentUserId;
         this.progress = data.progress;
+        // Set default language
+        this.translate.setDefaultLang('en');
+        this.translate.use('en');
     }
 
     ngOnInit(): void {
@@ -165,9 +170,9 @@ export class TaskDetailDialogComponent implements OnInit {
         
         // Check if task is completed
         if (this.progress?.isCompleted) {
-            this.snackBar.open('Поздравления! Задачата е завършена!', 'Изход', { duration: 5000 });
+            this.snackBar.open(this.translate.instant('TASK_FINISHED_MESSAGE', { taskName: this.task.name }), this.translate.instant('DISMISS'), { duration: 5000 });
         } else {
-            this.snackBar.open('Действието е завършено!', 'Изход', { duration: 2000 });
+            this.snackBar.open(this.translate.instant('ACTION_COMPLETED_MESSAGE', { actionName: this.task.name }), this.translate.instant('DISMISS'), { duration: 2000 });
         }
     }
 
@@ -177,7 +182,7 @@ export class TaskDetailDialogComponent implements OnInit {
         this.backendService.updateTaskProgress(this.progress, true);
         // this.updateProgress();
         this.updateCurrentActionIndex();
-        this.snackBar.open('Действието е отменено!', 'Изход', { duration: 2000 });
+        this.snackBar.open(this.translate.instant('ACTION_UNCOMPLETED_MESSAGE', { actionName: this.task.name }), this.translate.instant('DISMISS'), { duration: 2000 });
     }
 
     private updateProgress(): void {
@@ -203,10 +208,10 @@ export class TaskDetailDialogComponent implements OnInit {
 
     getActionStatusText(action: Action): string {
         const actionIndex = this.task.actions?.indexOf(action) ?? 0;
-        if (this.isActionCompleted(actionIndex)) return 'Завършено';
-        if (this.isActionCurrent(action)) return 'Действие';
-        if (this.isActionAvailable(actionIndex)) return 'Налична';
-        return 'Заключена';
+        if (this.isActionCompleted(actionIndex)) return this.translate.instant('ONBOARDING.COMPLETED').toString();
+        if (this.isActionCurrent(action)) return this.translate.instant('ONBOARDING.ACTION_CURRENT').toString();
+        if (this.isActionAvailable(actionIndex)) return this.translate.instant('ONBOARDING.ACTION_AVAILABLE').toString();
+        return this.translate.instant('ONBOARDING.ACTION_LOCKED').toString();
     }
 
     getActionStatusColor(action: Action): string {

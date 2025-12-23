@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from './services/auth.service';
 import { User, UserRole } from './models/user.model';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-root',
@@ -26,7 +27,8 @@ import { Router } from '@angular/router';
         MatSidenavModule,
         MatListModule,
         MatMenuModule,
-        MatTooltipModule
+        MatTooltipModule,
+        TranslateModule
     ],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
@@ -37,7 +39,10 @@ export class AppComponent {
     currentUser: User | null = null;
     isLoggedIn = false;
     protected dashboardMenuItems: any[] = [];
-    constructor(private authService: AuthService, private router: Router) {
+    constructor(private authService: AuthService, private router: Router, private translate: TranslateService) {
+        // Set default language
+        this.translate.setDefaultLang('en');
+        this.translate.use('en');
     }
 
     ngOnInit(): void {
@@ -57,20 +62,21 @@ export class AppComponent {
         switch (this.currentUser.role) {
             case UserRole.ADMIN:
                 items.push(
-                    { label: 'Потребители', icon: 'people', route: '/admin/users' },
-                    { label: 'Задачи', icon: 'assignment', route: '/manage/tasks' }
+                    { label: this.translate.instant('ONBOARDING.MY_TASKS'), icon: 'add', route: '/admin/tasks' }, 
+                    { label: this.translate.instant('ONBOARDING.USERS'), icon: 'people', route: '/admin/users' },
+                    { label: this.translate.instant('ONBOARDING.TASKS'), icon: 'assignment', route: '/manage/tasks' }
                 );
                 break;
             case UserRole.MANAGER:
                 items.push(
-                    { label: 'Моите задачи', icon: 'assignment', route: '/manage/tasks' },
-                    { label: 'Предложения', icon: 'lightbulb', route: '/manager/suggestions' }
+                    { label: this.translate.instant('ONBOARDING.MANAGE_TASKS'), icon: 'assignment', route: '/manage/tasks' },
+                    { label: this.translate.instant('ONBOARDING.SUGGESTIONS'), icon: 'lightbulb', route: '/manager/suggestions' }
                 );
                 break;
             case UserRole.EMPLOYEE:
                 items.push(
-                    { label: 'Моите задачи', icon: 'assignment', route: '/employee/tasks' },
-                    { label: 'Предложения', icon: 'add', route: '/employee/suggestions' }
+                    { label: this.translate.instant('ONBOARDING.MY_TASKS'), icon: 'assignment', route: '/employee/tasks' },
+                    { label: this.translate.instant('ONBOARDING.SUGGESTIONS'), icon: 'add', route: '/employee/suggestions' }
                 );
                 break;
         }

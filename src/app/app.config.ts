@@ -1,7 +1,7 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { routes } from './app.routes';
@@ -9,6 +9,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { BACKEND_SERVICE, BACKEND_SERVICE_PROVIDER } from './services/backend-service.factory';
 import { BackendService } from './services/backend.service';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -26,5 +28,21 @@ export const appConfig: ApplicationConfig = {
             multi: true
         },
         BACKEND_SERVICE_PROVIDER,
+        importProvidersFrom(
+            TranslateModule.forRoot({
+                loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient]
+                }
+            })
+        )
     ]
 };
+
+// Factory function for the loader
+export function HttpLoaderFactory(http: HttpClient): TranslateLoader {
+    return {
+        getTranslation: (lang: string) => http.get(`./assets/i18n/${lang}.json`)
+    } as TranslateLoader;
+}

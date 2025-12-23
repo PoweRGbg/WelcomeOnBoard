@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { User, UserRole } from '../../../models/user.model';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'task-filter',
@@ -36,7 +37,8 @@ import { User, UserRole } from '../../../models/user.model';
         MatTooltipModule,
         MatSnackBarModule,
         MatProgressSpinnerModule,
-        FormsModule
+        FormsModule,
+        TranslateModule
     ],
     templateUrl: './task-filter.component.html',
     styleUrl: './task-filter.component.scss'
@@ -56,6 +58,7 @@ export class TaskFilterComponent implements OnInit {
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private authService: AuthService,
+        private translate: TranslateModule
     ) { }
 
     ngOnInit(): void {

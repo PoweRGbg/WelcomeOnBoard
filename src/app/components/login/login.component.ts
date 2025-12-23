@@ -9,9 +9,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../services/auth.service';
 import { UserRole } from '../../models/user.model';
-import { BACKEND_SERVICE, IBackendService } from '../../services/backend-service.factory';
-import { toUser } from '../../common/utils';
+import { BACKEND_SERVICE } from '../../services/backend-service.factory';
 import { BackendService } from '../../services/backend.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-login',
@@ -23,7 +23,8 @@ import { BackendService } from '../../services/backend.service';
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
-        MatSelectModule
+        MatSelectModule,
+        TranslateModule
     ],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss'
@@ -36,13 +37,22 @@ export class LoginComponent {
         @Inject(BACKEND_SERVICE) private backendService: BackendService,
         private fb: FormBuilder,
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private translate: TranslateService
     ) {
         this.loginForm = this.fb.group({
             username: ['', Validators.required],
             password: ['', Validators.required]
         });
     }
+
+    ngOnInit(): void {
+        this.authService.currentUser$.subscribe(user => {
+            if (!!user) {
+                this.router.navigate(['/dashboard']);
+            }
+        });
+     }
 
     onSubmit(): void {
         if (this.loginForm.valid) {
@@ -58,7 +68,7 @@ export class LoginComponent {
                     });
                 },
                 error: (err: Error) => {
-                    alert('Login failed: ' + err.message);
+                    alert(this.translate.instant('LOGIN.FAILED') + ': ' + err.message);
                 }
             });
         }

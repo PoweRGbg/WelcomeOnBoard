@@ -7,16 +7,32 @@ export const RoleGuard = (route: any) => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    const requiredRoles = route.data?.['roles'] as UserRole[];
-    authService.currentUser$.subscribe(
-        (user) => {
-            if (!user || !requiredRoles.includes(user.role)) {
-                console.log('Access denied for user', user?.username);
-                router.navigate(['/login']);
-            }
+    const requiredRoles = route.data?.['roles'] as (string | UserRole)[] | undefined;
 
-            return false;
-    });
+    const user = authService.getCurrentUser();
+
+    if (!requiredRoles || requiredRoles.length === 0) {
+        // No role restriction configured -> allow
+        return true;
+    }
+
+    if (!user) {
+        console.log('Access denied - no user');
+        router.navigate(['/login']);
+        return false;
+    }
+
+    // Do a case-insensitive comparison to tolerate different casings in route data
+    const allowed = requiredRoles
+        .map(r => String(r).toUpperCase())
+        .includes(String(user.role).toUpperCase());
+
+    if (!allowed) {
+        console.log('Access denied for user', user.username);
+        router.navigate(['/login']);
+        return false;
+    }
+
     return true;
 };
 

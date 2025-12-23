@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { User, UserRole } from '../models/user.model';
-import { BACKEND_SERVICE, IBackendService } from './backend-service.factory';
+import { BACKEND_SERVICE } from './backend-service.factory';
 import { BackendService } from './backend.service';
 
 @Injectable({

@@ -1,6 +1,6 @@
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1>Здравей, {{ currentUser?.firstName }} {{ currentUser?.lastName }}!</h1>
+        <h1>{{ 'ONBOARDING.GREETING' | translate }} {{ currentUser?.firstName }} {{ currentUser?.lastName }}!</h1>
         <div class="user-info">
             <span class="role-badge">{{ currentUser?.role | titlecase }}</span>
         </div>
@@ -14,7 +14,7 @@
                     <mat-icon>alarm</mat-icon>
                     <div class="stat-details">
                         <div class="stat-number">{{ userStats.pendingTasks }}</div>
-                        <div class="stat-label">В очакване</div>
+                        <div class="stat-label">{{ 'ONBOARDING.PENDING_TASKS' | translate }}</div>
                     </div>
                 </div>
             </mat-card-content>
@@ -26,7 +26,7 @@
                         <mat-icon>done</mat-icon>
                     <div class="stat-details">
                         <div class="stat-number">{{ userStats.completedTasks }}</div>
-                        <div class="stat-label">Завършени</div>
+                        <div class="stat-label">{{ 'ONBOARDING.COMPLETED_TASKS' | translate }}</div>
                     </div>
                 </div>
             </mat-card-content>
@@ -38,7 +38,7 @@
                     <mat-icon class="stat-icon">assignment</mat-icon>
                     <div class="stat-details">
                         <div class="stat-number">{{ userStats.totalTasks }}</div>
-                        <div class="stat-label">Общо задачи</div>
+                        <div class="stat-label">{{ 'ONBOARDING.TOTAL_TASKS' | translate }}</div>
                     </div>
                 </div>
             </mat-card-content>
@@ -46,7 +46,7 @@
     </div>
 
     <div class="actions-section">
-        <h2>Бързи действия</h2>
+        <h2>{{ 'ONBOARDING.QUICK_ACTIONS' | translate }}</h2>
         <div class="actions-grid">
             <mat-card 
                 *ngFor="let action of getRoleBasedActions()"

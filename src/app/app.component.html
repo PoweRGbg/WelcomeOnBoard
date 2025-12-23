@@ -27,7 +27,7 @@
                     <mat-nav-list>
                         <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
                             <mat-icon matListItemIcon>dashboard</mat-icon>
-                            <span matListItemTitle>Табло</span>
+                            <span matListItemTitle>{{ 'DASHBOARD' | translate }}</span>
                         </a>
                         <a mat-list-item *ngFor="let item of dashboardMenuItems" [routerLink]="item.route"
                             routerLinkActive="active">

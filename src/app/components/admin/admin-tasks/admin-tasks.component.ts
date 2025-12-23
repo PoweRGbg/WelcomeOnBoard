@@ -18,6 +18,7 @@ import { TaskDialogComponent } from '../../shared/task-dialog/task-dialog.compon
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { map, Subscription, switchMap } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-admin-tasks',
@@ -35,7 +36,8 @@ import { AuthService } from '../../../services/auth.service';
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
-        FormsModule
+        FormsModule,
+        TranslateModule
     ],
     templateUrl: './admin-tasks.component.html',
     styleUrl: './admin-tasks.component.scss'
@@ -54,6 +56,7 @@ export class AdminTasksComponent implements OnInit {
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
+        private translate: TranslateService
     ) { }
 
     ngOnInit(): void {
@@ -85,7 +88,7 @@ export class AdminTasksComponent implements OnInit {
             },
             error: (error) => {
                 this.isLoading = false;
-                this.snackBar.open(`Error loading departments: ${error.message}`, 'Close', { duration: 5000 });
+                this.snackBar.open(this.translate.instant('ONBOARDING.LOAD_DEPARTMENTS_ERROR'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 5000 });
             }
         })
 
@@ -117,7 +120,8 @@ export class AdminTasksComponent implements OnInit {
 
     createTask(): void {
         if (!this.currentUser) {
-            this.snackBar.open('User not authenticated', 'Close', { duration: 3000 });
+            this.snackBar.open(this.translate.instant('ONBOARDING.USER_NOT_LOGGED_IN'),
+                this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
             return;
         }
 
@@ -136,7 +140,7 @@ export class AdminTasksComponent implements OnInit {
 
     editTask(task: Task): void {
         if (!this.currentUser) {
-            this.snackBar.open('User not authenticated', 'Close', { duration: 3000 });
+            this.snackBar.open(this.translate.instant('ONBOARDING.USER_NOT_LOGGED_IN'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
             return;
         }
 
@@ -154,17 +158,17 @@ export class AdminTasksComponent implements OnInit {
     }
 
     deleteTask(task: Task): void {
-        if (confirm(`Are you sure you want to delete task "${task.name}"?`)) {
+        if (confirm(this.translate.instant('ONBOARDING.DELETE_TASK_CONFIRMATION', { taskName: task.name }))) {
             this.isLoading = true;
             this.backendService.deleteTask(task.id).subscribe({
                 next: () => {
                     this.isLoading = false;
-                    this.snackBar.open('Task deleted successfully!', 'Close', { duration: 3000 });
+                    this.snackBar.open(this.translate.instant('ONBOARDING.TASK_DELETED_SUCCESS'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
                     this.loadTasks();
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    this.snackBar.open(`Error deleting task: ${error.message}`, 'Close', { duration: 5000 });
+                    this.snackBar.open(this.translate.instant('ONBOARDING.DELETE_TASK_ERROR', { errorMessage: error.message }), this.translate.instant('ONBOARDING.DISMISS'), { duration: 5000 });
                 }
             });
         }
@@ -185,15 +189,15 @@ export class AdminTasksComponent implements OnInit {
             next: () => {
                 this.isLoading = false;
                 this.snackBar.open(
-                    `Task ${updatedTask.isActive ? 'activated' : 'deactivated'} successfully!`,
-                    'Close',
+                    `${this.translate.instant('ONBOARDING.TASK')} ${updatedTask.isActive ? this.translate.instant('ONBOARDING.ACTIVATED') : this.translate.instant('ONBOARDING.DEACTIVATED')} ${this.translate.instant('ONBOARDING.SUCCESSFULLY')}!`,
+                    this.translate.instant('ONBOARDING.DISMISS'),
                     { duration: 3000 }
                 );
                 this.loadTasks();
             },
             error: (error) => {
                 this.isLoading = false;
-                this.snackBar.open(`Error updating task: ${error.message}`, 'Close', { duration: 5000 });
+                this.snackBar.open(this.translate.instant('ONBOARDING.UPDATE_TASK_ERROR', { errorMessage: error.message }), this.translate.instant('ONBOARDING.DISMISS'), { duration: 5000 });
             }
         });
     }

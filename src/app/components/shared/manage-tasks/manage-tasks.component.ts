@@ -17,12 +17,12 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { RecurringTaskPeriod, Task, TaskCreateRequest, TaskProgress } from '../../../models/task.model';
 import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
-import { Router } from '@angular/router';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { TaskFilterComponent } from "../task-filter/task-filter.component";
 import { User, UserRole } from '../../../models/user.model';
 import { catchError, map, Subscription, switchMap, tap, throwError } from 'rxjs';
 import { filterTasks } from '../../../common/utils';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-manager-tasks',
@@ -43,7 +43,8 @@ import { filterTasks } from '../../../common/utils';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     FormsModule,
-    TaskFilterComponent
+    TaskFilterComponent,
+    TranslateModule
 ],
     templateUrl: './manage-tasks.component.html',
     styleUrl: './manage-tasks.component.scss'
@@ -66,6 +67,7 @@ export class ManageTasksComponent implements OnInit {
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
+        private translate: TranslateService
     ) { }
 
     ngOnInit(): void {
@@ -102,7 +104,7 @@ export class ManageTasksComponent implements OnInit {
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    this.snackBar.open(`Error loading tasks: ${error.message}`, 'Close', { duration: 5000 });
+                    this.snackBar.open(`${this.translate.instant('ONBOARDING.LOAD_TASKS_ERROR')} ${error.message}`, this.translate.instant('ONBOARDING.DISMISS'), { duration: 5000 });
                 }
             });
         } else {
@@ -118,7 +120,7 @@ export class ManageTasksComponent implements OnInit {
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    this.snackBar.open(`Error loading departments: ${error.message}`, 'Close', { duration: 5000 });
+                    this.snackBar.open(`${this.translate.instant('ONBOARDING.LOAD_DEPARTMENTS_ERROR')} ${error.message}`, this.translate.instant('ONBOARDING.DISMISS'), { duration: 5000 });
                 }
             });
         }
@@ -135,7 +137,7 @@ export class ManageTasksComponent implements OnInit {
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    this.snackBar.open(`Error loading tasks: ${error.message}`, 'Close', { duration: 5000 });
+                    this.snackBar.open(`${this.translate.instant('ONBOARDING.LOAD_TASKS_ERROR')} ${error.message}`, this.translate.instant('ONBOARDING.DISMISS'), { duration: 5000 });
                 }
             });
         }
@@ -180,7 +182,7 @@ export class ManageTasksComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.loadTasks();
-                this.snackBar.open('Task created successfully!', 'Close', { duration: 3000 });
+                this.snackBar.open(this.translate.instant('ONBOARDING.TASK_CREATED_SUCCESS'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
             }
         });
     }
@@ -207,7 +209,7 @@ export class ManageTasksComponent implements OnInit {
             if (result) {
                 this.taskReloadNeeded = true;
                 this.loadTasks();
-                this.snackBar.open('Task updated successfully!', 'Close', { duration: 3000 });
+                this.snackBar.open(this.translate.instant('ONBOARDING.TASK_UPDATED_SUCCESS'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
             }
         });
     }
@@ -218,7 +220,7 @@ export class ManageTasksComponent implements OnInit {
                 (isDeleted) => {
                     this.loadTasks();
                     if (isDeleted) {
-                        this.snackBar.open('Task deleted successfully!', 'Close', { duration: 3000 });
+                        this.snackBar.open(this.translate.instant('ONBOARDING.TASK_DELETED_SUCCESS'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
                     }
                 }
             );

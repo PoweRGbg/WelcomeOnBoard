@@ -1,8 +1,7 @@
 <div class="employee-tasks-container">
     <mat-card>
         <mat-card-header>
-            <mat-card-title>Моите задачи</mat-card-title>
-            <mat-card-subtitle>Завършете възложените си задачи</mat-card-subtitle>
+            <mat-card-subtitle>{{ 'ONBOARDING.MY_TASKS_DESCRIPTION' | translate }}</mat-card-subtitle>
         </mat-card-header>
 
         <mat-card-content>
@@ -47,7 +46,7 @@
                                 <mat-chip
                                     [color]="getTaskStatusColor(task)" selected 
                                     [class.expiring-soon]="isTaskExpiring(task)">
-                                    {{ taskDaysLeft(task) }} - до {{ getTaskDueDate(task) }} 
+                                    {{ taskDaysLeft(task) }} - {{ 'ONBOARDING.TO' | translate }} {{ getTaskDueDate(task) }} 
                                 </mat-chip>
                             </div>
                         </div>
@@ -61,8 +60,7 @@
                         <div class="task-progress">
                             <div class="progress-info">
                                 <span class="progress-text">
-                                    {{ (getTaskProgress(task)?.actionsCompleted || 0) }} от {{ task.actions?.length || 0
-                                    }} завършени действия
+                                    {{ (getTaskProgress(task)?.actionsCompleted || 0) }} {{ 'ONBOARDING.OF' | translate }} {{ task.actions?.length || 0 }} {{ 'ONBOARDING.ACTIONS_COMPLETED' | translate }}
                                 </span>
                                 <span class="progress-percentage">
                                     {{ getTaskCompletionPercentage(task) | number:'1.0-0' }}%
@@ -76,7 +74,7 @@
                         <div class="task-meta">
                             <div class="task-actions-count">
                                 <mat-icon>assignment</mat-icon>
-                                <span>{{ task.actions?.length }} действия</span>
+                                <span>{{ task.actions?.length }} {{ 'ONBOARDING.ACTIONS' | translate }}</span>
                             </div>
                         </div>
                     </mat-card-content>
@@ -85,12 +83,12 @@
                         <button mat-raised-button color="primary" (click)="openTaskDetail(task)"
                             [disabled]="getTaskStatus(task).startsWith('Completed')">
                             <mat-icon>visibility</mat-icon>
-                            {{ getTaskStatus(task) === 'Не започната' ? 'Започни задачата' : 'Продължи задачата' }}
+                            {{ getTaskStatus(task) === ('ONBOARDING.NOT_STARTED') ? ('ONBOARDING.START_TASK' | translate ) : ('ONBOARDING.CONTINUE_TASK' | translate) }}
                         </button>
                         @if (getTaskStatus(task).startsWith('Completed')) {
                         <button mat-raised-button color="primary" (click)="restartTask(task)">
                             <mat-icon>visibility</mat-icon>
-                            Рестартирай задачата
+                            {{ 'ONBOARDING.RESTART_TASK' | translate }}
                         </button>
                         }
 
@@ -104,8 +102,8 @@
 
             <div *ngIf="tasks.length === 0" class="no-tasks">
                 <mat-icon>assignment</mat-icon>
-                <h3>Няма налични задачи</h3>
-                <p>Проверете по-късно за нови задачи за изпълнение</p>
+                <h3>{{ 'ONBOARDING.NO_TASKS_AVAILABLE' | translate }}</h3>
+                <p>{{ 'ONBOARDING.CHECK_LATER' | translate }}</p>
             </div>
         </mat-card-content>
     </mat-card>

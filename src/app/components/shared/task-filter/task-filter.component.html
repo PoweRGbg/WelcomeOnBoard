@@ -3,14 +3,14 @@
     <div class="search-bar">
       <div class="search-controls">
         <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Търси задача</mat-label>
+          <mat-label>{{ ('ONBOARDING.SEARCH_TASKS' | translate) }}</mat-label>
           <input matInput [(ngModel)]="searchTerm" (input)="onSearchChange()"
-            placeholder="Търси по име или описание...">
+            placeholder="{{ ('ONBOARDING.SEARCH_TASKS_PLACEHOLDER' | translate) }}">
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="department-field">
-          <mat-label>Отдел</mat-label>
+          <mat-label>{{ ('ONBOARDING.DEPARTMENT' | translate) }}</mat-label>
           <mat-select [(ngModel)]="selectedDepartment" (selectionChange)="onDepartmentChange()">
             <mat-option *ngFor="let department of departments" [value]="department">
               {{ department }}

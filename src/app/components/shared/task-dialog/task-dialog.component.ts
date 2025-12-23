@@ -16,6 +16,7 @@ import { Action } from '../../../models/action.model';
 import { User, UserRole } from '../../../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { convertAuDateToDate } from '../../../common/utils';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 export interface TaskDialogData {
     task?: Task;
@@ -39,7 +40,8 @@ export interface TaskDialogData {
         MatChipsModule,
         MatTooltipModule,
         MatSnackBarModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        TranslateModule
     ],
     templateUrl: './task-dialog.component.html',
     styleUrl: './task-dialog.component.scss'
@@ -59,6 +61,7 @@ export class TaskDialogComponent implements OnInit {
     private taskNames: string[] = [];
 
     constructor(
+        private translate: TranslateService,
         private fb: FormBuilder,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<TaskDialogComponent>,
@@ -176,8 +179,8 @@ export class TaskDialogComponent implements OnInit {
                 (!this.isEditMode || (this.isEditMode && this.data.task?.name !== formValue.name))) {
                 this.isLoading = false;
                 this.snackBar.open(
-                    `A task with the name "${formValue.name}" already exists. Please choose a different name.`,
-                    'Close',
+                    this.translate.instant('ONBOARDING.TASK_NAME_EXISTS_ERROR', { taskName: formValue.name }),
+                    this.translate.instant('ONBOARDING.DISMISS'),
                     { duration: 5000 }
                 );
                 return;
@@ -203,8 +206,8 @@ export class TaskDialogComponent implements OnInit {
                 next: (result: Task) => {
                     this.isLoading = false;
                     this.snackBar.open(
-                        `Task ${this.isEditMode ? 'updated' : 'created'} successfully!`,
-                        'Close',
+                        `${this.translate.instant('ONBOARDING.TASK')} ${this.isEditMode ? 'updated' : 'created'} %{}`,
+                        this.translate.instant('ONBOARDING.DISMISS'),
                         { duration: 3000 }
                     );
                     this.dialogRef.close(result);

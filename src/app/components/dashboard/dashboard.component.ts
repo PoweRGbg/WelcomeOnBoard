@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
 import { Task } from '../../models/task.model';
 import { BACKEND_SERVICE, IBackendService } from '../../services/backend-service.factory';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-dashboard',
@@ -18,7 +19,8 @@ import { BACKEND_SERVICE, IBackendService } from '../../services/backend-service
         MatCardModule,
         MatButtonModule,
         MatIconModule,
-        MatGridListModule
+        MatGridListModule,
+        TranslateModule
     ],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss'
@@ -36,16 +38,18 @@ export class DashboardComponent implements OnInit {
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private translate: TranslateService
     ) { }
 
     ngOnInit(): void {
         this.authService.currentUser$.subscribe(user => {
             if (!user || !user._id) {
-                console.error('No user data in AuthService observable');
+                this.currentUser = null;
+            } else {
+                this.currentUser = user;
+                this.authService.getCurrentUser();
             }
-            this.currentUser = user;
-            this.authService.getCurrentUser();
         });
         
         this.backendService.getTasks().subscribe(tasks => {
@@ -81,20 +85,20 @@ export class DashboardComponent implements OnInit {
         switch (this.currentUser.role.toLocaleUpperCase()) {
             case UserRole.ADMIN:
                 actions.push(
-                    { title: 'Управление Потребители', icon: 'people', route: '/admin/users', color: 'primary' },
-                    { title: 'Управление Задачи', icon: 'assignment', route: '/manage/tasks', color: 'primary' }
+                    { title: this.translate.instant('ONBOARDING.USER_MANAGEMENT'), icon: 'add', route: '/admin/tasks', color: 'primary' },
+                    { title: this.translate.instant('ONBOARDING.TASK_MANAGEMENT'), icon: 'assignment', route: '/manage/tasks', color: 'primary' }
                 );
                 break;
             case UserRole.MANAGER:
                 actions.push(
-                    { title: 'Моите Задачи', icon: 'assignment', route: '/manage/tasks', color: 'primary' },
-                    { title: 'Предложения за Задачи', icon: 'lightbulb', route: '/manager/suggestions', color: 'accent' }
+                    { title: this.translate.instant('ONBOARDING.MY_TASKS'), icon: 'assignment', route: '/manage/tasks', color: 'primary' },
+                    { title: this.translate.instant('ONBOARDING.TASK_SUGGESTIONS'), icon: 'lightbulb', route: '/manager/suggestions', color: 'accent' }
                 );
                 break;
             case UserRole.EMPLOYEE:
                 actions.push(
-                    { title: 'Моите Задачи', icon: 'assignment', route: '/employee/tasks', color: 'primary' },
-                    { title: 'Предложения за Задачи', icon: 'add', route: '/employee/suggestions', color: 'accent' }
+                    { title: this.translate.instant('ONBOARDING.MY_TASKS'), icon: 'assignment', route: '/employee/tasks', color: 'primary' },
+                    { title: this.translate.instant('ONBOARDING.TASK_SUGGESTIONS'), icon: 'add', route: '/employee/suggestions', color: 'accent' }
                 );
                 break;
             default:

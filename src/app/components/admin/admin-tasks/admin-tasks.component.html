@@ -1,24 +1,24 @@
 <div class="admin-tasks-container">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Task Management</mat-card-title>
-      <mat-card-subtitle>Manage all tasks in the system</mat-card-subtitle>
+      <mat-card-title>{{ 'ONBOARDING.MANAGE_TASKS' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'ONBOARDING.MANAGE_TASKS_SUBTITLE' | translate }}</mat-card-subtitle>
     </mat-card-header>
     
     <mat-card-content>
       <div class="search-bar">
         <div class="search-controls">
           <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Search tasks</mat-label>
+            <mat-label>{{ 'ONBOARDING.SEARCH_TASKS' | translate }}</mat-label>
             <input matInput 
                    [(ngModel)]="searchTerm" 
                    (input)="onSearchChange()"
-                   placeholder="Search by name or description...">
+                   placeholder="{{ 'ONBOARDING.SEARCH_PLACEHOLDER' | translate }}">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="category-field">
-            <mat-label>Department</mat-label>
+            <mat-label>{{ 'ONBOARDING.DEPARTMENT' | translate }}</mat-label>
             <mat-select [(ngModel)]="selectedDepartment" (selectionChange)="onDepartmentChange()">
               <mat-option value="">All Departments</mat-option>
               <mat-option *ngFor="let department of departments" [value]="department">
@@ -29,7 +29,7 @@
 
           <button mat-icon-button 
                   (click)="clearSearch()" 
-                  matTooltip="Clear search"
+                  matTooltip="{{ 'ONBOARDING.CLEAR_SEARCH' | translate }}"
                   *ngIf="searchTerm || selectedDepartment">
             <mat-icon>clear</mat-icon>
           </button>
@@ -60,7 +60,7 @@
                   {{ task.department }}
                 </mat-chip>
                 <mat-chip *ngIf="!task.isActive" color="warn" selected>
-                  Inactive
+                  {{ 'ONBOARDING.INACTIVE' | translate }}
                 </mat-chip>
               </div>
             </mat-card-subtitle>
@@ -72,27 +72,27 @@
             <div class="task-meta">
               <div class="meta-item">
                 <mat-icon>assignment</mat-icon>
-                <span>{{ task.actions?.length || 0 }} actions</span>
+                <span>{{ task.actions?.length || 0 }} {{ 'ONBOARDING.ACTIONS' | translate }}</span>
               </div>
             </div>
 
             <div class="task-created-info">
-              <small>Created by {{ task.createdBy.firstName }} {{ task.createdBy.lastName }} on {{ task.createdAt | date:'short' }}</small>
+              <small>{{ 'ONBOARDING.CREATED_BY' | translate }} {{ task.createdBy.firstName }} {{ task.createdBy.lastName }} {{ 'ONBOARDING.ON' | translate }} {{ task.createdAt | date:'short' }}</small>
             </div>
           </mat-card-content>
           
           <mat-card-actions>
             <button mat-button (click)="editTask(task)" [disabled]="isLoading">
               <mat-icon>edit</mat-icon>
-              Edit
+              {{ 'ONBOARDING.EDIT' | translate }}
             </button>
             <button mat-button (click)="toggleTaskStatus(task)" [disabled]="isLoading">
               <mat-icon>{{ task.isActive ? 'pause' : 'play_arrow' }}</mat-icon>
-              {{ task.isActive ? 'Deactivate' : 'Activate' }}
+              {{ task.isActive ? ('ONBOARDING.DEACTIVATE' | translate) : ('ONBOARDING.ACTIVATE' | translate) }}
             </button>
             <button mat-button color="warn" (click)="deleteTask(task)" [disabled]="isLoading">
               <mat-icon>delete</mat-icon>
-              Delete
+              {{ 'ONBOARDING.DELETE' | translate }}
             </button>
           </mat-card-actions>
         </mat-card>
@@ -100,11 +100,11 @@
         <!-- Empty state -->
         <div *ngIf="tasks.length === 0" class="empty-state">
           <mat-icon>assignment</mat-icon>
-          <h3>No tasks found</h3>
-          <p>Get started by creating your first task.</p>
+          <h3>{{ 'ONBOARDING.NO_TASKS_FOUND' | translate }}</h3>
+          <p>{{ 'ONBOARDING.GET_STARTED' | translate }}</p>
           <button mat-raised-button color="primary" (click)="createTask()">
             <mat-icon>add</mat-icon>
-            Create First Task
+            {{ 'ONBOARDING.CREATE_FIRST_TASK' | translate }}
           </button>
         </div>
       </div>

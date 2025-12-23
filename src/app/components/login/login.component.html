@@ -2,30 +2,30 @@
   <mat-card class="login-card">
     <mat-card-header>
       <mat-card-title>Welcome On Board</mat-card-title>
-      <mat-card-subtitle>Моля въведете вашия потребителско име и парола</mat-card-subtitle>
+      <mat-card-subtitle>{{ 'ONBOARDING.LOGIN_MESSAGE' | translate }}</mat-card-subtitle>
     </mat-card-header>
     
     <mat-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Потребителско име</mat-label>
-          <input matInput formControlName="username" placeholder="Въведи потребителско име">
+          <mat-label>{{ 'ONBOARDING.USER_NAME' | translate }}</mat-label>
+          <input matInput formControlName="username" placeholder="{{ 'ONBOARDING.USER_NAME_PLACEHOLDER' | translate }}">
           <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
-            Потребителското име е задължително
+            {{ 'ONBOARDING.USER_NAME_ERROR' | translate }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Парола</mat-label>
-          <input matInput formControlName="password" placeholder="Въведи парола" type="password">
+          <mat-label>{{ 'ONBOARDING.PASSWORD' | translate }}</mat-label>
+          <input matInput formControlName="password" placeholder="{{ 'ONBOARDING.PASSWORD_PLACEHOLDER' | translate }}" type="password">
           <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-            Въведи парола
+            {{ 'ONBOARDING.PASSWORD_ERROR' | translate }}
           </mat-error>
         </mat-form-field>
 
         <button mat-raised-button color="primary" type="submit" class="full-width" 
                 [disabled]="!loginForm.valid">
-          Вход
+          {{ 'ONBOARDING.LOGIN' | translate }}
         </button>
       </form>
     </mat-card-content>

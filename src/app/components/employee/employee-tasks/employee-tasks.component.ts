@@ -21,6 +21,8 @@ import { daysLeft, filterTasks, getTaskDueDate, hoursLeft, isFinishedOnTime, isT
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TaskFilterComponent } from '../../shared/task-filter/task-filter.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 
 @Component({
     selector: 'app-employee-tasks',
@@ -41,6 +43,7 @@ import { TaskFilterComponent } from '../../shared/task-filter/task-filter.compon
         MatSelectModule,
         FormsModule,
         TaskFilterComponent,
+        TranslateModule,
     ],
     templateUrl: './employee-tasks.component.html',
     styleUrl: './employee-tasks.component.scss',
@@ -65,6 +68,7 @@ export class EmployeeTasksComponent implements OnInit {
         private snackBar: MatSnackBar,
         private fb: FormBuilder,
         private route: ActivatedRoute,
+        private translate: TranslateService
     ) {
         this.searchForm = this.createForm();
     }
@@ -149,23 +153,23 @@ export class EmployeeTasksComponent implements OnInit {
 
     getTaskStatus(task: Task): string {
         const progress = this.getTaskProgress(task);
-        if (!progress) return 'Незапочната';
-        if (progress.isCompleted && isFinishedOnTime(task, progress)) return `Завършена`;
-        if (progress.actionsCompleted < progress.actionsTotal) return 'В процес на изпълнение';
-        return `Незапочната`;
+        if (!progress) return this.translate.instant('ONBOARDING.NOT_STARTED');
+        if (progress.isCompleted && isFinishedOnTime(task, progress)) return this.translate.instant('ONBOARDING.COMPLETED');
+        if (progress.actionsCompleted < progress.actionsTotal) return this.translate.instant('ONBOARDING.IN_PROGRESS');
+        return this.translate.instant('ONBOARDING.NOT_STARTED');
     }
 
     getTaskStartedDate(task: Task): string | null {
         const progress: TaskProgress | null = this.getTaskProgress(task);
         if (!progress) {
-            return 'Незапочната!';
+            return this.translate.instant('ONBOARDING.NOT_STARTED');
         }
 
         if (progress.isCompleted) {
-            return 'Завършена';
+            return this.translate.instant('ONBOARDING.COMPLETED');
         } else {
             progress.startedOn = progress.startedOn ?? new Date();
-            return `Започната на ${new Date(progress.startedOn).toLocaleDateString('en-GB') } ` ;
+            return `${this.translate.instant('ONBOARDING.STARTED_ON')} ${new Date(progress.startedOn).toLocaleDateString('en-GB') } ` ;
         }
     }
 
@@ -325,12 +329,16 @@ export class EmployeeTasksComponent implements OnInit {
         let taskHoursLeft = 0;
         if (task.recurring === RecurringTaskPeriod.DAILY) {
             taskHoursLeft = hoursLeft(task);
-            return taskHoursLeft.toString() + (taskHoursLeft === 1 ? ' час още' : ' часа остават');
+            return taskHoursLeft.toString() + ' ' + (taskHoursLeft === 1 ? this.translate.instant('ONBOARDING.HOUR_LEFT') : this.translate.instant('ONBOARDING.HOURS_LEFT'));
         } else {
             taskDaysLeft = daysLeft(task);
         }
         if (taskDaysLeft >= 0) {
-            return taskDaysLeft.toString() + (taskDaysLeft > 1 ? ' дни остават' : ' ден остава');
+            return taskDaysLeft.toString() + ' ' +
+            (taskDaysLeft > 1 ?
+                this.translate.instant('ONBOARDING.DAYS_LEFT') :
+                this.translate.instant('ONBOARDING.DAY_LEFT')
+            );
         } else {
             return 'завършена';
         }

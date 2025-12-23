@@ -14,15 +14,15 @@
     <div class="task-url" *ngIf="task.url">
       <button mat-button color="primary" (click)="openUrl(task.url!)">
         <mat-icon>open_in_new</mat-icon>
-        Отвори URL на задачата
+        {{ 'ONBOARDING.OPEN_TASK_URL' | translate }}
       </button>
     </div>
 
     <div class="progress-section">
       <div class="progress-header">
-        <h3>Напредък</h3>
+        <h3>{{ 'ONBOARDING.PROGRESS' | translate }}</h3>
         <span class="progress-text">
-          {{ progress?.actionsCompleted }} от {{ task.actions?.length }} действия завършени
+          {{ progress?.actionsCompleted }} {{ 'ONBOARDING.OF' | translate }} {{ task.actions?.length }} {{ 'ONBOARDING.ACTIONS_COMPLETED' | translate }}
         </span>
       </div>
       <mat-progress-bar 
@@ -34,7 +34,7 @@
     </div>
 
     <div class="actions-section">
-      <h3>Действия</h3>
+      <h3>{{ 'ONBOARDING.ACTIONS' | translate }}</h3>
       <div class="actions-list">
         <mat-card *ngFor="let action of task.actions; let i = index" 
                   class="action-card"
@@ -90,7 +90,7 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="onClose()">Затвори</button>
+    <button mat-button (click)="onClose()">{{ 'ONBOARDING.DISMISS' | translate }}</button>
     <button 
         mat-raised-button 
         color="primary" 
