@@ -6,8 +6,8 @@ TODO
     - reroute manager/admin tasks to the moved component
     - remove unused admin/mager task lists
 - Too many getTaskProgress in EmployeeTaskComponent
-- translate to Bulgarian
 - Add change password in admin
 - Fix sorting of tasks in EmployeeTaskComponent
 - Find a way to focus on a field
 - make vars protected/private
+- fix not logging out until menu is clicked

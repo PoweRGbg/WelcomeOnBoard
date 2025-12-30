@@ -42,7 +42,12 @@ export class AppComponent {
     constructor(private authService: AuthService, private router: Router, private translate: TranslateService) {
         // Set default language
         this.translate.setDefaultLang('en');
-        this.translate.use('en');
+        const savedLanguage = localStorage.getItem('language');
+        if (savedLanguage) {
+            this.translate.use(savedLanguage);
+        } else {
+            this.translate.use('en');
+        }
     }
 
     ngOnInit(): void {
@@ -82,6 +87,19 @@ export class AppComponent {
         }
         
         return items;
+    }
+
+    protected switchToEnglish(): void {
+        // set a cookie or local storage item to remember the preference
+        localStorage.setItem('language', 'en');
+        this.translate.use('en');
+        this.dashboardMenuItems = this.getRoleBasedMenuItems();
+    }
+
+    protected switchToBulgarian(): void {
+        localStorage.setItem('language', 'bg');
+        this.translate.use('bg');
+        this.dashboardMenuItems = this.getRoleBasedMenuItems();
     }
 
     protected logout(): void {

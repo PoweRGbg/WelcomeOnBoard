@@ -176,7 +176,7 @@ export class EmployeeTasksComponent implements OnInit {
     getTaskDueDate(task: Task): string {
         const dueDate = getTaskDueDate(task);
 
-        if (!dueDate) return 'Няма крайна дата';
+        if (!dueDate) return this.translate.instant('ONBOARDING.NO_DUE_DATE');
         
         return new Date(dueDate).toLocaleDateString('de-DE');
     }
@@ -231,7 +231,7 @@ export class EmployeeTasksComponent implements OnInit {
         dialogRef.afterClosed().subscribe((result) => {
             if (result || result === undefined) {
                 this.loadTaskProgress();
-                this.snackBar.open('Статусът на задачата е актуализиран!', 'Затвори', { duration: 3000 });
+                this.snackBar.open(this.translate.instant('ONBOARDING.TASK_PROGRESS_UPDATED'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
             }
         });
     }

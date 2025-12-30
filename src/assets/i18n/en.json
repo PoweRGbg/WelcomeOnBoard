@@ -81,6 +81,9 @@
     "CREATED_BY": "Created by",
     "CREATE_FIRST_TASK": "Create First Task",
     "NO_TASKS_FOUND": "No tasks found",
-    "TASK_NAME_EXISTS_ERROR": "A task with the name '{{taskName}}' already exists. Please choose a different name."
+    "TASK_NAME_EXISTS_ERROR": "A task with the name '{{taskName}}' already exists. Please choose a different name.",
+    "FILL_ALL_FIELDS": "Please fill in all required fields",
+    "NO_DUE_DATE": "No due date",
+    "TASK_PROGRESS_UPDATED": "Task progress has been updated!"
   }
 }

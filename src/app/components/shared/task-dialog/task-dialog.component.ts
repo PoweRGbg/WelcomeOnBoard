@@ -216,13 +216,13 @@ export class TaskDialogComponent implements OnInit {
                     this.isLoading = false;
                     this.snackBar.open(
                         `Error ${this.isEditMode ? 'updating' : 'creating'} task: ${error.message}`,
-                        'Close',
+                        this.translate.instant('ONBOARDING.DISMISS'),
                         { duration: 5000 }
                     );
                 }
             });
         } else {
-            this.snackBar.open('Please fill in all required fields', 'Close', { duration: 3000 });
+            this.snackBar.open(this.translate.instant('ONBOARDING.FILL_ALL_FIELDS'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
         }
     }
 

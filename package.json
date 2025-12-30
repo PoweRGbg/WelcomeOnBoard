@@ -1,6 +1,6 @@
 {
     "name": "welcome-on-board",
-    "version": "0.0.55",
+    "version": "0.1.0",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
