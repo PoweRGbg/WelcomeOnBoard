@@ -81,7 +81,7 @@
               
               (change)="onProgressChange(i)"
               class="action-checkbox">
-              {{ isActionCompleted(i) ? 'Completed' : 'Mark as Complete' }}
+              {{ isActionCompleted(i) ? ('ONBOARDING.COMPLETED' | translate) : ('ONBOARDING.MARK_AS_COMPLETED' | translate) }}
             </mat-checkbox>
           </mat-card-actions>
         </mat-card>

@@ -17,7 +17,7 @@ import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dial
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { daysLeft, filterTasks, getTaskDueDate, hoursLeft, isFinishedOnTime, isTaskExpiring, taskCompletedDaysBefore } from '../../../common/utils';
+import { daysLeft, filterTasks, getTaskDueDate, hoursLeft, isFinishedOnTime, isTaskExpiring } from '../../../common/utils';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TaskFilterComponent } from '../../shared/task-filter/task-filter.component';

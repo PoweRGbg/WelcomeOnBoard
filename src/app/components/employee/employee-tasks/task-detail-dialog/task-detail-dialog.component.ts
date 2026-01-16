@@ -50,8 +50,6 @@ export class TaskDetailDialogComponent implements OnInit {
         this.currentUserId = data.currentUserId;
         this.progress = data.progress;
         // Set default language
-        this.translate.setDefaultLang('en');
-        this.translate.use('en');
     }
 
     ngOnInit(): void {
@@ -69,7 +67,6 @@ export class TaskDetailDialogComponent implements OnInit {
                         isCompleted: false,
                         startedOn: new Date(),
                     }
-                    console.log('Created progress', this.progress);
                     
                 } else {
                     if (Object.keys(taskProgress ?? {}).includes('_id')) {
@@ -203,6 +200,8 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     onClose(): void {
+        // Ensure progress is updated before closing ( for some old tasks the progress was not updated )
+        this.updateProgress();
         this.dialogRef.close(true);
     }
 

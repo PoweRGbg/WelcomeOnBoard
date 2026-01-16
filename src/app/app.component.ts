@@ -35,9 +35,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 })
 export class AppComponent {
     @ViewChild('sidenav') sidenav!: MatSidenav;
-    title = 'WelcomeOnBoard';
-    currentUser: User | null = null;
-    isLoggedIn = false;
+    protected title = 'WelcomeOnBoard';
+    protected currentUser: User | null = null;
+    protected isLoggedIn = false;
     protected dashboardMenuItems: any[] = [];
     constructor(private authService: AuthService, private router: Router, private translate: TranslateService) {
         // Set default language

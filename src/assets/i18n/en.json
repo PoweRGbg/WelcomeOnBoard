@@ -84,6 +84,7 @@
     "TASK_NAME_EXISTS_ERROR": "A task with the name '{{taskName}}' already exists. Please choose a different name.",
     "FILL_ALL_FIELDS": "Please fill in all required fields",
     "NO_DUE_DATE": "No due date",
-    "TASK_PROGRESS_UPDATED": "Task progress has been updated!"
+    "TASK_PROGRESS_UPDATED": "Task progress has been updated!",
+    "MARK_AS_COMPLETED": "Mark as Completed"
   }
 }
