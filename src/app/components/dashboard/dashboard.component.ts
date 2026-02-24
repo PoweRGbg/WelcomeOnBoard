@@ -26,9 +26,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
-    currentUser: User | null = null;
-    tasks: Task[] = [];
-    userStats = {
+    protected currentUser: User | null = null;
+    protected tasks: Task[] = [];
+    protected userStats = {
         totalTasks: 0,
         completedTasks: 0,
         inProgressTasks: 0,
@@ -71,7 +71,6 @@ export class DashboardComponent implements OnInit {
                 taskProgress.actionsCompleted > 0 &&
                 this.taskIsActive(taskProgress.taskId))
                 .length;
-            // Maybe we need to substract the tasks.inProgress also ?!?
             this.userStats.pendingTasks = activeTasks -
                 this.userStats.completedTasks;
         });
@@ -85,7 +84,7 @@ export class DashboardComponent implements OnInit {
         switch (this.currentUser.role.toLocaleUpperCase()) {
             case UserRole.ADMIN:
                 actions.push(
-                    { title: this.translate.instant('ONBOARDING.USER_MANAGEMENT'), icon: 'add', route: '/admin/tasks', color: 'primary' },
+                    { title: this.translate.instant('ONBOARDING.USER_MANAGEMENT'), icon: 'add', route: '/admin/users', color: 'primary' },
                     { title: this.translate.instant('ONBOARDING.TASK_MANAGEMENT'), icon: 'assignment', route: '/manage/tasks', color: 'primary' }
                 );
                 break;

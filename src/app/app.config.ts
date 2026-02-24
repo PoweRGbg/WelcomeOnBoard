@@ -40,7 +40,6 @@ export const appConfig: ApplicationConfig = {
     ]
 };
 
-// Factory function for the loader
 export function HttpLoaderFactory(http: HttpClient): TranslateLoader {
     return {
         getTranslation: (lang: string) => http.get(`./assets/i18n/${lang}.json`)

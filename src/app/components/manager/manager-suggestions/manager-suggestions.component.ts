@@ -88,7 +88,6 @@ export class ManagerSuggestionsComponent implements OnInit {
     }
 
     approveSuggestion(suggestion: TaskSuggestion): void {
-        // Convert suggestion to task
         const taskData: TaskCreateRequest = {
             name: suggestion.name,
             description: suggestion.description || '',

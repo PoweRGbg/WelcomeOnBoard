@@ -16,7 +16,6 @@ export class AuthService {
     ) {
         this.checkAuthStatus();
         this.backendService.token$.subscribe((token) => {
-            // When switching from logged in user to null token
             if (!token && this.currentUserSubject.value !== null) {
                 this.logout();
             }

@@ -153,13 +153,11 @@ div .action-extras {
   grid-column: 1 / -1;
 }
 
-// Loading state
 button[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;

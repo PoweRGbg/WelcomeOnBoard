@@ -12,6 +12,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { User, UserRole } from '../../../models/user.model';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
+import { Router } from '@angular/router';
 
 export interface UserDialogData {
     user?: User;
@@ -64,6 +65,7 @@ export class UserDialogComponent implements OnInit {
         private fb: FormBuilder,
         private snackBar: MatSnackBar,
         private dialogRef: MatDialogRef<UserDialogComponent>,
+        private router: Router,
         @Inject(MAT_DIALOG_DATA) public data: UserDialogData,
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
     ) {
@@ -94,7 +96,6 @@ export class UserDialogComponent implements OnInit {
             isActive: [true]
         }) as FormGroup;
 
-        // Add password fields only for new users
         if (!this.isEditMode) {
             form.addControl('password', this.fb.control('', [
                 Validators.required,
@@ -147,7 +148,6 @@ export class UserDialogComponent implements OnInit {
                 department,
             };
 
-            // Add password for new users
             if (!this.isEditMode) {
                 (userData as any).password = formValue.password;
             }

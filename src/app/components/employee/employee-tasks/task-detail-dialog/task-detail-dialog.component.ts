@@ -49,13 +49,11 @@ export class TaskDetailDialogComponent implements OnInit {
         this.task = data.task;
         this.currentUserId = data.currentUserId;
         this.progress = data.progress;
-        // Set default language
     }
 
     ngOnInit(): void {
         if (!this.task) return;
         if (!this.progress) {
-            // Creating new progress
             this.backendService.getTaskProgressByTaskId(this.currentUserId ?? undefined, this.task.id).subscribe((taskProgress) => {
                 
                 if ((!taskProgress || Array.isArray(taskProgress)) && this.currentUserId) {
@@ -70,7 +68,6 @@ export class TaskDetailDialogComponent implements OnInit {
                     
                 } else {
                     if (Object.keys(taskProgress ?? {}).includes('_id')) {
-                        // Strange where these properties come from
                         this.progress = this.toTaskProgress(taskProgress);
                     } else {
                         this.progress = taskProgress;
@@ -79,9 +76,7 @@ export class TaskDetailDialogComponent implements OnInit {
                 this.updateCurrentActionIndex();
             });
         } else {
-            // Progress already exists but we should update the total actions count
             this.progress.actionsTotal = this.task.actions?.length ?? 0;
-            // This conversion is needed because this.progress includes createdAt and updatedAt properties
             this.progress = this.toTaskProgress(this.progress); 
             if ( this.progress.actionsCompleted === 0 && !this.progress.isCompleted ){
                 this.updateProgress();
@@ -120,7 +115,6 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     isActionAvailable(actionIndex: number): boolean {
-        // index to be different from completedActions or completedActions-1
         if (actionIndex === 0 && this.progress?.actionsCompleted === 0) {
             return true;
         }        
@@ -165,7 +159,6 @@ export class TaskDetailDialogComponent implements OnInit {
         this.updateCurrentActionIndex();
         this.updateProgress();
         
-        // Check if task is completed
         if (this.progress?.isCompleted) {
             this.snackBar.open(this.translate.instant('TASK_FINISHED_MESSAGE', { taskName: this.task.name }), this.translate.instant('DISMISS'), { duration: 5000 });
         } else {
@@ -177,7 +170,6 @@ export class TaskDetailDialogComponent implements OnInit {
         if (!this.progress || !this.currentUserId) return;
 
         this.backendService.updateTaskProgress(this.progress, true);
-        // this.updateProgress();
         this.updateCurrentActionIndex();
         this.snackBar.open(this.translate.instant('ACTION_UNCOMPLETED_MESSAGE', { actionName: this.task.name }), this.translate.instant('DISMISS'), { duration: 2000 });
     }
@@ -200,7 +192,6 @@ export class TaskDetailDialogComponent implements OnInit {
     }
 
     onClose(): void {
-        // Ensure progress is updated before closing ( for some old tasks the progress was not updated )
         this.updateProgress();
         this.dialogRef.close(true);
     }

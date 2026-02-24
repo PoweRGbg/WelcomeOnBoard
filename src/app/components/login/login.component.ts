@@ -30,8 +30,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-    loginForm: FormGroup;
-    userRoles = Object.values(UserRole);
+    protected loginForm: FormGroup;
+    protected userRoles = Object.values(UserRole);
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: BackendService,

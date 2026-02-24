@@ -13,7 +13,6 @@ export class BackendMockService {
     private tokenSubject = new BehaviorSubject<string | null>(null);
     public token$ = this.tokenSubject.asObservable();
 
-    // Mock data storage
     private mockUsers: User[] = [
         {
             _id: '1',
@@ -236,7 +235,6 @@ export class BackendMockService {
     ];
 
     constructor() {
-        // Load token from localStorage on service initialization
         const token = localStorage.getItem('authToken');
         if (token) {
             this.tokenSubject.next(token);
@@ -249,7 +247,7 @@ export class BackendMockService {
             username: user.username,
             role: user.role,
             iat: Math.floor(Date.now() / 1000),
-            exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
+            exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60)
         };
         return btoa(JSON.stringify(payload));
     }
@@ -268,10 +266,9 @@ export class BackendMockService {
     }
 
     private simulateNetworkDelay(): Observable<any> {
-        return of(null).pipe(delay(Math.random() * 500 + 200)); // 200-700ms delay
+        return of(null).pipe(delay(Math.random() * 500 + 200));
     }
 
-    // Authentication Methods
     login(credentials: LoginRequest): Observable<LoginResponse> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
@@ -347,7 +344,6 @@ export class BackendMockService {
         return this.getCurrentUserFromToken();
     }
 
-    // User Management Methods
     getUsers(page: number = 1, limit: number = 10, search?: string): Observable<User[]> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
@@ -452,7 +448,6 @@ export class BackendMockService {
         );
     }
 
-    // Task Management Methods
     getTasks(page: number = 1, limit: number = 10, category?: string, search?: string): Observable<Task[]> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
@@ -537,7 +532,7 @@ export class BackendMockService {
                 this.mockTasks[taskIndex] = {
                     ...this.mockTasks[taskIndex],
                     ...taskData,
-                    createdBy: this.mockTasks[taskIndex].createdBy, // Preserve createdBy
+                    createdBy: this.mockTasks[taskIndex].createdBy,
                     updatedAt: new Date()
                 };
 
@@ -560,7 +555,6 @@ export class BackendMockService {
         );
     }
 
-    // Action Management Methods
     getActionsByTaskId(taskId: string): Observable<Action[]> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
@@ -663,9 +657,6 @@ export class BackendMockService {
         );
     }
 
-    // Task Progress Methods
-    
-    // Get all tasks  
     getTaskProgressByUserId(userId?: string): Observable<TaskProgress[]> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
@@ -689,7 +680,6 @@ export class BackendMockService {
                         progress.userId === userId && progress.taskId === taskId
                     ) ?? null;
                     if (!filteredProgress && taskId){
-                        // Create a brand new progress object for this task
                         filteredProgress = {
                             taskId,
                             userId,
@@ -721,7 +711,6 @@ export class BackendMockService {
                     taskProgress.isCompleted = true;
                 }
 
-                // update progress in mockTaskProgress
                 this.mockTaskProgress[taskIndex] = taskProgress;
                 return taskProgress;
             })
@@ -782,7 +771,6 @@ export class BackendMockService {
         );
     }
 
-    // Task Suggestions Methods
     getTaskSuggestions(page: number = 1, limit: number = 10, status?: string): Observable<TaskSuggestion[]> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
@@ -798,14 +786,6 @@ export class BackendMockService {
                 const endIndex = startIndex + limit;
                 const paginatedSuggestions = filteredSuggestions.slice(startIndex, endIndex);
 
-            //     return {
-            //         data: paginatedSuggestions,
-            //         total: filteredSuggestions.length,
-            //         page: page,
-            //         limit: limit,
-            //         totalPages: Math.ceil(filteredSuggestions.length / limit)
-            //     };
-            // })
                 return paginatedSuggestions;
             })
         );
@@ -858,7 +838,6 @@ export class BackendMockService {
         );
     }
 
-    // Utility Methods
     isAuthenticated(): boolean {
         return !!this.tokenSubject.value;
     }
@@ -867,11 +846,9 @@ export class BackendMockService {
         return this.tokenSubject.value;
     }
 
-    // File Upload Methods (mock implementation)
     uploadFile(file: File, taskId: string, actionId?: string): Observable<{ url: string }> {
         return this.simulateNetworkDelay().pipe(
             map(() => {
-                // Mock file upload - return a placeholder URL
                 const mockUrl = `https://mock-storage.com/files/${taskId}/${actionId || 'general'}/${file.name}`;
                 return { url: mockUrl };
             })

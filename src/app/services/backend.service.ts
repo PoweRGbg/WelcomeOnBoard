@@ -38,7 +38,6 @@ export class BackendService {
 
     constructor(private http: HttpClient, private router: Router) {
         this.handleError = this.handleError.bind(this);
-        // Load token from localStorage on service initialization
         const token = localStorage.getItem('authToken');
         if (token) {
             this.tokenSubject.next(token);
@@ -67,13 +66,11 @@ export class BackendService {
         if (error.status === 401) {
             errorMessage = 'Unauthorized access';
             this.logout();
-            // this.router.navigate(['/login']);
         } 
 
         return throwError(() => new Error(errorMessage));
     }
 
-    // Authentication Methods
     login(credentials: LoginRequest): Observable<LoginResponse> {
         return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, credentials)
             .pipe(
@@ -95,7 +92,6 @@ export class BackendService {
     }
 
     extendSession(userId: string): Observable<LoginResponse> {
-        // ?!? this.refreshToken()
         const token = localStorage.getItem('authToken');
 
         return this.http.post<LoginResponse>(`${this.baseUrl}/auth/extend-session`, { token, userId })
@@ -115,7 +111,7 @@ export class BackendService {
 
     logout(): void {
         this.clearTokens();
-        this.tokenSubject.next(null); // Check authentication status after logout
+        this.tokenSubject.next(null);
     }
 
     refreshToken(userId: string): Observable<LoginResponse> {
@@ -175,7 +171,6 @@ export class BackendService {
         return loggedUser;
     }
 
-    // User Management Methods
     getUsers(page: number = 1, limit: number = 10, search?: string): Observable<User[]> {
         let params = new HttpParams()
             .set('page', page.toString())

@@ -13,6 +13,7 @@ import { User, UserRole } from '../../../models/user.model';
 import { UserDialogComponent } from '../../shared/user-dialog/user-dialog.component';
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { toUser } from '../../../common/utils';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-admin-users',
@@ -27,21 +28,23 @@ import { toUser } from '../../../common/utils';
         MatTooltipModule,
         MatSnackBarModule,
         MatProgressSpinnerModule,
-        MatChipsModule
+        MatChipsModule,
+        TranslateModule
     ],
     templateUrl: './admin-users.component.html',
     styleUrl: './admin-users.component.scss'
 })
 export class AdminUsersComponent implements OnInit {
-    users: User[] = [];
-    displayedColumns: string[] = ['username', 'email', 'role', 'firstName', 'lastName', 'isActive', 'actions'];
-    isLoading = false;
-    currentUser: User | null = null;
+    protected users: User[] = [];
+    protected displayedColumns: string[] = ['username', 'email', 'role', 'firstName', 'lastName', 'isActive', 'actions'];
+    protected isLoading = false;
+    private currentUser: User | null = null;
 
     constructor(
         @Inject(BACKEND_SERVICE) private backendService: IBackendService,
         private dialog: MatDialog,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private translate: TranslateService
     ) { }
 
     ngOnInit(): void {

@@ -76,13 +76,11 @@ mat-checkbox {
   margin-right: 16px;
 }
 
-// Loading state
 button[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-// Form validation styles
 mat-form-field {
   &.mat-form-field-invalid {
     .mat-form-field-outline {
@@ -91,7 +89,6 @@ mat-form-field {
   }
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;

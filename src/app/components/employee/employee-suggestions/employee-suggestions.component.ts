@@ -124,7 +124,7 @@ export class EmployeeSuggestionsComponent implements OnInit {
                 department: formValue.department,
                 url: formValue.url,
                 actions: actions,
-                status: SuggestionStatus.PENDING, // always pending when creating or updating
+                status: SuggestionStatus.PENDING,
                 suggestedBy: this.currentUserId ?? 'no one',
             };
 
@@ -183,11 +183,9 @@ export class EmployeeSuggestionsComponent implements OnInit {
             url: suggestion.url,
         });
 
-        // Clear filled actions
         const actionsArray = this.suggestionForm.get('actions') as FormArray;
         actionsArray.clear();
 
-        // Add existing actions
         if (suggestion.actions?.length) {
             suggestion.actions.forEach(action => this.addAction(action));
         }

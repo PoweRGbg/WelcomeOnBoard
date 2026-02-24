@@ -11,10 +11,8 @@ export class ErrorInterceptor implements HttpInterceptor {
                 let errorMessage = 'An error occurred';
 
                 if (error.error instanceof ErrorEvent) {
-                    // Client-side error
                     errorMessage = `Error: ${error.error.message}`;
                 } else {
-                    // Server-side error
                     switch (error.status) {
                         case 400:
                             errorMessage = error.error?.message || 'Bad Request';
@@ -46,10 +44,6 @@ export class ErrorInterceptor implements HttpInterceptor {
                 }
 
                 console.error('HTTP Error:', errorMessage);
-
-                // You can also show a toast notification here
-                // this.notificationService.showError(errorMessage);
-
                 return throwError(() => new Error(errorMessage));
             })
         );

@@ -244,18 +244,15 @@ export class TaskDialogComponent implements OnInit {
             dueDate: task.dueDate,
         });
 
-        // Add status controls if allowed
         if (this.data.allowStatusToggle) {
             this.taskForm.patchValue({
                 isActive: task.isActive,
             });
         }
 
-        // Clear filled actions
         const actionsArray = this.taskForm.get('actions') as FormArray;
         actionsArray.clear();
 
-        // Add existing actions
         if (task.actions?.length) {
             task.actions.forEach(action => this.addAction(action));
         }
@@ -278,7 +275,6 @@ export class TaskDialogComponent implements OnInit {
             dueDate: [''],
         }) as FormGroup;
 
-        // Add status controls only if allowed
         if (this.data.allowStatusToggle) {
             form.addControl('isActive', this.fb.control(true));
         }

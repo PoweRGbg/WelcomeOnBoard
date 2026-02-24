@@ -11,3 +11,4 @@ TODO
 - Find a way to focus on a field
 - make vars protected/private
 - fix not logging out until menu is clicked
+- task list pagination

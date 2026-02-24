@@ -127,16 +127,16 @@ export function isTaskExpiring(task: Task, taskProgress?: TaskProgress): boolean
     let tolerance = 0;
     switch (task.recurring) {
         case RecurringTaskPeriod.YEARLY:
-            tolerance = 31; // One month should be enough
+            tolerance = 31;
             break;
         case RecurringTaskPeriod.MONTHLY || RecurringTaskPeriod.CUSTOM:
-            tolerance = 7; // One week
+            tolerance = 7;
             break;
         case RecurringTaskPeriod.WEEKLY:
-            tolerance = 4; // 2 days + weekend
+            tolerance = 4;
             break;
         case RecurringTaskPeriod.DAILY:
-            tolerance = 16; // 8 hours
+            tolerance = 16;
             break;
         default:
             tolerance = 0; 
@@ -174,7 +174,6 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
     let daysLeft = 0;
     const today = new Date();
     let taskLastCompleted = taskCompletedDaysBefore(taskProgress);
-    // taskProgress.updatedAt = new Date('2024-06-15T10:00:00'); // For testing
     if (task.recurring === RecurringTaskPeriod.MONTHLY) {
         const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         task.dueDate = lastDayOfMonth;
@@ -205,7 +204,7 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
         today.setHours(23, 59, 59, 999);
         if (taskLastCompleted > 0 && taskProgress.updatedAt && !taskProgress.isCompleted) {
             const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            return taskProgress.updatedAt.getDay() > todayStart.getDay(); // completed today
+            return taskProgress.updatedAt.getDay() > todayStart.getDay();
         }
         task.dueDate = today;
         daysLeft = Math.floor((today.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 ));

@@ -53,7 +53,7 @@ export class AppComponent {
     ngOnInit(): void {
         this.authService.currentUser$.subscribe(user => {
             this.currentUser = user;
-            this.isLoggedIn = !!user; // Check if user object exists to set the login status
+            this.isLoggedIn = !!user;
             this.dashboardMenuItems = this.getRoleBasedMenuItems();
         });
     }

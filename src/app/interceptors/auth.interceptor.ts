@@ -11,7 +11,6 @@ export class AuthInterceptor implements HttpInterceptor {
     constructor(private backendService: BackendService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        // Skip auth for login and refresh token endpoints
         if (req.url.includes('/auth/login') || req.url.includes('/auth/refresh')) {
             return next.handle(req);
         }
@@ -43,7 +42,6 @@ export class AuthInterceptor implements HttpInterceptor {
             switchMap((response) => {
                 this.isRefreshing = false;
 
-                // Retry the original request with new token
                 const newReq = req.clone({
                     setHeaders: {
                         Authorization: `Bearer ${response.token}`
@@ -54,7 +52,6 @@ export class AuthInterceptor implements HttpInterceptor {
             }),
             catchError((error) => {
                 this.isRefreshing = false;
-                // If refresh fails, redirect to login or clear tokens
                 this.backendService.logout();
                 return throwError(() => error);
             })

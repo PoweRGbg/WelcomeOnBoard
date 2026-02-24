@@ -12,7 +12,6 @@ export const RoleGuard = (route: any) => {
     const user = authService.getCurrentUser();
 
     if (!requiredRoles || requiredRoles.length === 0) {
-        // No role restriction configured -> allow
         return true;
     }
 
@@ -22,7 +21,6 @@ export const RoleGuard = (route: any) => {
         return false;
     }
 
-    // Do a case-insensitive comparison to tolerate different casings in route data
     const allowed = requiredRoles
         .map(r => String(r).toUpperCase())
         .includes(String(user.role).toUpperCase());

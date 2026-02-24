@@ -32,7 +32,7 @@ export interface Task {
     updatedAt?: Date;
     recurring?: RecurringTaskPeriod;
     dueDate?: Date;
-    recurringPeriod?: number; // number of days
+    recurringPeriod?: number;
     isActive: boolean;
 }
 

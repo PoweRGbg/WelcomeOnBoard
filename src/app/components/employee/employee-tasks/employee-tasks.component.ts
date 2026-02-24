@@ -87,7 +87,6 @@ export class EmployeeTasksComponent implements OnInit {
 
     onSearchChange(searchTerm: string): void {
         this.searchTerm = searchTerm;
-        // We already called loadTasks, so don't call it again
         if (!this.tasks.length && !searchTerm.length) {
             this.taskReloadNeeded = true;
             this.loadTasks();
@@ -124,7 +123,7 @@ export class EmployeeTasksComponent implements OnInit {
                 }
             });
         }
-        this.tasks = this.filterTasksByStatus(this.tasks, this.statusFilter); // filter by the status parameter
+        this.tasks = this.filterTasksByStatus(this.tasks, this.statusFilter);
         this.tasks = filterTasks(this.tasks, this.searchTerm, this.selectedDepartment || ''); // Filter by deparment
     }
 
