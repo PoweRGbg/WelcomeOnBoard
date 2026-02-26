@@ -9,11 +9,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../services/auth.service';
-import { RecurringTaskPeriod, TaskSuggestion } from '../../../models/task.model';
+import { RecurringTaskPeriod, SuggestionStatus, TaskSuggestion } from '../../../models/task.model';
 import { TaskCreateRequest } from '../../../models/task.model';
 import { UserInfo } from '../../../models/user.model';
 import { SuggestionReviewDialogComponent } from './suggestion-review-dialog/suggestion-review-dialog.component';
-import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
+import { BackendService } from '../../../services/backend.service';
+import { map, Subscription, switchMap } from 'rxjs';
 
 @Component({
     selector: 'app-manager-suggestions',
@@ -35,28 +36,45 @@ import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-serv
 export class ManagerSuggestionsComponent implements OnInit {
     suggestions: TaskSuggestion[] = [];
     displayedColumns: string[] = ['taskName', 'suggestedBy', 'category', 'actions-count', 'status', 'createdAt', 'actions'];
-    currentUserId: string | null = null;
+    currentUser: UserInfo | null = null;
+    private mainSubscription: Subscription | null = null;
 
     constructor(
-        @Inject(BACKEND_SERVICE) private backendService: IBackendService,
+        private backendService: BackendService,
         private authService: AuthService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar
     ) { }
 
     ngOnInit(): void {
-        this.authService.currentUser$.subscribe(currentUser => {
-            this.currentUserId = currentUser?._id || null;
+        this.mainSubscription = this.authService.currentUser$.pipe(
+            switchMap((currentUser) => {
+                return this.backendService.getUserById(currentUser?._id || '').pipe(
+                    map((user) => {
+                        this.currentUser = user;
+                        return user;
+                    })
+                );
+            }),
+        ).subscribe(() => {
+            this.loadSuggestions();
+
         });
-        this.loadSuggestions();
     }
 
     loadSuggestions(): void {
-        this.backendService.getTaskSuggestions().subscribe(suggestions => {
-            suggestions ? this.suggestions = suggestions : console.log("no suggestions.data");
-        });
+            console.log('Current user', this.currentUser);
+            this.backendService.getTaskSuggestions().subscribe(suggestions => {
+                suggestions ? this.suggestions = suggestions : console.log("no suggestions.data");
+                if (this.currentUser?.department) {
+                    this.suggestions = this.suggestions.filter(suggestion => 
+                        this.currentUser!.department === suggestion.department || suggestion.department === 'All Departments'
+                    );
+                }
+                // Now show only pending suggestions
+                this.suggestions = this.suggestions.filter(s => s.status === SuggestionStatus.PENDING);
+            });
     }
-
     getStatusColor(status: string): string {
         switch (status) {
             case 'approved': return 'primary';
@@ -76,7 +94,7 @@ export class ManagerSuggestionsComponent implements OnInit {
     reviewSuggestion(suggestion: TaskSuggestion): void {
         const dialogRef = this.dialog.open(SuggestionReviewDialogComponent, {
             width: '800px',
-            data: { suggestion, currentUserId: this.currentUserId }
+            data: { suggestion, currentUserId: this.currentUser?._id }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -104,9 +122,9 @@ export class ManagerSuggestionsComponent implements OnInit {
             console.log('Created task', createdTask.name);
             
             this.backendService.updateTaskSuggestion(suggestion.id, {
-                status: 'approved',
+                status: SuggestionStatus.APPROVED,
                 reviewedAt: new Date(),
-                reviewedBy: this.currentUserId!
+                reviewedBy: this.currentUser?._id!
             }).subscribe((suggestion) => {
                 console.log('Suggestion approved', suggestion);
                 
@@ -119,9 +137,9 @@ export class ManagerSuggestionsComponent implements OnInit {
 
     rejectSuggestion(suggestion: TaskSuggestion): void {
         this.backendService.updateTaskSuggestion(suggestion.id, {
-            status: 'rejected',
+            status: SuggestionStatus.REJECTED,
             reviewedAt: new Date(),
-            reviewedBy: this.currentUserId!
+            reviewedBy: this.currentUser?._id!
         }).subscribe(() => {
             this.loadSuggestions();
             this.snackBar.open('Suggestion rejected', 'Close', { duration: 3000 });
@@ -142,5 +160,11 @@ export class ManagerSuggestionsComponent implements OnInit {
 
     getRejectedSuggestions(): TaskSuggestion[] {
         return this.getSuggestionsByStatus('rejected');
+    }
+
+    ngOnDestroy(): void {
+        if (this.mainSubscription) {
+            this.mainSubscription.unsubscribe();
+        }
     }
 }

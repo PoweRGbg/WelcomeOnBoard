@@ -62,7 +62,8 @@ export class AppComponent {
                 return [
                     { label: 'ONBOARDING.MY_TASKS', icon: 'add', route: '/admin/tasks' },
                     { label: 'ONBOARDING.USERS', icon: 'people', route: '/admin/users' },
-                    { label: 'ONBOARDING.TASKS', icon: 'assignment', route: '/manage/tasks' }
+                    { label: 'ONBOARDING.TASKS', icon: 'assignment', route: '/manage/tasks' },
+                    { label: 'ONBOARDING.SUGGESTIONS', icon: 'lightbulb', route: '/manager/suggestions' }
                 ];
             case UserRole.MANAGER:
                 return [

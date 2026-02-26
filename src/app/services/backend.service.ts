@@ -77,7 +77,7 @@ export class BackendService {
                 map(response => {
                     return {
                         token: response.token,
-                        user: toUser(response.user),
+                        user: (response.user),
                         refreshToken: response.refreshToken,
                     };
                 }),
@@ -474,6 +474,7 @@ export class BackendService {
             email: payload.email,
             firstName: payload.firstName,
             lastName: payload.lastName,
+            department: payload.department,
             isActive: payload.isActive
         }
     }

@@ -86,7 +86,7 @@
                         @if (!isTaskInProgress(task)) {
                             <button mat-raised-button color="primary" (click)="restartTask(task)">
                                 <mat-icon>visibility</mat-icon>
-                                {{ 'ONBOARDING.START_TASK'| translate }}
+                                {{ 'ONBOARDING.START_TASK' | translate }}
                             </button>
                         } @else {
                             <button mat-raised-button color="primary" (click)="openTaskDetail(task)"

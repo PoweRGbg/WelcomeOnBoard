@@ -92,15 +92,22 @@ export class ManageTasksComponent implements OnInit {
         this.taskReloadNeeded = this.taskReloadNeeded || !this.tasks.length || this.getTaskRequestExpired();
         const searchQuery = this.searchTerm.trim() || undefined;
         const categoryFilter = this.selectedDepartment || undefined;
-
+        if (this.currentUser?.department) {
+            this.departments = ['All Departments', this.currentUser.department];
+        }
         if (this.taskReloadNeeded) {
             this.backendService.getTasks(1, 50, categoryFilter, searchQuery).subscribe({
                 next: (tasks) => {
                     this.tasks = tasks;
+                    console.log('currentUser', this.currentUser);
+                    
                     this.isLoading = false;
                     this.lastTasksRequest = new Date();
                     this.taskReloadNeeded = false;
                     this.tasks = tasks;
+                    this.tasks = this.tasks.filter((task) => {
+                        return task.department === this.currentUser?.department || this.currentUser?.role === UserRole.ADMIN;
+                    });
                 },
                 error: (error) => {
                     this.isLoading = false;

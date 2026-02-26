@@ -238,6 +238,8 @@ export class EmployeeTasksComponent implements OnInit {
     restartTask(task: Task): void {
         this.startTask(task);
         let progress = this.getTaskProgress(task);
+        console.log('Restarting task', task.name, 'with progress', progress);
+        
         progress!.actionsCompleted = 0;
         progress!.isCompleted = false;
 
@@ -258,8 +260,6 @@ export class EmployeeTasksComponent implements OnInit {
 
     getSortedTasks(): Task[] {
         if (!this.taskProgress.size) {
-            console.log('No task progress data available, returning unsorted tasks');
-            
             return this.tasks;
         }
         return this.tasks.sort((a, b) => {

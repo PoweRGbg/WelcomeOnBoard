@@ -1,6 +1,5 @@
 import { User } from "../models/user.model";
 import { RecurringTaskPeriod, Task, TaskProgress } from "../models/task.model";
-import { last } from "rxjs";
 
 export function toUser(userData: any): User {
     if (!userData || (!userData._id && !userData.id)) {
