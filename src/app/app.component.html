@@ -47,7 +47,7 @@
                         <a mat-list-item *ngFor="let item of dashboardMenuItems" [routerLink]="item.route"
                             routerLinkActive="active">
                             <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-                            <span matListItemTitle>{{ item.label }}</span>
+                            <span matListItemTitle>{{ item.label | translate }}</span>
                         </a>
                     </mat-nav-list>
                 </mat-sidenav>

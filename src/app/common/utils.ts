@@ -142,7 +142,7 @@ export function isTaskExpiring(task: Task, taskProgress?: TaskProgress): boolean
             tolerance = 0; 
             break;
     }
-
+    
     return taskDaysLeft < tolerance;
 }
     
@@ -160,14 +160,19 @@ export function filterTasks(tasks: Task[], searchTerm: string, selectedDepartmen
 }
 
 function getLastDayOfTheWeek(date: Date = new Date()): Date {
-    const lastDay = new Date(date);
-    lastDay.setDate(date.getDate());
-    lastDay.setHours(23, 59, 59, 999);
-    
-    return lastDay;
+    const today = new Date(date);
+    const lastDayOfThisWeek = today.getDate() + (7 - today.getDay());
+    const lastDayOfWeek = new Date(today.setDate(lastDayOfThisWeek));
+    lastDayOfWeek.setHours(23, 59, 59, 999);
+    return lastDayOfWeek;
 }
 export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boolean {
-    if ((!task.dueDate && !task.recurring) || !taskProgress) {        
+    if ((!task.dueDate && !task.recurring) || !taskProgress) {     
+        return false;
+    }
+
+    // When task is in progress it is not completed on time, even if it was completed in the past, because it should be completed again in the future
+    if (!taskProgress.isCompleted || taskProgress.actionsCompleted < taskProgress.actionsTotal) {
         return false;
     }
 
@@ -182,6 +187,7 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
             return taskProgress.updatedAt! > firstDayOfMonth;
         } else {
             daysLeft = (lastDayOfMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+            return false;
         }
     } else if (task.recurring === RecurringTaskPeriod.YEARLY) {
         const lastDayOfYear = new Date(today.getFullYear() + 1, 0, 0);
@@ -220,10 +226,40 @@ export function isFinishedOnTime(task: Task, taskProgress?: TaskProgress): boole
 
 export function taskCompletedDaysBefore(taskProgress: TaskProgress): number {
     const today = new Date();
-    if (!taskProgress.updatedAt) return -1;
+    if (!taskProgress || !taskProgress.updatedAt || taskProgress.actionsCompleted !== taskProgress.actionsTotal) return -1;
     const taskLastCompleted = new Date(taskProgress.updatedAt);
-    let daysLeft = Math.floor((today.getTime() - taskLastCompleted.getTime()) / (1000 * 60 * 60 * 24));
-    daysLeft = daysLeft < 0 ? 0 : daysLeft;
-    
-    return daysLeft;
+    let daysBefore = Math.floor((today.getTime() - taskLastCompleted.getTime()) / (1000 * 60 * 60 * 24));
+    daysBefore = daysBefore < 0 ? 0 : daysBefore;
+
+    return daysBefore;
+}
+
+export function isRecurringTask(task: Task): boolean {
+    return task.recurring !== RecurringTaskPeriod.NONE;
+}
+
+export function getUrgentTasks(tasks: Task[], taskProgressList: TaskProgress[]): Task[] {
+    return tasks.filter((task) => {
+        const taskProgress = taskProgressList.find((progress) => progress.taskId === task.id);
+        if (task.recurring !== RecurringTaskPeriod.NONE) {
+            const updatedToday = new Date();
+            updatedToday.setHours(0, 0, 0, 0);
+
+            console.log('Task:', task.name, 'is expiring:', isTaskExpiring(task, taskProgress),
+                'last updated at:', taskProgress?.updatedAt,
+                'all actions finished:', progressDone(taskProgress),
+                'is finished on time:', isFinishedOnTime(task, taskProgress),
+                'days left:', daysLeft(task),
+                'hours left:', hoursLeft(task),
+                'test complete:', isTaskExpiring(task, taskProgress) && progressDone(taskProgress) && taskProgress?.updatedAt ? isFinishedOnTime(task, taskProgress) : 'N/A'
+            );
+        }
+
+        return isTaskExpiring(task, taskProgress) && !isFinishedOnTime(task, taskProgress);
+    });
+}
+
+export function progressDone(taskProgress?: TaskProgress): boolean {
+    if (!taskProgress) return false;
+    return taskProgress.actionsCompleted === taskProgress.actionsTotal;
 }

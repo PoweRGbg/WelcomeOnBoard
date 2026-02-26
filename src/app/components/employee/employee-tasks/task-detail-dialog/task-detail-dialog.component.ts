@@ -194,6 +194,8 @@ export class TaskDetailDialogComponent implements OnInit {
     onClose(): void {
         this.updateProgress();
         this.dialogRef.close(true);
+        // Refresh the page to update the task list and progress
+        window.location.reload();
     }
 
     getActionStatusText(action: Action): string {

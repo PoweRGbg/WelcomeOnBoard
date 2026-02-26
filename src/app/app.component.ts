@@ -12,6 +12,7 @@ import { AuthService } from './services/auth.service';
 import { User, UserRole } from './models/user.model';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { combineLatest, startWith } from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -40,14 +41,8 @@ export class AppComponent {
     protected isLoggedIn = false;
     protected dashboardMenuItems: any[] = [];
     constructor(private authService: AuthService, private router: Router, private translate: TranslateService) {
-        // Set default language
-        this.translate.setDefaultLang('en');
-        const savedLanguage = localStorage.getItem('language');
-        if (savedLanguage) {
-            this.translate.use(savedLanguage);
-        } else {
-            this.translate.use('en');
-        }
+        const savedLanguage = localStorage.getItem('language') || 'en';
+        this.translate.use(savedLanguage);
     }
 
     ngOnInit(): void {
@@ -59,34 +54,27 @@ export class AppComponent {
     }
 
     getRoleBasedMenuItems(): any[] {
-        if (!this.currentUser) {
-            return [];
-        }
-        const items = [];
+        if (!this.currentUser) return [];
 
+        // 2. Return KEYS only. Do NOT use this.translate.instant() here.
         switch (this.currentUser.role) {
             case UserRole.ADMIN:
-                items.push(
-                    { label: this.translate.instant('ONBOARDING.MY_TASKS'), icon: 'add', route: '/admin/tasks' }, 
-                    { label: this.translate.instant('ONBOARDING.USERS'), icon: 'people', route: '/admin/users' },
-                    { label: this.translate.instant('ONBOARDING.TASKS'), icon: 'assignment', route: '/manage/tasks' }
-                );
-                break;
+                return [
+                    { label: 'ONBOARDING.MY_TASKS', icon: 'add', route: '/admin/tasks' },
+                    { label: 'ONBOARDING.USERS', icon: 'people', route: '/admin/users' },
+                    { label: 'ONBOARDING.TASKS', icon: 'assignment', route: '/manage/tasks' }
+                ];
             case UserRole.MANAGER:
-                items.push(
-                    { label: this.translate.instant('ONBOARDING.MANAGE_TASKS'), icon: 'assignment', route: '/manage/tasks' },
-                    { label: this.translate.instant('ONBOARDING.SUGGESTIONS'), icon: 'lightbulb', route: '/manager/suggestions' }
-                );
-                break;
-            case UserRole.EMPLOYEE:
-                items.push(
-                    { label: this.translate.instant('ONBOARDING.MY_TASKS'), icon: 'assignment', route: '/employee/tasks' },
-                    { label: this.translate.instant('ONBOARDING.SUGGESTIONS'), icon: 'add', route: '/employee/suggestions' }
-                );
-                break;
+                return [
+                    { label: 'ONBOARDING.MANAGE_TASKS', icon: 'assignment', route: '/manage/tasks' },
+                    { label: 'ONBOARDING.SUGGESTIONS', icon: 'lightbulb', route: '/manager/suggestions' }
+                ];
+            default:
+                return [
+                    { label: 'ONBOARDING.MY_TASKS', icon: 'assignment', route: '/employee/tasks' },
+                    { label: 'ONBOARDING.SUGGESTIONS', icon: 'add', route: '/employee/suggestions' }
+                ];
         }
-        
-        return items;
     }
 
     protected switchToEnglish(): void {

@@ -30,10 +30,11 @@ export const appConfig: ApplicationConfig = {
         BACKEND_SERVICE_PROVIDER,
         importProvidersFrom(
             TranslateModule.forRoot({
+                defaultLanguage: 'en',
                 loader: {
-                provide: TranslateLoader,
-                useFactory: HttpLoaderFactory,
-                deps: [HttpClient]
+                    provide: TranslateLoader,
+                    useFactory: HttpLoaderFactory,
+                    deps: [HttpClient]
                 }
             })
         )

@@ -6,12 +6,12 @@
 
         <mat-card-content>
                 <div class="search-bar">
-                        <task-filter
-                            [searchTerm]="searchTerm"
-                            [selectedDepartment]="selectedDepartment"
-                            (searchTermChange)="onSearchChange($event)"
-                            (selectedDepartmentChange)="onDepartmentChange($event)"
-                        ></task-filter>
+                    <task-filter
+                        [searchTerm]="searchTerm"
+                        [selectedDepartment]="selectedDepartment"
+                        (searchTermChange)="onSearchChange($event)"
+                        (selectedDepartmentChange)="onDepartmentChange($event)"
+                    ></task-filter>
                 </div>
 
             <mat-card>
@@ -20,7 +20,7 @@
             <div class="tasks-grid">
                 <mat-card *ngFor="let task of getSortedTasks()" class="task-card"
                     [class.in-progress]="isTaskInProgress(task)"
-                    [class.completed]="getTaskStatus(task).startsWith('Completed')"
+                    [class.completed]="getTaskProgress(task)?.actionsTotal && getTaskProgress(task)?.actionsTotal === getTaskProgress(task)?.actionsCompleted"
                     [class.expiring-soon-card]="isTaskExpiring(task)">
 
                     <mat-card-header>
@@ -34,28 +34,31 @@
                                     {{ getTaskStatus(task) }}
                                 </mat-chip>
                             </div>
-                            <div *ngIf="getTaskProgress(task) && !getTaskProgress(task)?.isCompleted"
-                                class="task-status">
-                                <mat-chip [color]="getTaskStatusColor(task)" selected>
-                                    {{ getTaskStartedDate(task) }}
-                                </mat-chip>
-                            </div>
-                            <div *ngIf="!isFinishedOnTime(task)" 
-                                    class="task-status"
-                                    >
-                                <mat-chip
-                                    [color]="getTaskStatusColor(task)" selected 
-                                    [class.expiring-soon]="isTaskExpiring(task)">
-                                    {{ taskDaysLeft(task) }} - {{ 'ONBOARDING.TO' | translate }} {{ getTaskDueDate(task) }} 
-                                </mat-chip>
-                            </div>
+                            @if (!getTaskProgress(task)?.isCompleted && !isFinishedOnTime(task)) {
+                                <div class="task-status">
+                                    <mat-chip [color]="getTaskStatusColor(task)" selected>
+                                        {{ getTaskStartedDate(task) }}
+                                    </mat-chip>
+                                </div>
+                            }
+                            @if (task.recurring !== 'None' && !isFinishedOnTime(task)) {
+                                <div class="task-status">
+                                    <mat-chip
+                                        [color]="getTaskStatusColor(task)" selected 
+                                        [class.expiring-soon]="isTaskExpiring(task)">
+                                        {{ taskDaysLeft(task) }} - {{ 'ONBOARDING.TO' | translate }} {{ getTaskDueDate(task) }} 
+                                    </mat-chip>
+                                </div>
+                            }
                         </div>
                     </mat-card-header>
 
                     <mat-card-content>
-                        <div class="task-description" *ngIf="task.description">
-                            {{ task.description }}
-                        </div>
+                        @if (task.description) {
+                            <div class="task-description">
+                                {{ task.description }}
+                            </div>
+                        }
 
                         <div class="task-progress">
                             <div class="progress-info">
@@ -80,16 +83,17 @@
                     </mat-card-content>
 
                     <mat-card-actions>
-                        <button mat-raised-button color="primary" (click)="openTaskDetail(task)"
-                            [disabled]="getTaskStatus(task).startsWith('Completed')">
+                        @if (!isTaskInProgress(task)) {
+                            <button mat-raised-button color="primary" (click)="restartTask(task)">
+                                <mat-icon>visibility</mat-icon>
+                                {{ 'ONBOARDING.START_TASK'| translate }}
+                            </button>
+                        } @else {
+                            <button mat-raised-button color="primary" (click)="openTaskDetail(task)"
+                                [disabled]="!isTaskInProgress(task)">
                             <mat-icon>visibility</mat-icon>
-                            {{ getTaskStatus(task) === ('ONBOARDING.NOT_STARTED') ? ('ONBOARDING.START_TASK' | translate ) : ('ONBOARDING.CONTINUE_TASK' | translate) }}
-                        </button>
-                        @if (getTaskStatus(task).startsWith('Completed')) {
-                        <button mat-raised-button color="primary" (click)="restartTask(task)">
-                            <mat-icon>visibility</mat-icon>
-                            {{ 'ONBOARDING.RESTART_TASK' | translate }}
-                        </button>
+                                {{ getTaskStatus(task) === ('ONBOARDING.NOT_STARTED') ? ('ONBOARDING.START_TASK' | translate ) : ('ONBOARDING.CONTINUE_TASK' | translate) }}
+                            </button>
                         }
 
                         <button mat-button *ngIf="task.url" (click)="openTaskUrl(task.url!)" matTooltip="Open Task URL">

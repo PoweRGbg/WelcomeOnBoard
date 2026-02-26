@@ -17,7 +17,7 @@ import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dial
 import { BACKEND_SERVICE, IBackendService } from '../../../services/backend-service.factory';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { daysLeft, filterTasks, getTaskDueDate, hoursLeft, isFinishedOnTime, isTaskExpiring } from '../../../common/utils';
+import { daysLeft, filterTasks, getTaskDueDate, getUrgentTasks, hoursLeft, isFinishedOnTime, isRecurringTask, isTaskExpiring } from '../../../common/utils';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TaskFilterComponent } from '../../shared/task-filter/task-filter.component';
@@ -82,6 +82,8 @@ export class EmployeeTasksComponent implements OnInit {
             this.loadTasks();
             this.getDepartments();
             this.loadTaskProgress();
+            const progress: TaskProgress[] = Array.from(this.taskProgress.values());
+            
         });
     }
 
@@ -112,8 +114,9 @@ export class EmployeeTasksComponent implements OnInit {
                 tasks = tasks.map((task) => {
                     if (!task.recurring) {
                         task.recurring = RecurringTaskPeriod.NONE;
+                    } else if (task.recurring === RecurringTaskPeriod.DAILY) {
+                        task.dueDate = new Date();
                     }
-
                     return task;
                 });
                 this.tasks = tasks.filter((task) => task.isActive);
@@ -139,8 +142,8 @@ export class EmployeeTasksComponent implements OnInit {
             });
     }
 
-    getTaskProgress(task: Task): TaskProgress | null {
-        return this.taskProgress.get(task.id) || null;
+    getTaskProgress(task: Task): TaskProgress | undefined {
+        return this.taskProgress.get(task.id) || undefined;
     }
 
     getTaskCompletionPercentage(task: Task): number {
@@ -154,12 +157,12 @@ export class EmployeeTasksComponent implements OnInit {
         const progress = this.getTaskProgress(task);
         if (!progress) return this.translate.instant('ONBOARDING.NOT_STARTED');
         if (progress.isCompleted && isFinishedOnTime(task, progress)) return this.translate.instant('ONBOARDING.COMPLETED');
-        if (progress.actionsCompleted < progress.actionsTotal) return this.translate.instant('ONBOARDING.IN_PROGRESS');
+        if (progress.actionsCompleted > 0 && progress.actionsCompleted < progress.actionsTotal) return this.translate.instant('ONBOARDING.IN_PROGRESS');
         return this.translate.instant('ONBOARDING.NOT_STARTED');
     }
 
     getTaskStartedDate(task: Task): string | null {
-        const progress: TaskProgress | null = this.getTaskProgress(task);
+        const progress: TaskProgress | undefined = this.getTaskProgress(task);
         if (!progress) {
             return this.translate.instant('ONBOARDING.NOT_STARTED');
         }
@@ -182,13 +185,10 @@ export class EmployeeTasksComponent implements OnInit {
 
     getTaskStatusColor(task: Task): string {
         const status = this.getTaskStatus(task);
-        if(status.startsWith('Completed')) {
-            return 'primary';
-        }
         switch (status) {
-            case 'Completed':
+            case this.translate.instant('ONBOARDING.COMPLETED'):
                 return 'primary';
-            case 'In Progress':
+            case this.translate.instant('ONBOARDING.IN_PROGRESS'):
                 return 'warn';
             default:
                 return 'basic';
@@ -197,9 +197,9 @@ export class EmployeeTasksComponent implements OnInit {
 
     isTaskInProgress(task: Task): boolean {
         const progress = this.getTaskProgress(task);
-        return progress
-            ? !progress.isCompleted && progress.actionsCompleted > 0
-            : false;
+        if (!progress) return false;
+        if (progress.actionsCompleted == 0) return false;
+        return progress.actionsTotal > progress.actionsCompleted;
     }
 
     startTask(task: Task): void {
@@ -216,7 +216,7 @@ export class EmployeeTasksComponent implements OnInit {
 
         this.backendService.updateTaskProgress(progress).subscribe(() => {
             this.loadTaskProgress();
-            this.snackBar.open('Започната задача!', 'Затвори', { duration: 3000 });
+            this.snackBar.open(this.translate.instant('ONBOARDING.TASK_STARTED'), this.translate.instant('ONBOARDING.DISMISS'), { duration: 3000 });
         });
     }
 
@@ -257,6 +257,11 @@ export class EmployeeTasksComponent implements OnInit {
     }
 
     getSortedTasks(): Task[] {
+        if (!this.taskProgress.size) {
+            console.log('No task progress data available, returning unsorted tasks');
+            
+            return this.tasks;
+        }
         return this.tasks.sort((a, b) => {
             
             const aInProgress = this.isTaskInProgress(a);
@@ -344,9 +349,15 @@ export class EmployeeTasksComponent implements OnInit {
     }
 
     protected isFinishedOnTime(task: Task): boolean {
-        if (task.recurring !== RecurringTaskPeriod.NONE) {
-            const taskProgress = this.getTaskProgress(task) ?? undefined;
-            return isFinishedOnTime(task, taskProgress);
+        const taskProgress = this.getTaskProgress(task);
+        
+        const onTime = isFinishedOnTime(task, taskProgress);
+        const lastUpdate = taskProgress?.updatedAt ? new Date(taskProgress.updatedAt) : null;
+        if (isRecurringTask(task) && task.recurring !== RecurringTaskPeriod.NONE) {
+            if (taskProgress) {
+                return isFinishedOnTime(task, taskProgress);
+            }
+            return false;
         }
         return true;
     }
