@@ -1,64 +1,60 @@
 <div class="employee-suggestions-container">
     <button mat-raised-button color="primary" (click)="toggleSuggestionForm()">
         <mat-icon>plus</mat-icon>
-        Дай ново предложение
+        {{ 'ONBOARDING.SUGGEST_NEW_TASK' | translate }}
     </button>
     <div *ngIf='showSuggestionForm' class="suggestion-form-section">
         <mat-card>
             <mat-card-header>
-                <mat-card-title>Предложи нова задача</mat-card-title>
-                <mat-card-subtitle>Създай предложение за задача, което мениджърите да прегледат</mat-card-subtitle>
+                <mat-card-title>{{ 'ONBOARDING.SUGGEST_NEW_TASK' | translate }}</mat-card-title>
+                <mat-card-subtitle>{{ 'ONBOARDING.SUGGEST_NEW_TASK_SUBTITLE' | translate }}</mat-card-subtitle>
             </mat-card-header>
 
             <mat-card-content>
                 <form [formGroup]="suggestionForm" (ngSubmit)="onSubmit()" class="suggestion-form">
                     <div class="form-row">
                         <mat-form-field appearance="outline" class="full-width">
-                            <mat-label>Име на задачата *</mat-label>
-                            <input matInput formControlName="taskName" placeholder="Въведи име на предложената задача">
+                            <mat-label>{{ 'ONBOARDING.TASK_NAME' | translate }} *</mat-label>
+                            <input matInput formControlName="taskName" placeholder="{{ 'ONBOARDING.TASK_NAME_PLACEHOLDER' | translate }}">
                             <mat-error *ngIf="suggestionForm.get('taskName')?.hasError('required')">
-                                Името на задачата е задължително
+                                {{ 'ONBOARDING.TASK_NAME_ERROR' | translate }}
                             </mat-error>
                             <mat-error *ngIf="suggestionForm.get('taskName')?.hasError('minlength')">
-                                Името на задачата трябва да е поне 3 символа
+                                {{ 'ONBOARDING.TASK_NAME_LENGTH_ERROR' | translate }}
                             </mat-error>
                         </mat-form-field>
                     </div>
 
                     <div class="form-row">
                         <mat-form-field appearance="outline" class="full-width">
-                            <mat-label>Описание</mat-label>
+                            <mat-label>{{ 'ONBOARDING.TASK_DESCRIPTION' | translate }}</mat-label>
                             <textarea matInput formControlName="description" rows="3"
-                                placeholder="Опиши задачата и нейното предназначение"></textarea>
+                                placeholder="{{ 'ONBOARDING.TASK_DESCRIPTION_PLACEHOLDER' | translate }}"></textarea>
                         </mat-form-field>
                     </div>
 
                     <div class="form-row">
                         <mat-form-field appearance="outline" class="department-field">
-                            <mat-label>Отдел *</mat-label>
+                            <mat-label>{{ 'ONBOARDING.DEPARTMENT' | translate }} *</mat-label>
                             <mat-select formControlName="department">
                                 <mat-option *ngFor="let department of departments" [value]="department">
                                     {{ department }}
                                 </mat-option>
                             </mat-select>
                             <mat-error *ngIf="suggestionForm.get('department')?.hasError('required')">
-                                Отделът е задължителен
+                                {{ 'ONBOARDING.DEPARTMENT_REQUIRED_ERROR' | translate }}
                             </mat-error>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline" class="url-field">
-                            <mat-label>URL на задачата</mat-label>
+                            <mat-label>{{ 'ONBOARDING.ACTION_URL' | translate }}</mat-label>
                             <input matInput formControlName="url" placeholder="https://example.com">
                         </mat-form-field>
                     </div>
 
                     <div class="actions-section">
                         <div class="actions-header">
-                            <h3>Действия</h3>
-                            <button mat-raised-button color="primary" type="button" (click)="addAction()">
-                                <mat-icon>add</mat-icon>
-                                Добави действие
-                            </button>
+                            <h3>{{ 'ONBOARDING.ACTIONS' | translate }}</h3>
                         </div>
 
                         <div formArrayName="actions" class="actions-list">
@@ -77,21 +73,21 @@
 
                                 <div class="action-fields">
                                     <mat-form-field appearance="outline" class="action-name">
-                                        <mat-label>Име на действието *</mat-label>
-                                        <input matInput formControlName="name" placeholder="Въведи име на действието">
+                                        <mat-label>{{ 'ONBOARDING.ACTION_NAME' | translate }} *</mat-label>
+                                        <input matInput formControlName="name" placeholder="{{ 'ONBOARDING.ACTION_NAME_PLACEHOLDER' | translate }}">
                                         <mat-error *ngIf="action.get('name')?.hasError('required')">
-                                            Името на действието е задължително
+                                            {{ 'ONBOARDING.ACTION_NAME_ERROR' | translate }}
                                         </mat-error>
                                     </mat-form-field>
 
                                     <mat-form-field appearance="outline" class="action-description">
-                                        <mat-label>Описание</mat-label>
+                                        <mat-label>{{ 'ONBOARDING.ACTION_DESCRIPTION' | translate }}</mat-label>
                                         <input matInput formControlName="description"
-                                            placeholder="Въведи описание на действието">
+                                            placeholder="{{ 'ONBOARDING.ACTION_DESCRIPTION_PLACEHOLDER' | translate }}">
                                     </mat-form-field>
 
                                     <mat-form-field appearance="outline" class="action-image">
-                                        <mat-label>URL на изображението</mat-label>
+                                        <mat-label>{{ 'ONBOARDING.IMAGE_URL' | translate }}</mat-label>
                                         <input matInput formControlName="imageUrl"
                                             placeholder="https://example.com/image.jpg">
                                     </mat-form-field>
@@ -111,9 +107,13 @@
                     </div>
 
                     <div class="form-actions">
+                        <button mat-raised-button color="primary" type="button" (click)="addAction()">
+                            <mat-icon>add</mat-icon>
+                            {{ 'ONBOARDING.ACTION_ADD' | translate }}
+                        </button>
                         <button mat-raised-button color="primary" type="submit" [disabled]="!suggestionForm.valid">
                             <mat-icon>send</mat-icon>
-                            Изпрати предложение
+                            {{ 'ONBOARDING.SUBMIT_SUGGESTION' | translate }}
                         </button>
                     </div>
                 </form>
@@ -124,8 +124,8 @@
     <div class="my-suggestions-section" *ngIf="mySuggestions.length > 0">
         <mat-card>
             <mat-card-header>
-                <mat-card-title>Моите предложения</mat-card-title>
-                <mat-card-subtitle>Проследи статуса на твоите изпратени предложения</mat-card-subtitle>
+                <mat-card-title>{{ 'ONBOARDING.MY_SUGGESTIONS' | translate }}</mat-card-title>
+                <mat-card-subtitle>{{ 'ONBOARDING.MY_SUGGESTIONS_SUBTITLE' | translate }}</mat-card-subtitle>
             </mat-card-header>
 
             <mat-card-content>
@@ -139,7 +139,7 @@
                                 </div>
                                 <div class="suggestion-status">
                                     <mat-chip [color]="getStatusColor(suggestion.status)" selected>
-                                        {{ getStatusText(suggestion.status) }} {{ suggestion.reviewedBy ? 'by ' + reviewers.get(suggestion.reviewedBy) : '' }}
+                                        {{ getStatusText(suggestion.status) }} {{ suggestion.reviewedBy ? reviewers.get(suggestion.reviewedBy) : '' }}
                                     </mat-chip>
                                 </div>
                             </div>
@@ -164,7 +164,7 @@
                                 </div>
                                 <div>
                                     <button mat-icon-button (click)="deleteSugestion(suggestion)" 
-                                        matTooltip="Изтрий предложението" color="warn">
+                                        matTooltip="'ONBOARDING.DELETE_SUGGESTION' | translate" color="warn">
                                         <mat-icon>close</mat-icon>
                                     </button>
                                 </div>

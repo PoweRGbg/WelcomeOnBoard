@@ -13,6 +13,7 @@ import { AuthService } from '../../../services/auth.service';
 import { SuggestionStatus, TaskSuggestion } from '../../../models/task.model';
 import { Action } from '../../../models/action.model';
 import { BackendService } from '../../../services/backend.service';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-employee-suggestions',
@@ -27,7 +28,8 @@ import { BackendService } from '../../../services/backend.service';
         MatInputModule,
         MatSelectModule,
         MatChipsModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        TranslateModule
     ],
     templateUrl: './employee-suggestions.component.html',
     styleUrl: './employee-suggestions.component.scss'
@@ -46,7 +48,8 @@ export class EmployeeSuggestionsComponent implements OnInit {
         private backendService: BackendService,
         private fb: FormBuilder,
         private authService: AuthService,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private translate: TranslateService
     ) {
         this.suggestionForm = this.createForm();
     }
@@ -201,9 +204,9 @@ export class EmployeeSuggestionsComponent implements OnInit {
 
     getStatusText(status?: string): string {
         switch (status) {
-            case 'approved': return 'Approved';
-            case 'rejected': return 'Rejected';
-            default: return 'Pending Review';
+            case 'approved': return this.translate.instant("ONBOARDING.SUGGESTION_APPROVED");
+            case 'rejected': return this.translate.instant("ONBOARDING.SUGGESTION_REJECTED");
+            default: return this.translate.instant("ONBOARDING.SUGGESTION_PENDING");
         }
     }
 
